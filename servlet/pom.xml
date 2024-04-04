@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>JsonWebDB</groupId>
+  <artifactId>Servlet</artifactId>
+  <version>4.0</version>
+  <packaging>war</packaging>
+  <description>JsonWebDB Servlet</description>
+
+  <properties>
+     <maven.compiler.source>21</maven.compiler.source>
+     <maven.compiler.target>21</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-servlet-api</artifactId>
+      <version>9.0.17</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20200518</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.10</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+
+    <resources>
+      <resource>
+        <directory>src/main/webapp/WEB-INF/</directory>
+        <includes>
+          <include>*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/webapp/META-INF/</directory>
+        <includes>
+          <include>*</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <packagingExcludes>WEB-INF/classes/WEB-INF/</packagingExcludes>
+            <packagingExcludes>WEB-INF/classes/.data/</packagingExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <outputDirectory>./classes/</outputDirectory>
+  </build>
+</project>

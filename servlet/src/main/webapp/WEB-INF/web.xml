@@ -1,0 +1,13 @@
+<web-app>
+  <servlet>
+    <servlet-name>JsonWebDB</servlet-name>
+    <servlet-class>jsonwebdb.JsonWebDB</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>JsonWebDB</servlet-name>
+    <url-pattern>/jsonwebdb</url-pattern>
+  </servlet-mapping>
+
+  <display-name>JsonWebDB</display-name>
+</web-app>
