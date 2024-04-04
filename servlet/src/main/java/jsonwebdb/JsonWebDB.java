@@ -25,21 +25,43 @@ SOFTWARE.
 package jsonwebdb;
 
 import java.io.PrintWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import javax.naming.Context;
+import javax.sql.DataSource;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 public class JsonWebDB extends HttpServlet
 {
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
-      response.setContentType("text/html");
-      PrintWriter pw = response.getWriter();
-      pw.println("<html><body>");
-      pw.println("<b>JsonWebDB</b>");
-      pw.println("</body></html>");
+    String msg = "Ok";
+    DataSource ds = null;
+
+    try
+    {
+      Context ctx = new InitialContext();
+      ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/JsonWebDB");
+    }
+    catch (NamingException e)
+    {
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      PrintWriter err = new PrintWriter(out);
+      e.printStackTrace(err);
+      err.close();
+      out.close();
+      msg = out.toString();
+    }
+
+    response.setContentType("text/html");
+    PrintWriter pw = response.getWriter();
+    pw.println("<html><body>");
+    pw.println("<b>JsonWebDB \n" + (msg) + "\n"+ (ds != null) + "</b>");
+    pw.println("</body></html>");
   }
 }

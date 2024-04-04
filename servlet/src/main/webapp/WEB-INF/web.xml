@@ -6,7 +6,7 @@
 
   <servlet-mapping>
     <servlet-name>JsonWebDB</servlet-name>
-    <url-pattern>/jsonwebdb</url-pattern>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
 
   <display-name>JsonWebDB</display-name>
