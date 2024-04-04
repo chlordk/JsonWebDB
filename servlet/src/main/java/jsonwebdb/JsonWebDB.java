@@ -25,7 +25,6 @@ SOFTWARE.
 package jsonwebdb;
 
 import java.io.PrintWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.naming.Context;
 import javax.sql.DataSource;
@@ -36,11 +35,32 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 public class JsonWebDB extends HttpServlet
 {
+  private Pool pool = null;
+  private String config = null;
+
+
+  public void init() throws ServletException
+  {
+    pool = new Pool(getDataSource());
+    config = getInitParameter("JsonWebDB");
+  }
+
+
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
-    String msg = "Ok";
+    response.setContentType("text/html");
+    PrintWriter pw = response.getWriter();
+    pw.println("<html><body>");
+    pw.println("<b>JsonWebDB " + config +" " + (pool != null) + "</b>");
+    pw.println("</body></html>");
+  }
+
+
+  private DataSource getDataSource() throws AnyException
+  {
     DataSource ds = null;
 
     try
@@ -50,18 +70,19 @@ public class JsonWebDB extends HttpServlet
     }
     catch (NamingException e)
     {
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      PrintWriter err = new PrintWriter(out);
-      e.printStackTrace(err);
-      err.close();
-      out.close();
-      msg = out.toString();
+      throw new AnyException(e);
     }
 
-    response.setContentType("text/html");
-    PrintWriter pw = response.getWriter();
-    pw.println("<html><body>");
-    pw.println("<b>JsonWebDB \n" + (msg) + "\n"+ (ds != null) + "</b>");
-    pw.println("</body></html>");
+    return(ds);
+  }
+
+
+  private static class AnyException extends ServletException
+  {
+    public AnyException(Exception e)
+    {
+      super(e.getMessage());
+      this.setStackTrace(e.getStackTrace());
+    }
   }
 }

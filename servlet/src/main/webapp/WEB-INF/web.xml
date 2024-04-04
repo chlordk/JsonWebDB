@@ -2,6 +2,10 @@
   <servlet>
     <servlet-name>JsonWebDB</servlet-name>
     <servlet-class>jsonwebdb.JsonWebDB</servlet-class>
+    <init-param>
+      <param-name>JsonWebDB</param-name>
+      <param-value>/jsonwebdb</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
