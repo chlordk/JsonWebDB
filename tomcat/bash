@@ -1,0 +1,2 @@
+NAME=jsonwebdb
+docker exec -it $NAME bash

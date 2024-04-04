@@ -1,0 +1,2 @@
+NAME=jsonwebdb
+docker build -t $NAME .
