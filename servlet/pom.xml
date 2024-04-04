@@ -20,15 +20,29 @@
     </dependency>
 
     <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>20200518</version>
+      <groupId>jsonwebdb</groupId>
+      <artifactId>jsonwebdb</artifactId>
+      <version>4.0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/../libraries/jsonwebdb.jar</systemPath>
     </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.2.10</version>
+      <version>42.7.3</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.oracle.database.jdbc</groupId>
+        <artifactId>ojdbc8</artifactId>
+        <version>21.3.0.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>20240303</version>
     </dependency>
   </dependencies>
 
@@ -42,6 +56,7 @@
           <include>*</include>
         </includes>
       </resource>
+
       <resource>
         <directory>src/main/webapp/META-INF/</directory>
         <includes>
@@ -55,6 +70,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
+            <includeSystemScope>true</includeSystemScope>
             <addMavenDescriptor>false</addMavenDescriptor>
             <packagingExcludes>WEB-INF/classes/WEB-INF/</packagingExcludes>
             <packagingExcludes>WEB-INF/classes/.data/</packagingExcludes>

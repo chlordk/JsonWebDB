@@ -1,0 +1,3 @@
+rm -rf target
+mvn package
+cp target/jsonwebdb*.jar ../libraries/jsonwebdb.jar

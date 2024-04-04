@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import jsondb.Messages;
 import java.io.PrintWriter;
 import java.io.IOException;
 import javax.naming.Context;
@@ -53,8 +54,9 @@ public class JsonWebDB extends HttpServlet
   {
     response.setContentType("text/html");
     PrintWriter pw = response.getWriter();
+    String msg = new Messages().getMessage();
     pw.println("<html><body>");
-    pw.println("<b>JsonWebDB " + config +" " + (pool != null) + "</b>");
+    pw.println("<b>JsonWebDB " + config +" " + msg + "</b>");
     pw.println("</body></html>");
   }
 
