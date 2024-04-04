@@ -40,6 +40,12 @@
     </dependency>
 
     <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <version>11.0.0-M18</version>
+    </dependency>
+
+    <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20240303</version>
@@ -70,8 +76,6 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.3.1</version>
         <configuration>
-            <includeSystemScope>true</includeSystemScope>
-            <addMavenDescriptor>false</addMavenDescriptor>
             <packagingExcludes>WEB-INF/classes/WEB-INF/</packagingExcludes>
             <packagingExcludes>WEB-INF/classes/.data/</packagingExcludes>
         </configuration>

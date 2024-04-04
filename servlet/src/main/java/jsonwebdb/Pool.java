@@ -24,17 +24,54 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import java.sql.ResultSet;
 import java.sql.Connection;
-import javax.sql.DataSource;
-
+import java.sql.DriverManager;
+import jsonwebdb.JsonWebDB.AnyException;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 public class Pool
 {
+   private final String url;
    private final DataSource ds;
 
-   public Pool(DataSource ds)
+   public Pool() throws AnyException
    {
-      this.ds = ds;
+      try
+      {
+         Class.forName("org.postgresql.Driver");
+         Class.forName("oracle.jdbc.driver.OracleDriver");
+      }
+      catch (Exception e)
+      {
+         throw new AnyException(e);
+      }
+
+      url = "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB";
+
+      PoolProperties props = new PoolProperties();
+
+      props.setUrl(url);
+
+      props.setUsername("hr");
+      props.setPassword("hr");
+
+      props.setValidationInterval(30000);
+      props.setValidationQuery("select user");
+
+      props.setMinIdle(10);
+      props.setInitialSize(0);
+      props.setMaxActive(100);
+      props.setMaxWait(10000);
+
+      this.ds = new DataSource();
+      this.ds.setPoolProperties(props);
+   }
+
+   public DataSource datasource()
+   {
+      return(ds);
    }
 
    public Connection getConnection() throws Exception
@@ -42,10 +79,21 @@ public class Pool
       return(ds.getConnection());
    }
 
-   public boolean authenticate(String username, String password) throws Exception
+   public String authenticate(String username, String password) throws Exception
    {
-      Connection conn = ds.getConnection(username,password);
+      String user = null;
+
+      Connection conn = DriverManager.getConnection(url,username,password);
+      ResultSet  rset = conn.createStatement().executeQuery("select user");
+      if (rset.next()) user = rset.getString(1);
+
+      rset.close();
       conn.close();
-      return(true);
+
+      conn = getConnection();
+      rset = conn.createStatement().executeQuery("select user");
+      if (rset.next()) user += " "+rset.getString(1);
+
+      return(user);
    }
 }

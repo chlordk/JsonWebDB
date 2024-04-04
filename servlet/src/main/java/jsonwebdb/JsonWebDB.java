@@ -24,13 +24,8 @@ SOFTWARE.
 
 package jsonwebdb;
 
-import jsondb.Messages;
 import java.io.PrintWriter;
 import java.io.IOException;
-import javax.naming.Context;
-import javax.sql.DataSource;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,41 +40,27 @@ public class JsonWebDB extends HttpServlet
 
   public void init() throws ServletException
   {
-    pool = new Pool(getDataSource());
+    pool = new Pool();
     config = getInitParameter("JsonWebDB");
   }
 
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
+    String user = null;
     response.setContentType("text/html");
     PrintWriter pw = response.getWriter();
-    String msg = new Messages().getMessage();
+    try {
+      user = pool.authenticate("pvuser","pvuser");
+    } catch (Exception e) {
+      throw new AnyException(e);
+    }
     pw.println("<html><body>");
-    pw.println("<b>JsonWebDB " + config +" " + msg + "</b>");
+    pw.println("<b>JsonWebDB 4 "+user+"</b>");
     pw.println("</body></html>");
   }
 
-
-  private DataSource getDataSource() throws AnyException
-  {
-    DataSource ds = null;
-
-    try
-    {
-      Context ctx = new InitialContext();
-      ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/JsonWebDB");
-    }
-    catch (NamingException e)
-    {
-      throw new AnyException(e);
-    }
-
-    return(ds);
-  }
-
-
-  private static class AnyException extends ServletException
+  public static class AnyException extends ServletException
   {
     public AnyException(Exception e)
     {
