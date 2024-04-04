@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>JsonWebDB</groupId>
-  <artifactId>Servlet</artifactId>
+  <artifactId>JsonWebDB</artifactId>
   <version>4.0</version>
   <packaging>war</packaging>
   <description>JsonWebDB Servlet</description>
