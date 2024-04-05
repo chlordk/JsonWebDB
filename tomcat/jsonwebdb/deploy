@@ -1,2 +1,0 @@
-# Run this from inside container
-cp /jsonwebdb/* /usr/local/tomcat/webapps

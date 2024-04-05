@@ -24,8 +24,13 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import jsondb.JsonDB;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import jsondb.json.JSONObject;
+import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,29 +40,106 @@ import javax.servlet.http.HttpServletResponse;
 public class JsonWebDB extends HttpServlet
 {
   private Pool pool = null;
-  private String config = null;
+  private String root = null;
 
 
   public void init() throws ServletException
   {
     pool = new Pool();
-    config = getInitParameter("JsonWebDB");
+    root = getInitParameter("JsonWebDB");
+  }
+
+  public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+  {
+    String vers = "4.0";
+
+    String path = getPath(request);
+    String meth = request.getMethod();
+
+    if (meth.equals("GET") && path.length() <= 0)
+    {
+      showBanner(response,vers);
+      return;
+    }
+
+    if (meth.equals("GET"))
+    {
+      byte[] cont = file(path);
+    }
+
+    if (meth.equals("POST"))
+    {
+      String body = getBody(request);
+    }
+
+    JsonDB jsondb = new JsonDB(path);
+    JSONObject resp = jsondb.execute("{}");
+
+    resp.put("path",path);
+    resp.put("method",meth);
+
+    String xxx = resp.pretty();
+
+    response.setContentType("text/html");
+    PrintWriter pw = response.getWriter();
+
+    pw.println("<html>");
+    pw.println(xxx);
+    pw.println("</html>");
+  }
+
+  private byte[] file(String path)
+  {
+    return(null);
+  }
+
+  private JSONObject jsondb(String request)
+  {
+    JsonDB jsondb = new JsonDB(root);
+    return(jsondb.execute(request));
+  }
+
+  private String getPath(HttpServletRequest request)
+  {
+    return(request.getRequestURI().substring(request.getContextPath().length()));
+  }
+
+  private String getBody(HttpServletRequest request) throws IOException
+  {
+    int read = 0;
+    byte[] buf = new byte[4196];
+
+    InputStream in = request.getInputStream();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    while (read >= 0)
+    {
+      read = in.read(buf);
+      if (read > 0) out.write(buf,0,read);
+    }
+
+    in.close();
+    out.close();
+
+    return(out.toString());
   }
 
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+  private void showFile(HttpServletResponse response, byte[] cont) throws IOException
   {
-    String user = null;
+    OutputStream out = response.getOutputStream();
+    out.write(cont);
+    out.close();
+  }
+
+  private void showBanner(HttpServletResponse response, String version) throws IOException
+  {
     response.setContentType("text/html");
     PrintWriter pw = response.getWriter();
-    try {
-      user = pool.authenticate("pvuser","pvuser");
-    } catch (Exception e) {
-      throw new AnyException(e);
-    }
-    pw.println("<html><body>");
-    pw.println("<b>JsonWebDB 4 "+user+"</b>");
-    pw.println("</body></html>");
+    pw.println("<html>");
+    pw.println("<head><title>JsonWebDB version "+version+"</title></head>");
+    pw.println("<body><b>JsonWebDB is running</b></body>");
+    pw.println("</html>");
   }
 
   public static class AnyException extends ServletException

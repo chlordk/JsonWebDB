@@ -69,9 +69,9 @@ public class Pool
       this.ds.setPoolProperties(props);
    }
 
-   public DataSource datasource()
+   public void release(Connection conn) throws Exception
    {
-      return(ds);
+      conn.close();
    }
 
    public Connection getConnection() throws Exception
@@ -79,21 +79,19 @@ public class Pool
       return(ds.getConnection());
    }
 
-   public String authenticate(String username, String password) throws Exception
+   public boolean authenticate(String username, String password) throws Exception
    {
       String user = null;
 
       Connection conn = DriverManager.getConnection(url,username,password);
       ResultSet  rset = conn.createStatement().executeQuery("select user");
+
       if (rset.next()) user = rset.getString(1);
+      rset.close(); conn.close();
 
-      rset.close();
-      conn.close();
+      if (user == null)
+         return(false);
 
-      conn = getConnection();
-      rset = conn.createStatement().executeQuery("select user");
-      if (rset.next()) user += " "+rset.getString(1);
-
-      return(user);
+      return(username.equalsIgnoreCase(user));
    }
 }

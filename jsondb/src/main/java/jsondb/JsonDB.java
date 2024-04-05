@@ -24,10 +24,29 @@ SOFTWARE.
 
 package jsondb;
 
-public class Messages
+import jsondb.json.JSONObject;
+
+
+public class JsonDB
 {
-   public String getMessage()
+   public final String root;
+
+
+   public JsonDB(String root)
    {
-      return("Hello there");
+      this.root = root;
+   }
+
+
+   public JSONObject execute(String request)
+   {
+      return(execute(new JSONObject(request)));
+   }
+
+
+   public JSONObject execute(JSONObject request)
+   {
+      request.put("test","Hello");
+      return(request);
    }
 }

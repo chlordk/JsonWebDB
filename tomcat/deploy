@@ -1,0 +1,2 @@
+NAME=jsonwebdb
+docker exec -it $NAME cp /jsonwebdb/tomcat/JsonWebDB.war /usr/local/tomcat/webapps

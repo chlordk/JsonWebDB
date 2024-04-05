@@ -1,3 +1,7 @@
 rm -rf target
+cp ../libraries/jsonwebdb.jar src/main/webapp/WEB-INF/lib
+
 mvn package
-cp target/JsonWebDB*.war ../tomcat/jsonwebdb/JsonWebDB.war
+
+cp target/JsonWebDB*.war ../tomcat/JsonWebDB.war
+../tomcat/deploy
