@@ -37,11 +37,12 @@ public class Config
    private static String root = null;
    private static Config instance = null;
 
-   
+
    public static synchronized void load(String root) throws Exception
    {
       Config.root = root;
-      FileInputStream in = new FileInputStream(path("config.json"));
+      String path = path("config","config.json");
+      FileInputStream in = new FileInputStream(path);
       Config.instance  = new Config(new JSONObject(new JSONTokener(in)));
    }
 
@@ -71,8 +72,11 @@ public class Config
    {
       String path = root;
 
-      for (int i = 0; i < parts.length; i++)
-         path += File.separator + parts[i];
+      if (parts != null)
+      {
+         for (int i = 0; i < parts.length; i++)
+            path += File.separator + parts[i];
+      }
 
       return(path);
    }

@@ -24,29 +24,26 @@ SOFTWARE.
 
 package jsonwebdb;
 
-import jsondb.JsonDB;
+import jsondb.Config;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import jsondb.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 
 public class JsonWebDB extends HttpServlet
 {
-  private Pool pool = null;
-  private String root = null;
-
-
   public void init() throws ServletException
   {
-    pool = new Pool();
-    root = getInitParameter("JsonWebDB");
+    try {Config.load(System.getenv("JsonWebDB"));}
+    catch (Exception e) {throw new AnyException(e);}
   }
 
   public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -72,19 +69,11 @@ public class JsonWebDB extends HttpServlet
       String body = getBody(request);
     }
 
-    JsonDB jsondb = new JsonDB(path);
-    JSONObject resp = jsondb.execute("{}");
-
-    resp.put("path",path);
-    resp.put("method",meth);
-
-    String xxx = resp.pretty();
-
     response.setContentType("text/html");
     PrintWriter pw = response.getWriter();
 
     pw.println("<html>");
-    pw.println(xxx);
+    pw.println(Config.path());
     pw.println("</html>");
   }
 
@@ -95,8 +84,7 @@ public class JsonWebDB extends HttpServlet
 
   private JSONObject jsondb(String request)
   {
-    JsonDB jsondb = new JsonDB(root);
-    return(jsondb.execute(request));
+    return(null);
   }
 
   private String getPath(HttpServletRequest request)

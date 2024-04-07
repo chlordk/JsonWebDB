@@ -2,5 +2,6 @@ NAME=jsonwebdb
 
 docker run -dit --name $NAME \
  -p 8080:8080 \
+ -e JsonWebDB=/jsonwebdb \
  -v /Users/alhof/Repository/JsonWebDB:/jsonwebdb \
 $NAME
