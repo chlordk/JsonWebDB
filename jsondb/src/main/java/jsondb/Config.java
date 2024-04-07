@@ -22,44 +22,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.json;
+package jsondb;
+
+import java.io.File;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import java.io.FileInputStream;
 
 
-public class JSONObject extends org.json.JSONObject
+public class Config
 {
-   public JSONObject()
+   private final JSONObject config;
+
+   private static String root = null;
+   private static Config instance = null;
+
+   
+   public static synchronized void load(String root) throws Exception
    {
-      super();
+      Config.root = root;
+      FileInputStream in = new FileInputStream(path("config.json"));
+      Config.instance  = new Config(new JSONObject(new JSONTokener(in)));
    }
 
-   public JSONObject(String payload)
+   private Config(JSONObject config)
    {
-      super(payload);
+      this.config = config;
    }
 
-   public String pretty()
+   public Config get()
    {
-      return(this.toString(2));
+      return(instance);
    }
 
-   public Object get(String name)
+   @SuppressWarnings({ "unchecked" })
+   public <T> T get(String section)
    {
-      return(this.get(name));
+      return((T) config.get(section));
    }
 
-   public int getInt(String name)
+   @SuppressWarnings({ "unchecked" })
+   public <T> T get(JSONObject section, String attr)
    {
-      return(super.getInt(name));
+      return((T) section.get(attr));
    }
 
-   public boolean getBoolean(String name)
+   public static String path(String... parts)
    {
-      return(super.getBoolean(name));
-   }
+      String path = root;
 
-   public JSONObject put(String name, Object value)
-   {
-      super.put(name,value);
-      return(this);
+      for (int i = 0; i < parts.length; i++)
+         path += File.separator + parts[i];
+
+      return(path);
    }
 }

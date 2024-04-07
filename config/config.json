@@ -1,0 +1,51 @@
+{
+   "application":
+   {
+      "path": ""
+   }
+   ,
+   "session":
+   {
+      "timeout": 600
+   }
+   ,
+	"database":
+   {
+      "type": "Postgres",
+
+      "init": 0,
+
+      "min": 5,
+      "max": 600,
+
+      "max-wait": 10000,
+
+      "username": "hr",
+      "password": "hr",
+
+      "classes": ["org.postgresql.Driver"],
+      "jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+   }
+   ,
+   "files":
+   {
+		"mimetypes":
+		[
+			{"ext": "css", "type": "text/css"},
+
+			{"ext": "txt", "type": "text/plain"},
+			{"ext": "text", "type": "text/plain"},
+
+			{"ext": "htm", "type": "text/html"},
+			{"ext": "html", "type": "text/html"},
+
+			{"ext": "gif", "type": "image/gif"},
+			{"ext": "png", "type": "image/png"},
+			{"ext": "jpg", "type": "image/jpeg"},
+			{"ext": "jpeg", "type": "image/jpeg"},
+
+			{"ext": "js", "type": "text/javascript"},
+			{"ext": "json", "type": "application/json"}
+		]
+   }
+}

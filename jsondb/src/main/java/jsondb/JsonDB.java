@@ -24,7 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
-import jsondb.json.JSONObject;
+import org.json.JSONObject;
 
 
 public class JsonDB
