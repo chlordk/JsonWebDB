@@ -48,4 +48,11 @@
 			{"ext": "json", "type": "application/json"}
 		]
    }
+	,
+	"logger":
+	{
+		"files"	: 10,
+		"size"	: "1MB",
+		"level"  : "info"
+	}
 }

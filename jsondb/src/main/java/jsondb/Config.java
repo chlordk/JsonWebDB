@@ -27,33 +27,60 @@ package jsondb;
 import java.io.File;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import jsondb.logger.Applogger;
 import java.io.FileInputStream;
+import java.util.logging.Logger;
 
 
 public class Config
 {
+   private static final String PATH = "path";
+   private static final String APPL = "application";
+
+   private final String inst;
+   private final String appl;
+
+   private final Logger logger;
    private final JSONObject config;
 
    private static String root = null;
    private static Config instance = null;
 
+   public static void main(String[] args) throws Exception
+   {
+      Config.load("/Users/alhof/Repository/JsonWebDB","inst01");
+   }
 
-   public static synchronized void load(String root) throws Exception
+
+   public static synchronized void load(String root, String inst) throws Exception
    {
       Config.root = root;
       String path = path("config","config.json");
       FileInputStream in = new FileInputStream(path);
-      Config.instance  = new Config(new JSONObject(new JSONTokener(in)));
+      Config.instance = new Config(inst,new JSONObject(new JSONTokener(in)));
    }
 
-   private Config(JSONObject config)
+   private Config(String inst, JSONObject config) throws Exception
    {
+      this.inst = inst;
       this.config = config;
+      this.appl = get(get(APPL),PATH);
+      this.logger = Applogger.setup(this);
    }
 
    public Config get()
    {
       return(instance);
+   }
+
+   public String inst()
+   {
+      return(inst);
+   }
+
+   public Logger logger()
+   {
+      return(logger);
    }
 
    @SuppressWarnings({ "unchecked" })
