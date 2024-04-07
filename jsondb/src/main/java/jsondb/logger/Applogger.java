@@ -32,18 +32,23 @@ import java.util.logging.FileHandler;
 
 public class Applogger
 {
+   private static String SIZE = "size";
+   private static String LEVEL = "level";
+   private static String FILES = "files";
+
    private static String LOGFLD = "logs";
+   private static String LOGDEF = "logger";
    private static String LOGFILE = "server.log";
 
    public static Logger setup(Config config) throws Exception
    {
       String inst = config.inst();
-      JSONObject logd = config.get("logger");
+      JSONObject logd = config.get(LOGDEF);
 
-      int files = config.get(logd,"files");
-      int fsize = logsize(config.get(logd,"size"));
+      int files = config.get(logd,FILES);
+      int fsize = logsize(config.get(logd,SIZE));
 
-      String levl = config.get(logd,"level");
+      String levl = config.get(logd,LEVEL);
       String path = Config.path(LOGFLD,inst);
 
       Level level = Level.parse(levl.toUpperCase());
@@ -52,7 +57,7 @@ public class Applogger
       if (!file.exists()) file.mkdirs();
 
       path += File.separator + LOGFILE;
-      file = new File(path+".0");
+      file = new File(path+".0"); // Logger appends .0 ...
 
       if (file.exists())
       {

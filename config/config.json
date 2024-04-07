@@ -12,8 +12,7 @@
 	"database":
    {
       "type": "Postgres",
-
-      "init": 0,
+      "test": "select user",
 
       "min": 5,
       "max": 600,

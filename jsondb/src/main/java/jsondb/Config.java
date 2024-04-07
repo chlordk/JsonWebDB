@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 public class Config
 {
    private static final String PATH = "path";
+   private static final String CONF = "config";
    private static final String APPL = "application";
 
    private final String inst;
@@ -46,18 +47,13 @@ public class Config
    private static String root = null;
    private static Config instance = null;
 
-   public static void main(String[] args) throws Exception
-   {
-      Config.load("/Users/alhof/Repository/JsonWebDB","inst01");
-   }
-
-
-   public static synchronized void load(String root, String inst) throws Exception
+   public static synchronized Config load(String root, String inst) throws Exception
    {
       Config.root = root;
-      String path = path("config","config.json");
+      String path = path(CONF,"config.json");
       FileInputStream in = new FileInputStream(path);
-      Config.instance = new Config(inst,new JSONObject(new JSONTokener(in)));
+      instance = new Config(inst,new JSONObject(new JSONTokener(in)));
+      return(instance);
    }
 
    private Config(String inst, JSONObject config) throws Exception
@@ -76,6 +72,11 @@ public class Config
    public String inst()
    {
       return(inst);
+   }
+
+   public String appl()
+   {
+      return(appl);
    }
 
    public Logger logger()

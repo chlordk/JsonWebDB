@@ -28,40 +28,37 @@ import jsondb.Config;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONObject;
-
 
 public class JsonWebDB extends HttpServlet
 {
   public void init() throws ServletException
   {
-    try {Config.load(System.getenv("JsonWebDB"));}
+    Config config = null;
+
+    String home = System.getenv("JsonWebDB_Home");
+    String inst = System.getenv("JsonWebDB_Inst");
+
+    try {config = Config.load(home,inst);}
     catch (Exception e) {throw new AnyException(e);}
+
+    Pool pool = new Pool(config);
   }
 
   public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
     String vers = "4.0";
 
-    String path = getPath(request);
     String meth = request.getMethod();
-
-    if (meth.equals("GET") && path.length() <= 0)
-    {
-      showBanner(response,vers);
-      return;
-    }
 
     if (meth.equals("GET"))
     {
-      byte[] cont = file(path);
+      String path = getPath(request);
     }
 
     if (meth.equals("POST"))
@@ -75,16 +72,6 @@ public class JsonWebDB extends HttpServlet
     pw.println("<html>");
     pw.println(Config.path());
     pw.println("</html>");
-  }
-
-  private byte[] file(String path)
-  {
-    return(null);
-  }
-
-  private JSONObject jsondb(String request)
-  {
-    return(null);
   }
 
   private String getPath(HttpServletRequest request)
@@ -110,24 +97,6 @@ public class JsonWebDB extends HttpServlet
     out.close();
 
     return(out.toString());
-  }
-
-
-  private void showFile(HttpServletResponse response, byte[] cont) throws IOException
-  {
-    OutputStream out = response.getOutputStream();
-    out.write(cont);
-    out.close();
-  }
-
-  private void showBanner(HttpServletResponse response, String version) throws IOException
-  {
-    response.setContentType("text/html");
-    PrintWriter pw = response.getWriter();
-    pw.println("<html>");
-    pw.println("<head><title>JsonWebDB version "+version+"</title></head>");
-    pw.println("<body><b>JsonWebDB is running</b></body>");
-    pw.println("</html>");
   }
 
   public static class AnyException extends ServletException

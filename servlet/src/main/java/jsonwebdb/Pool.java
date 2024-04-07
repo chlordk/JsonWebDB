@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import jsondb.Config;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,12 +32,22 @@ import jsonwebdb.JsonWebDB.AnyException;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
+
 public class Pool
 {
+   private static final String URL = "jdbc-url";
+   private static final String MIN = "min";
+   private static final String MAX = "max";
+   private static final String TYPE = "type";
+   private static final String WAIT = "max-wait";
+   private static final String QUERY = "test";
+   private static final String CLASSES = "classes";
+   private static final String DATABASE = "database";
+
    private final String url;
    private final DataSource ds;
 
-   public Pool() throws AnyException
+   public Pool(Config config) throws AnyException
    {
       try
       {
