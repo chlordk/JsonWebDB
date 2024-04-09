@@ -1,8 +1,15 @@
+# Visual Studio Code
+.vscode/
+
 # Compiled class files
 classes/
 
 # Maven target files
 target/
+
+# Logfiles
+logs/
+
 
 # Mac
 .DS_Store

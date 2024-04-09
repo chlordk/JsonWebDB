@@ -26,14 +26,17 @@ package jsonwebdb;
 
 import jsondb.Config;
 import java.sql.ResultSet;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.sql.Connection;
+import jsondb.database.Type;
 import java.sql.DriverManager;
 import jsonwebdb.JsonWebDB.AnyException;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 
-public class Pool
+public class Pool implements jsondb.database.Pool
 {
    private static final String URL = "jdbc-url";
    private static final String MIN = "min";
@@ -42,54 +45,92 @@ public class Pool
    private static final String WAIT = "max-wait";
    private static final String QUERY = "test";
    private static final String CLASSES = "classes";
+   private static final String VALIDATE = "validate";
+   private static final String USERNAME = "username";
+   private static final String PASSWORD = "password";
    private static final String DATABASE = "database";
 
+   private final Type type;
    private final String url;
    private final DataSource ds;
 
+   public static void main(String[] args) throws Exception
+   {
+      Config config = Config.load("/Users/alhof/Repository/JsonWebDB","inst01");
+      new Pool(config);
+   }
+
    public Pool(Config config) throws AnyException
    {
+      config.logger().info("start");
+      JSONObject def = config.get(DATABASE);
+      this.type = Type.valueOf(config.get(def,TYPE));
+
+      String url = config.get(def,URL);
+      String sql = config.get(def,QUERY);
+      String usr = config.get(def,USERNAME);
+      String pwd = config.get(def,PASSWORD);
+
+      int min = config.get(def,MIN);
+      int max = config.get(def,MAX);
+
+      int wait = config.get(def,WAIT);
+      int cval = config.get(def,VALIDATE);
+
       try
       {
-         Class.forName("org.postgresql.Driver");
-         Class.forName("oracle.jdbc.driver.OracleDriver");
+         JSONArray cls = config.get(def,CLASSES);
+
+         for (int i = 0; i < cls.length(); i++)
+         {
+            config.logger().info(cls.getString(i));
+            Class.forName(cls.getString(i));
+         }
       }
       catch (Exception e)
       {
          throw new AnyException(e);
       }
 
-      url = "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB";
-
       PoolProperties props = new PoolProperties();
 
       props.setUrl(url);
 
-      props.setUsername("hr");
-      props.setPassword("hr");
+      props.setUsername(usr);
+      props.setPassword(pwd);
 
-      props.setValidationInterval(30000);
-      props.setValidationQuery("select user");
+      props.setValidationQuery(sql);
+      props.setValidationInterval(cval);
 
-      props.setMinIdle(10);
+      props.setMinIdle(min);
       props.setInitialSize(0);
-      props.setMaxActive(100);
-      props.setMaxWait(10000);
+      props.setMaxActive(max);
+      props.setMaxWait(wait);
 
+      this.url = url;
       this.ds = new DataSource();
       this.ds.setPoolProperties(props);
    }
 
+   @Override
+   public Type type()
+   {
+      return(type);
+   }
+
+   @Override
    public void release(Connection conn) throws Exception
    {
       conn.close();
    }
 
+   @Override
    public Connection getConnection() throws Exception
    {
       return(ds.getConnection());
    }
 
+   @Override
    public boolean authenticate(String username, String password) throws Exception
    {
       String user = null;

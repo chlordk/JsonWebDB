@@ -18,6 +18,7 @@
       "max": 600,
 
       "max-wait": 10000,
+      "validate": 30000,
 
       "username": "hr",
       "password": "hr",

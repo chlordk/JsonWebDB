@@ -49,6 +49,9 @@ public class Config
 
    public static synchronized Config load(String root, String inst) throws Exception
    {
+      if (instance != null)
+         return(instance);
+         
       Config.root = root;
       String path = path(CONF,"config.json");
       FileInputStream in = new FileInputStream(path);
