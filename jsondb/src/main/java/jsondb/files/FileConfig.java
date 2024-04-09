@@ -24,13 +24,10 @@ SOFTWARE.
 
 package jsondb.files;
 
-import java.io.File;
+import jsondb.Config;
 import java.util.HashMap;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import jsondb.Config;
 
 
 public class FileConfig
@@ -39,7 +36,6 @@ public class FileConfig
    private static final String TYPE = "type";
    private static final String FILES = "files";
    private static final String MIMETYPES = "mimetypes";
-   private static final String SEPARATOR = File.pathSeparator;
 
    private final Config config;
 
@@ -54,14 +50,24 @@ public class FileConfig
       if (instance != null)
          return(instance);
 
+      FileHandler.setConfig(config);
       instance = new FileConfig(config);
+      
       return(instance);
    }
 
 
    public String getMimeType(String file)
    {
+      String ext = file;
 
+      int pos = file.lastIndexOf("/");
+      if (pos >= 0) file = file.substring(pos+1);
+
+      pos = file.lastIndexOf('.');
+      if (pos >= 0) ext = file.substring(pos+1);
+
+      return(mimetypes.get(ext));
    }
 
    private FileConfig(Config config)

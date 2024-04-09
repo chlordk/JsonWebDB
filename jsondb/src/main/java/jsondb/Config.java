@@ -27,6 +27,7 @@ package jsondb;
 import java.io.File;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
@@ -43,6 +44,7 @@ public class Config
 
    private final Logger logger;
    private final JSONObject config;
+   private final FileConfig fconfig;
 
    private static String root = null;
    private static Config instance = null;
@@ -66,6 +68,7 @@ public class Config
       this.config = config;
       this.appl = get(get(APPL),PATH);
       this.logger = Applogger.setup(this);
+      this.fconfig = FileConfig.load(this);
    }
 
    public String inst()
@@ -86,6 +89,11 @@ public class Config
    public JSONObject get()
    {
       return(config);
+   }
+
+   public String getMimeType(String file)
+   {
+      return(fconfig.getMimeType(file));
    }
 
    @SuppressWarnings({ "unchecked" })

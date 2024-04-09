@@ -22,21 +22,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb;
+package jsondb.files;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.OutputStream;
 
+import jsondb.Config;
+import jsondb.Response;
 
-public class Response
+
+public class FileHandler
 {
-   public final long bytes;
-   public final String mimetype;
-   public final OutputStream out;
+   private static Config config = null;
 
-   public Response(OutputStream out, long bytes, String mimetype)
+
+   public static void setConfig(Config config)
    {
-      this.out = out;
-      this.bytes = bytes;
-      this.mimetype = mimetype;
+      FileHandler.config = config;
+   }
+
+
+   public Response load(String path, OutputStream out) throws Exception
+   {
+      String mime = config.getMimeType(path);
+
+      path = config.appl() + path;
+      long bytes = readFile(path,out);
+
+      Response response = new Response(out,bytes,mime);
+      return(response);
+   }
+
+   
+   private long readFile(String path, OutputStream out) throws Exception
+   {
+      int read = 0;
+      long bytes = 0;
+
+      File file = new File(path);
+      byte[] buf = new byte[8192];
+
+      if (file.exists())
+      {
+         FileInputStream in = new FileInputStream(file);
+
+         while((read = in.read(buf)) >= 0)
+         {
+            bytes += read;
+            out.write(buf,0,read);
+         }
+
+         in.close();
+      }
+
+      return(bytes);
    }
 }

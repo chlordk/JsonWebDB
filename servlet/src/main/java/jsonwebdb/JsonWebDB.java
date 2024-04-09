@@ -26,10 +26,12 @@ package jsonwebdb;
 
 import jsondb.Config;
 import jsondb.JsonDB;
+import jsondb.Response;
 
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,25 +63,33 @@ public class JsonWebDB extends HttpServlet
 
     if (meth.equals("GET"))
     {
+      Response file = null;
+      JsonDB jsondb = new JsonDB();
       String path = getPath(request);
+      OutputStream out = response.getOutputStream();
+
+      try {file = jsondb.getFile(path);}
+      catch (Exception e) {throw new AnyException(e);}
+
+      response.setContentType(file.mimetype);
+      out.close();
+      return;
     }
 
     if (meth.equals("POST"))
     {
       String body = getBody(request);
+      return;
     }
 
-    response.setContentType("text/html");
-    PrintWriter pw = response.getWriter();
-
-    pw.println("<html>");
-    pw.println(Config.path());
-    pw.println("</html>");
+    throw new ServletException("Method '"+meth+"'' not supported");
   }
 
   private String getPath(HttpServletRequest request)
   {
-    return(request.getRequestURI().substring(request.getContextPath().length()));
+    String path = request.getRequestURI().substring(request.getContextPath().length());
+    if (path.length() == 0) path = "/index.html";
+    return(path);
   }
 
   private String getBody(HttpServletRequest request) throws IOException

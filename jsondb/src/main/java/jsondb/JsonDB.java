@@ -24,10 +24,11 @@ SOFTWARE.
 
 package jsondb;
 
-import java.io.OutputStream;
-
 import org.json.JSONObject;
 import jsondb.database.Pool;
+import java.io.OutputStream;
+import jsondb.files.FileHandler;
+import java.io.ByteArrayOutputStream;
 
 
 public class JsonDB
@@ -49,9 +50,21 @@ public class JsonDB
          JsonDB.config = config;
    }
 
-   public void getFile(String path) throws Exception
+   public Response getFile(String path) throws Exception
    {
-      System.out.println(path);
+      return(getFile(path,new ByteArrayOutputStream()));
+   }
+
+   public Response getFile(String path, OutputStream out) throws Exception
+   {
+      FileHandler handler = new FileHandler();
+      Response response = handler.load(path,out);
+      return(response);
+   }
+
+   public JSONObject execute(String request) throws Exception
+   {
+      return(execute(request,new ByteArrayOutputStream()));
    }
 
    public JSONObject execute(String request, OutputStream out) throws Exception
@@ -59,9 +72,13 @@ public class JsonDB
       return(execute(new JSONObject(request),out));
    }
 
+   public JSONObject execute(JSONObject request) throws Exception
+   {
+      return(execute(request,new ByteArrayOutputStream()));
+   }
+
    public JSONObject execute(JSONObject request, OutputStream out) throws Exception
    {
-      request.put("test","Hello");
       return(request);
    }
 }

@@ -1,3 +1,6 @@
+#!/bin/bash
+LOCATION=$(dirname "$0")
+
 NAME=jsonwebdb
 
 docker run -dit --name $NAME \
@@ -6,3 +9,6 @@ docker run -dit --name $NAME \
  -e JsonWebDB_Home=/jsonwebdb \
  -v /Users/alhof/Repository/JsonWebDB:/jsonwebdb \
 $NAME
+
+
+$LOCATION/deploy
