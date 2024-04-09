@@ -68,11 +68,6 @@ public class Config
       this.logger = Applogger.setup(this);
    }
 
-   public Config get()
-   {
-      return(instance);
-   }
-
    public String inst()
    {
       return(inst);
@@ -86,6 +81,11 @@ public class Config
    public Logger logger()
    {
       return(logger);
+   }
+
+   public JSONObject get()
+   {
+      return(config);
    }
 
    @SuppressWarnings({ "unchecked" })
