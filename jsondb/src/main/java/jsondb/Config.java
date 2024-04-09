@@ -47,11 +47,12 @@ public class Config
    private static String root = null;
    private static Config instance = null;
 
+
    public static synchronized Config load(String root, String inst) throws Exception
    {
       if (instance != null)
          return(instance);
-         
+
       Config.root = root;
       String path = path(CONF,"config.json");
       FileInputStream in = new FileInputStream(path);

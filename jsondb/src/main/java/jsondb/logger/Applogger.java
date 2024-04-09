@@ -24,6 +24,7 @@ package jsondb.logger;
 import java.io.File;
 import jsondb.Config;
 import org.json.JSONObject;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.FileOutputStream;
@@ -74,6 +75,10 @@ public class Applogger
       logger.setLevel(level);
       logger.addHandler(handler);
       logger.setUseParentHandlers(false);
+
+      PrintStream out = new PrintStream(new FileOutputStream(file,true));
+      System.setOut(out);
+      System.setErr(out);
 
       return(logger);
    }

@@ -39,7 +39,6 @@ public class Formatter extends java.util.logging.Formatter
   {
     String date = df.format(new Date());
     String location = record.getSourceClassName()+"."+record.getSourceMethodName();
-    location = location.substring("database.rest.".length());
 
     String message = ": "+record.getMessage();
     String level = String.format("%-7s",record.getLevel().toString());

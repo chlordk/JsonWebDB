@@ -54,12 +54,6 @@ public class Pool implements jsondb.database.Pool
    private final String url;
    private final DataSource ds;
 
-   public static void main(String[] args) throws Exception
-   {
-      Config config = Config.load("/Users/alhof/Repository/JsonWebDB","inst01");
-      new Pool(config);
-   }
-
    public Pool(Config config) throws AnyException
    {
       config.logger().info("start");
