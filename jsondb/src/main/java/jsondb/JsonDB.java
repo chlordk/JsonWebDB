@@ -24,27 +24,42 @@ SOFTWARE.
 
 package jsondb;
 
+import java.io.OutputStream;
+
 import org.json.JSONObject;
+import jsondb.database.Pool;
 
 
 public class JsonDB
 {
-   public final String root;
+   public static String version = "4.0.1";
 
+   private static Pool pool = null;
+   private static Config config = null;
 
-   public JsonDB(String root)
+   public static void register(Pool pool)
    {
-      this.root = root;
+      if (JsonDB.pool == null)
+         JsonDB.pool = pool;
    }
 
-
-   public JSONObject execute(String request)
+   public static void register(Config config)
    {
-      return(execute(new JSONObject(request)));
+      if (JsonDB.config == null)
+         JsonDB.config = config;
    }
 
+   public void getFile(String path) throws Exception
+   {
+      System.out.println(path);
+   }
 
-   public JSONObject execute(JSONObject request)
+   public JSONObject execute(String request, OutputStream out) throws Exception
+   {
+      return(execute(new JSONObject(request),out));
+   }
+
+   public JSONObject execute(JSONObject request, OutputStream out) throws Exception
    {
       request.put("test","Hello");
       return(request);

@@ -25,6 +25,8 @@ SOFTWARE.
 package jsonwebdb;
 
 import jsondb.Config;
+import jsondb.JsonDB;
+
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,12 +50,13 @@ public class JsonWebDB extends HttpServlet
     catch (Exception e) {throw new AnyException(e);}
 
     Pool pool = new Pool(config);
+
+    JsonDB.register(pool);
+    JsonDB.register(config);
   }
 
   public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
   {
-    String vers = "4.0";
-
     String meth = request.getMethod();
 
     if (meth.equals("GET"))
