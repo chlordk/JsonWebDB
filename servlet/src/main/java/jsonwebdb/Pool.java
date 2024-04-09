@@ -56,7 +56,6 @@ public class Pool implements jsondb.database.Pool
 
    public Pool(Config config) throws AnyException
    {
-      config.logger().info("start");
       JSONObject def = config.get(DATABASE);
       this.type = Type.valueOf(config.get(def,TYPE));
 
@@ -76,10 +75,7 @@ public class Pool implements jsondb.database.Pool
          JSONArray cls = config.get(def,CLASSES);
 
          for (int i = 0; i < cls.length(); i++)
-         {
-            config.logger().info(cls.getString(i));
             Class.forName(cls.getString(i));
-         }
       }
       catch (Exception e)
       {
