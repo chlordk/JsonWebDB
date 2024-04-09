@@ -10,7 +10,6 @@ target/
 # Logfiles
 logs/
 
-
 # Mac
 .DS_Store
 
