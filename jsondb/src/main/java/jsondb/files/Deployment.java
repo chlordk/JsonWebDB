@@ -24,9 +24,8 @@ SOFTWARE.
 
 package jsondb.files;
 
-import jsondb.Config;
-
 import java.io.File;
+import jsondb.Config;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;

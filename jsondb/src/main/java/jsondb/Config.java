@@ -73,7 +73,6 @@ public class Config
       this.appl = get(get(APPL),PATH);
       this.logger = Applogger.setup(this);
       this.fconfig = FileConfig.load(this);
-      this.logger().info("Configuration loaded");
    }
 
    public String inst()
@@ -98,7 +97,7 @@ public class Config
 
    public String getMimeType(String file)
    {
-      return(fconfig.getMimeType(file));
+      return(FileConfig.getMimeType(file));
    }
 
    @SuppressWarnings({ "unchecked" })

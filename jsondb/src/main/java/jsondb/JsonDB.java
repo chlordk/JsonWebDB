@@ -27,6 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.database.Pool;
 import java.io.OutputStream;
+import jsondb.files.Deployment;
 import jsondb.files.FileHandler;
 import java.io.ByteArrayOutputStream;
 
@@ -37,6 +38,12 @@ public class JsonDB
 
    private static Pool pool = null;
    private static Config config = null;
+
+   public static void start() throws Exception
+   {
+      JsonDB.config.logger().info("Starting JsonDB version "+version+"\n\n");
+      Deployment.observe(JsonDB.config);
+   }
 
    public static void register(Pool pool)
    {

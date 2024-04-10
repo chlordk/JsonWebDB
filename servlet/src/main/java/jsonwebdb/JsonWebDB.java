@@ -49,14 +49,22 @@ public class JsonWebDB extends HttpServlet
     String home = System.getenv("JsonWebDB_Home");
     String inst = System.getenv("JsonWebDB_Inst");
 
-    try {config = Config.load(home,inst);}
-    catch (Exception e) {throw new AnyException(e);}
+    try
+    {
+      config = Config.load(home,inst);
+      logger = config.logger();
 
-    logger = config.logger();
-    Pool pool = new Pool(config);
+      Pool pool = new Pool(config);
 
-    JsonDB.register(pool);
-    JsonDB.register(config);
+      JsonDB.register(pool);
+      JsonDB.register(config);
+
+      JsonDB.start();
+    }
+    catch (Throwable e)
+    {
+      throw new AnyException(e);
+    }
   }
 
   public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -118,7 +126,7 @@ public class JsonWebDB extends HttpServlet
 
   public static class AnyException extends ServletException
   {
-    public AnyException(Exception e)
+    public AnyException(Throwable e)
     {
       super(e.getMessage());
       this.setStackTrace(e.getStackTrace());

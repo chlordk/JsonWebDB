@@ -70,7 +70,7 @@ public class FileConfig
    private static FileConfig instance = null;
 
 
-   public static FileConfig load(Config config)
+   public static FileConfig load(Config config) throws Exception
    {
       if (instance != null)
          return(instance);
@@ -78,7 +78,6 @@ public class FileConfig
       FileHandler.setConfig(config);
       instance = new FileConfig(config);
 
-      Deployment.observe(config);
       return(instance);
    }
 
