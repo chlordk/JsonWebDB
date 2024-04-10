@@ -43,7 +43,6 @@ public class JsonDB
    {
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Starting JsonDB version "+version);
-      JsonDB.config.logger().info("Deploying application");
       JsonDB.config.logger().info(".......................................");
       Deployment.observe(JsonDB.config);
       JsonDB.config.logger().info(".......................................");
