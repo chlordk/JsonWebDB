@@ -41,8 +41,14 @@ public class JsonDB
 
    public static void start() throws Exception
    {
-      JsonDB.config.logger().info("Starting JsonDB version "+version+"\n\n");
+      JsonDB.config.logger().info(".......................................");
+      JsonDB.config.logger().info("Starting JsonDB version "+version);
+      JsonDB.config.logger().info("Deploying application");
+      JsonDB.config.logger().info(".......................................");
       Deployment.observe(JsonDB.config);
+      JsonDB.config.logger().info(".......................................");
+      JsonDB.config.logger().info("Ready to accept requests");
+      JsonDB.config.logger().info(".......................................");
    }
 
    public static void register(Pool pool)
