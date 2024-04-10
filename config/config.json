@@ -29,23 +29,40 @@
    ,
    "files":
    {
+      "deployment":
+      {
+         "grace-period": 5,
+         "check-for-changes": 60,
+         "ignore": ["*.ts"]
+      }
+      ,
+		"cache":
+		[
+			{"pattern": "*.js", "maxsize": 1048576},
+			{"pattern": "*.html", "maxsize": 1048576}
+		]
+		,
+		"compression":
+		[
+			{"pattern": "*.js", "minsize": 1024},
+			{"pattern": "*.html", "minsize": 1024}
+		]
+		,
 		"mimetypes":
 		[
-			{"ext": "css", "type": "text/css"},
+			{"filetype": "css",  "mimetype": "text/css"},
 
-			{"ext": "txt", "type": "text/plain"},
-			{"ext": "text", "type": "text/plain"},
+			{"filetype": "txt",  "mimetype": "text/plain"},
+			{"filetype": "htm",  "mimetype": "text/html"},
+			{"filetype": "html", "mimetype": "text/html"},
 
-			{"ext": "htm", "type": "text/html"},
-			{"ext": "html", "type": "text/html"},
+			{"filetype": "gif",  "mimetype": "image/gif"},
+			{"filetype": "png",  "mimetype": "image/png"},
+			{"filetype": "jpg",  "mimetype": "image/jpeg"},
+			{"filetype": "jpeg", "mimetype": "image/jpeg"},
 
-			{"ext": "gif", "type": "image/gif"},
-			{"ext": "png", "type": "image/png"},
-			{"ext": "jpg", "type": "image/jpeg"},
-			{"ext": "jpeg", "type": "image/jpeg"},
-
-			{"ext": "js", "type": "text/javascript"},
-			{"ext": "json", "type": "application/json"}
+			{"filetype": "js",   "mimetype": "text/javascript"},
+			{"filetype": "json", "mimetype": "application/json"}
 		]
    }
 	,

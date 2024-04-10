@@ -28,18 +28,41 @@ import jsondb.Config;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 
 public class FileConfig
 {
-   private static final String FEXT = "ext";
-   private static final String TYPE = "type";
    private static final String FILES = "files";
-   private static final String MIMETYPES = "mimetypes";
 
+   private static final String CACHE = "cache";
+   private static final String IGNORE = "ignore";
+   private static final String MIMETYPES = "mimetypes";
+   private static final String DEPLOYMENT = "deployment";
+   private static final String COMPRESSION = "compression";
+
+   private static final String FEXT = "filetype";
+   private static final String TYPE = "mimetype";
+
+   private static final String GRACE = "grace-period";
+   private static final String CHECK = "check-for-changes";
+
+   private static final String PATTERN = "pattern";
+   private static final String MINSIZE = "minsize";
+   private static final String MAXSIZE = "maxsize";
+
+   private final int check;
+   private final int grace;
    private final Config config;
-   private final Logger logger;
+
+   private final ArrayList<String> ignore =
+      new ArrayList<String>();
+
+   private final ArrayList<FileSpec> cache =
+      new ArrayList<FileSpec>();
+
+   private final ArrayList<FileSpec> compression =
+      new ArrayList<FileSpec>();
 
    private final HashMap<String,String> mimetypes =
       new HashMap<String,String>();
@@ -55,17 +78,42 @@ public class FileConfig
       FileHandler.setConfig(config);
       instance = new FileConfig(config);
 
+      Deployment.observe(config);
       return(instance);
    }
 
    private FileConfig(Config config)
    {
       this.config = config;
-      this.logger = config.logger();
-      loadMimeTypes(config.get(FILES));
+
+      JSONObject files = config.get(FILES);
+      JSONObject deploy = config.get(files,DEPLOYMENT);
+
+      loadIgnore(deploy);
+      loadMimeTypes(files);
+      loadCacheRules(files);
+      loadCompressionRules(files);
+
+      this.check = deploy.getInt(CHECK) * 1000;
+      this.grace = deploy.getInt(GRACE) * 1000;
    }
 
-   public String getMimeType(String file)
+   public static int check()
+   {
+      return(instance.check);
+   }
+
+   public static int grace()
+   {
+      return(instance.grace);
+   }
+
+   public static ArrayList<String> ignore()
+   {
+      return(instance.ignore);
+   }
+
+   public static String getMimeType(String file)
    {
       String ext = file;
 
@@ -75,17 +123,55 @@ public class FileConfig
       pos = file.lastIndexOf('.');
       if (pos >= 0) ext = file.substring(pos+1);
 
-      return(mimetypes.get(ext));
+      return(instance.mimetypes.get(ext));
+   }
+
+   private void loadIgnore(JSONObject def)
+   {
+      ignore.clear();
+
+      if (def.has(IGNORE))
+      {
+         JSONArray list = def.optJSONArray(IGNORE);
+
+         for (int i = 0; i < list.length(); i++)
+            ignore.add(list.getString(i));
+      }
    }
 
    private void loadMimeTypes(JSONObject def)
    {
+      mimetypes.clear();
       JSONArray types = config.get(def,MIMETYPES);
 
       for (int i = 0; i < types.length(); i++)
       {
          JSONObject mt = types.getJSONObject(i);
          mimetypes.put(mt.getString(FEXT).toLowerCase(),mt.getString(TYPE));
+      }
+   }
+
+   private void loadCacheRules(JSONObject def)
+   {
+      cache.clear();
+      JSONArray rules = config.get(def,CACHE);
+
+      for (int i = 0; i < rules.length(); i++)
+      {
+         JSONObject rule = rules.getJSONObject(i);
+         cache.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
+      }
+   }
+
+   private void loadCompressionRules(JSONObject def)
+   {
+      compression.clear();
+      JSONArray rules = config.get(def,COMPRESSION);
+
+      for (int i = 0; i < rules.length(); i++)
+      {
+         JSONObject rule = rules.getJSONObject(i);
+         compression.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
       }
    }
 }

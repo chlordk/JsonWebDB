@@ -24,57 +24,24 @@ SOFTWARE.
 
 package jsondb.files;
 
-import java.io.File;
-import jsondb.Config;
-import jsondb.Response;
-import java.io.OutputStream;
-import java.io.FileInputStream;
-
-
-public class FileHandler
+public class FileSpec
 {
-   private static Config config = null;
+   private final long size;
+   private final String pattern;
 
-
-   public static void setConfig(Config config)
+   public FileSpec(String pattern, long size)
    {
-      FileHandler.config = config;
+      this.size = size;
+      this.pattern = pattern;
    }
 
-
-   public Response load(String path, OutputStream out) throws Exception
+   public boolean matchLT(String file, long size)
    {
-      String mime = config.getMimeType(path);
-
-      path = config.appl() + path;
-      long bytes = readFile(path,out);
-
-      Response response = new Response(path,out,bytes,mime);
-      return(response);
+      return(file.matches(pattern) && size <= this.size);
    }
 
-
-   private long readFile(String path, OutputStream out) throws Exception
+   public boolean matchGT(String file, long size)
    {
-      int read = 0;
-      long bytes = 0;
-
-      File file = new File(path);
-      byte[] buf = new byte[8192];
-
-      if (file.exists())
-      {
-         FileInputStream in = new FileInputStream(file);
-
-         while((read = in.read(buf)) >= 0)
-         {
-            bytes += read;
-            out.write(buf,0,read);
-         }
-
-         in.close();
-      }
-
-      return(bytes);
+      return(file.matches(pattern) && size >= this.size);
    }
 }

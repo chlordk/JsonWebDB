@@ -49,6 +49,10 @@ public class Config
    private static String root = null;
    private static Config instance = null;
 
+   public static void main(String[] args) throws Exception
+   {
+      Config.load(args[0],args[1]);
+   }
 
    public static synchronized Config load(String root, String inst) throws Exception
    {
