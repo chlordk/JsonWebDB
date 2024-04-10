@@ -28,6 +28,7 @@ import jsondb.Config;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.logging.Logger;
 
 
 public class FileConfig
@@ -38,6 +39,7 @@ public class FileConfig
    private static final String MIMETYPES = "mimetypes";
 
    private final Config config;
+   private final Logger logger;
 
    private final HashMap<String,String> mimetypes =
       new HashMap<String,String>();
@@ -52,10 +54,16 @@ public class FileConfig
 
       FileHandler.setConfig(config);
       instance = new FileConfig(config);
-      
+
       return(instance);
    }
 
+   private FileConfig(Config config)
+   {
+      this.config = config;
+      this.logger = config.logger();
+      loadMimeTypes(config.get(FILES));
+   }
 
    public String getMimeType(String file)
    {
@@ -68,13 +76,6 @@ public class FileConfig
       if (pos >= 0) ext = file.substring(pos+1);
 
       return(mimetypes.get(ext));
-   }
-
-   private FileConfig(Config config)
-   {
-      this.config = config;
-      JSONObject def = config.get(FILES);
-      loadMimeTypes(def);
    }
 
    private void loadMimeTypes(JSONObject def)

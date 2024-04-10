@@ -1,7 +1,12 @@
+CWD=$(pwd)
+LOCATION=$(dirname "$0")
+
+cd $LOCATION
+
 rm -rf target
 cp ../libraries/jsonwebdb.jar src/main/webapp/WEB-INF/lib
 
 mvn package
-
 cp target/JsonWebDB*.war ../tomcat/JsonWebDB.war
-../tomcat/deploy
+
+cd $CWD

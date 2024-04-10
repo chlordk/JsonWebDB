@@ -69,6 +69,7 @@ public class Config
       this.appl = get(get(APPL),PATH);
       this.logger = Applogger.setup(this);
       this.fconfig = FileConfig.load(this);
+      this.logger().info("Configuration loaded");
    }
 
    public String inst()

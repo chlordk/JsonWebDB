@@ -27,11 +27,11 @@ package jsonwebdb;
 import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
-
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,16 +41,19 @@ import javax.servlet.http.HttpServletResponse;
 
 public class JsonWebDB extends HttpServlet
 {
+  private Config config = null;
+  private Logger logger = null;
+
+
   public void init() throws ServletException
   {
-    Config config = null;
-
     String home = System.getenv("JsonWebDB_Home");
     String inst = System.getenv("JsonWebDB_Inst");
 
     try {config = Config.load(home,inst);}
     catch (Exception e) {throw new AnyException(e);}
 
+    logger = config.logger();
     Pool pool = new Pool(config);
 
     JsonDB.register(pool);
@@ -68,11 +71,13 @@ public class JsonWebDB extends HttpServlet
       String path = getPath(request);
       OutputStream out = response.getOutputStream();
 
-      try {file = jsondb.getFile(path);}
+      try {file = jsondb.getFile(path,out);}
       catch (Exception e) {throw new AnyException(e);}
 
+      logger.info(file.toString());
       response.setContentType(file.mimetype);
       out.close();
+
       return;
     }
 
@@ -88,7 +93,7 @@ public class JsonWebDB extends HttpServlet
   private String getPath(HttpServletRequest request)
   {
     String path = request.getRequestURI().substring(request.getContextPath().length());
-    if (path.length() == 0) path = "/index.html";
+    if (path.length() == 1) path += "index.html";
     return(path);
   }
 

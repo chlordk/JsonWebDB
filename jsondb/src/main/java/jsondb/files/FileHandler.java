@@ -25,21 +25,23 @@ SOFTWARE.
 package jsondb.files;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-
 import jsondb.Config;
 import jsondb.Response;
+import java.io.OutputStream;
+import java.io.FileInputStream;
+import java.util.logging.Logger;
 
 
 public class FileHandler
 {
    private static Config config = null;
+   private static Logger logger = null;
 
 
    public static void setConfig(Config config)
    {
       FileHandler.config = config;
+      FileHandler.logger = config.logger();
    }
 
 
@@ -50,11 +52,11 @@ public class FileHandler
       path = config.appl() + path;
       long bytes = readFile(path,out);
 
-      Response response = new Response(out,bytes,mime);
+      Response response = new Response(path,out,bytes,mime);
       return(response);
    }
 
-   
+
    private long readFile(String path, OutputStream out) throws Exception
    {
       int read = 0;

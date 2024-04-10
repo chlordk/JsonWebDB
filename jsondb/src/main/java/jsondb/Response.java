@@ -30,13 +30,21 @@ import java.io.OutputStream;
 public class Response
 {
    public final long bytes;
+   public final String path;
    public final String mimetype;
    public final OutputStream out;
 
-   public Response(OutputStream out, long bytes, String mimetype)
+   public Response(String path, OutputStream out, long bytes, String mimetype)
    {
       this.out = out;
+      this.path = path;
       this.bytes = bytes;
       this.mimetype = mimetype;
+   }
+
+   @Override
+   public String toString()
+   {
+      return(path+" ["+mimetype+"] "+bytes+" bytes");
    }
 }

@@ -1,5 +1,14 @@
 #!/bin/bash
+
+CWD=$(pwd)
 LOCATION=$(dirname "$0")
+
+cd $LOCATION
+
+../jsondb/build
+../servlet/build
+
+rm -rf $LOCATION/../logs/*
 
 NAME=jsonwebdb
 
@@ -8,7 +17,10 @@ docker run -dit --name $NAME \
  -e JsonWebDB_Inst=inst01 \
  -e JsonWebDB_Home=/jsonwebdb \
  -v /Users/alhof/Repository/JsonWebDB:/jsonwebdb \
+ -v /Users/alhof/Repository/forms42/demo/dist:/dist \
 $NAME
 
 
-$LOCATION/deploy
+./deploy
+
+cd $CWD
