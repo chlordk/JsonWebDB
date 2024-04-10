@@ -35,13 +35,11 @@ import java.util.logging.Logger;
 public class FileHandler
 {
    private static Config config = null;
-   private static Logger logger = null;
 
 
    public static void setConfig(Config config)
    {
       FileHandler.config = config;
-      FileHandler.logger = config.logger();
    }
 
 

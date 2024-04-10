@@ -27,7 +27,6 @@ package jsonwebdb;
 import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
