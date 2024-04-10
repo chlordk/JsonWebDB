@@ -36,6 +36,8 @@ public class Deployment extends Thread
 {
    private static Deployment instance = null;
 
+   private long modified = 0;
+
    private final int check;
    private final int grace;
    private final String appl;
@@ -44,12 +46,16 @@ public class Deployment extends Thread
    private final ArrayList<String> ignore;
 
 
-   public static Deployment observe(Config config)
+   public static Deployment observe(Config config) throws Exception
    {
       if (instance != null)
          return(instance);
 
       instance = new Deployment(config);
+
+      instance.deploy();
+      instance.start();
+
       return(instance);
    }
 
@@ -64,23 +70,25 @@ public class Deployment extends Thread
       this.grace = FileConfig.grace();
       this.ignore = FileConfig.ignore();
       this.repos = Config.path("deployment");
-
-      this.start();
    }
 
    @Override
    public void run()
    {
-      try
-      {
-         int sleep = check;
-         if (!deploy()) sleep = grace;
+      try {Thread.sleep(check);}
+      catch (Exception e) {logger.log(Level.SEVERE,e.getMessage(),e);}
 
-         Thread.sleep(sleep);
-      }
-      catch (Throwable e)
+      while (true)
       {
-         logger.log(Level.SEVERE,e.getMessage(),e);
+         try
+         {
+            deploy();
+            Thread.sleep(check);
+         }
+         catch (Throwable e)
+         {
+            logger.log(Level.SEVERE,e.getMessage(),e);
+         }
       }
    }
 

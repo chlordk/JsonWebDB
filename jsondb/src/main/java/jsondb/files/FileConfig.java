@@ -135,7 +135,14 @@ public class FileConfig
          JSONArray list = def.optJSONArray(IGNORE);
 
          for (int i = 0; i < list.length(); i++)
-            ignore.add(list.getString(i));
+         {
+            String pattern = list.getString(i);
+
+            pattern = pattern.replace(".","\\.");
+            pattern = pattern.replace("*",".*");
+
+            ignore.add(pattern);
+         }
       }
    }
 

@@ -32,15 +32,17 @@ public class FileSpec
    public FileSpec(String pattern, long size)
    {
       this.size = size;
+      pattern = pattern.replace(".","\\.");
+      pattern = pattern.replace("*",".*");
       this.pattern = pattern;
    }
 
-   public boolean matchLT(String file, long size)
+   public boolean matchSmallFile(String file, long size)
    {
       return(file.matches(pattern) && size <= this.size);
    }
 
-   public boolean matchGT(String file, long size)
+   public boolean matchLargeFile(String file, long size)
    {
       return(file.matches(pattern) && size >= this.size);
    }
