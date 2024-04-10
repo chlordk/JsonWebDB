@@ -38,7 +38,6 @@ public class Deployment extends Thread
    private final int check;
    private final int grace;
    private final String appl;
-   private final String repos;
    private final Logger logger;
    private final ArrayList<String> ignore;
 
@@ -48,6 +47,7 @@ public class Deployment extends Thread
       if (instance != null)
          return(instance);
 
+      Repository.init(config);
       instance = new Deployment(config);
 
       instance.deploy();
@@ -66,7 +66,6 @@ public class Deployment extends Thread
       this.check = FileConfig.check();
       this.grace = FileConfig.grace();
       this.ignore = FileConfig.ignore();
-      this.repos = Config.path("deployment");
    }
 
    @Override
