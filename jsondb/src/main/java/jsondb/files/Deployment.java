@@ -35,8 +35,6 @@ public class Deployment extends Thread
 {
    private static Deployment instance = null;
 
-   private long modified = 0;
-
    private final int check;
    private final int grace;
    private final String appl;
