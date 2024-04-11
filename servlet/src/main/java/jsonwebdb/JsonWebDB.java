@@ -73,18 +73,21 @@ public class JsonWebDB extends HttpServlet
 
     if (meth.equals("GET"))
     {
-      Response file = null;
-      JsonDB jsondb = new JsonDB();
+      Response wrap = null;
       String path = getPath(request);
+
+      JsonDB jsondb = new JsonDB();
       OutputStream out = response.getOutputStream();
 
-      try {file = jsondb.getFile(path,out);}
+      try {wrap = jsondb.getFile(path,out);}
       catch (Exception e) {throw new AnyException(e);}
 
-      logger.info(file.toString());
-      response.setContentType(file.mimetype);
-      out.close();
+      logger.info(wrap.toString());
 
+      response.setContentType(wrap.mimetype);
+      if (wrap.gzip) response.setHeader("Content-Encoding","gzip");
+
+      out.close();
       return;
     }
 

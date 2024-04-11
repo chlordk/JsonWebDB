@@ -26,6 +26,8 @@ package jsondb;
 
 import java.io.OutputStream;
 
+import jsondb.files.FileCache.CacheEntry;
+
 
 public class Response
 {
@@ -35,19 +37,25 @@ public class Response
    public final String mimetype;
    public final OutputStream out;
 
-
    public Response(String path, OutputStream out, long bytes, String mimetype)
    {
-      this(path,out,bytes,mimetype,false);
-   }
-
-   public Response(String path, OutputStream out, long bytes, String mimetype, boolean gzip)
-   {
       this.out = out;
-      this.gzip = gzip;
       this.path = path;
+      this.gzip = false;
       this.bytes = bytes;
       this.mimetype = mimetype;
+   }
+
+   public Response(CacheEntry entry, OutputStream out, String mimetype) throws Exception
+   {
+      this.out = out;
+      this.mimetype = mimetype;
+
+      this.path = entry.path();
+      this.gzip = entry.gzipped();
+
+      this.bytes = entry.bytes();
+      out.write(entry.content());
    }
 
    @Override

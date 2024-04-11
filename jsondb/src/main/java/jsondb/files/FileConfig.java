@@ -85,6 +85,11 @@ public class FileConfig
       loadCompressionRules(cache);
    }
 
+   public static String root()
+   {
+      return(instance.config.appl());
+   }
+
    public static boolean cache(File file)
    {
       for (int i = 0; i < instance.cache.size(); i++)

@@ -25,6 +25,9 @@ SOFTWARE.
 package jsondb.files;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -34,49 +37,117 @@ public class FileCache
       new ConcurrentHashMap<String,CacheEntry>();
 
 
-   public static CacheEntry get(String path)
+   public static CacheEntry get(String path) throws Exception
    {
-      File file = new File(path);
       CacheEntry centry = cache.get(path);
 
       if (centry != null)
       {
-         if (!file.exists())
+         if (!centry.ensure())
          {
             cache.remove(path);
             return(null);
          }
-
-         if (file.lastModified() != centry.modified)
-         {
-            System.out.println("reload "+path);
-         }
       }
       else
       {
+         File file = open(path);
+
          if (FileConfig.cache(file))
          {
-            System.out.println("cache "+path);
+            centry = new CacheEntry(path,false);
+            cache.put(path,centry);
          }
          else if (FileConfig.compress(file))
          {
-            System.out.println("compress "+path);
+            centry = new CacheEntry(path,true);
+            cache.put(path,centry);
          }
       }
 
       return(centry);
    }
 
+   private static File open(String path)
+   {
+      return(new File(FileConfig.root() + path));
+   }
 
    public static class CacheEntry
    {
-      public final boolean gzip;
-      public final long modified;
+      private String path;
+      private long modified;
+      private byte[] content;
+      private boolean gzipped;
 
-      private CacheEntry(File file, boolean gzip)
+      private CacheEntry(String path, boolean gzip) throws Exception
       {
-         this.gzip = gzip;
+         File file = open(path);
+
+         this.path = path;
+         this.gzipped = gzip;
+         this.content = readFile(file);
          this.modified = file.lastModified();
+      }
+
+      public String path()
+      {
+         return(path);
+      }
+
+      public long bytes()
+      {
+         return(content.length);
+      }
+
+      public boolean gzipped()
+      {
+         return(gzipped);
+      }
+
+      public byte[] content()
+      {
+         return(content);
+      }
+
+      private boolean ensure() throws Exception
+      {
+         File file = open(path);
+         if (!file.exists()) return(false);
+
+         if (file.lastModified() != modified)
+         {
+            this.content = readFile();
+            this.modified = file.lastModified();
+         }
+
+         return(true);
+      }
+
+      private byte[] readFile() throws Exception
+      {
+         return(readFile(open(path)));
+      }
+
+      private byte[] readFile(File file) throws Exception
+      {
+         FileInputStream in = new FileInputStream(file);
+         byte[] content = in.readAllBytes(); in.close();
+
+         if (this.gzipped)
+         {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            GZIPOutputStream gout = new GZIPOutputStream(out);
+            gout.write(content); gout.close(); out.close();
+            content = out.toByteArray();
+         }
+
+         return(content);
+      }
+
+      private static File open(String path)
+      {
+         return(FileCache.open(path));
       }
    }
 }

@@ -46,13 +46,21 @@ public class FileHandler
 
    public Response load(String path, OutputStream out) throws Exception
    {
+      Response response = null;
+
       String mime = config.getMimeType(path);
       CacheEntry centry = FileCache.get(path);
 
-      path = config.appl() + path;
-      long bytes = readFile(path,out);
+      if (centry == null)
+      {
+         long bytes = readFile(path,out);
+         response = new Response(path,out,bytes,mime);
+      }
+      else
+      {
+         response = new Response(centry,out,mime);
+      }
 
-      Response response = new Response(path,out,bytes,mime);
       return(response);
    }
 
@@ -61,6 +69,7 @@ public class FileHandler
    {
       int read = 0;
       long bytes = 0;
+      path = config.appl() + path;
 
       File file = new File(path);
       byte[] buf = new byte[8192];
