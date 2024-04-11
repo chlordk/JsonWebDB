@@ -29,23 +29,6 @@
    ,
    "files":
    {
-      "ignore":
-      [
-         "*.ts"
-      ]
-      ,
-		"cache":
-		[
-			{"pattern": "*.js", "maxsize": 1048576},
-			{"pattern": "*.html", "maxsize": 1048576}
-		]
-		,
-		"compress":
-		[
-			{"pattern": "*.js", "minsize": 1024},
-			{"pattern": "*.html", "minsize": 1024}
-		]
-		,
 		"mimetypes":
 		[
 			{"filetype": "css",  "mimetype": "text/css"},
@@ -62,7 +45,33 @@
 			{"filetype": "js",   "mimetype": "text/javascript"},
 			{"filetype": "json", "mimetype": "application/json"}
 		]
-   }
+		,
+		"cache":
+		{
+			"ignore":
+			[
+				"*.ts",
+				"*.json"
+			]
+			,
+			"small":
+			[
+				{"pattern": "*.js", "maxsize": 1024},
+				{"pattern": "*.css", "maxsize": 1024},
+				{"pattern": "*.png", "maxsize": 1024},
+				{"pattern": "*.jpg", "maxsize": 1024},
+				{"pattern": "*.gif", "maxsize": 1024},
+				{"pattern": "*.jpeg", "maxsize": 1024},
+				{"pattern": "*.html", "maxsize": 1024}
+			]
+			,
+			"large":
+			[
+				{"pattern": "*.js", "minsize": 1048576},
+				{"pattern": "*.html", "minsize": 1048576}
+			]
+		}
+	}
 	,
 	"logger":
 	{

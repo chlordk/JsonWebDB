@@ -36,8 +36,9 @@ public class FileConfig
    private static final String FILES = "files";
 
    private static final String CACHE = "cache";
+   private static final String SMALL = "small";
+   private static final String LARGE = "large";
    private static final String IGNORE = "ignore";
-   private static final String COMPRESS = "compress";
    private static final String MIMETYPES = "mimetypes";
 
    private static final String PATTERN = "pattern";
@@ -80,11 +81,12 @@ public class FileConfig
       this.config = config;
 
       JSONObject files = config.get(FILES);
+      JSONObject cache = config.get(files,CACHE);
 
-      loadIgnore(files);
+      loadIgnore(cache);
       loadMimeTypes(files);
-      loadCacheRules(files);
-      loadCompressionRules(files);
+      loadCacheRules(cache);
+      loadCompressionRules(cache);
    }
 
    public static ArrayList<String> ignore()
@@ -170,11 +172,12 @@ public class FileConfig
    private void loadCacheRules(JSONObject def)
    {
       cache.clear();
-      JSONArray rules = config.get(def,CACHE);
+      JSONArray rules = config.get(def,SMALL);
 
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
+         System.out.println("small "+rule.toString(2));
          cache.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
       }
    }
@@ -182,11 +185,12 @@ public class FileConfig
    private void loadCompressionRules(JSONObject def)
    {
       compress.clear();
-      JSONArray rules = config.get(def,COMPRESS);
+      JSONArray rules = config.get(def,LARGE);
 
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
+         System.out.println("large "+rule.toString(2));
          compress.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
       }
    }

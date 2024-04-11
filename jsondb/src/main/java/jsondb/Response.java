@@ -31,12 +31,20 @@ public class Response
 {
    public final long bytes;
    public final String path;
+   public final boolean gzip;
    public final String mimetype;
    public final OutputStream out;
 
+
    public Response(String path, OutputStream out, long bytes, String mimetype)
    {
+      this(path,out,bytes,mimetype,false);
+   }
+
+   public Response(String path, OutputStream out, long bytes, String mimetype, boolean gzip)
+   {
       this.out = out;
+      this.gzip = gzip;
       this.path = path;
       this.bytes = bytes;
       this.mimetype = mimetype;
@@ -45,6 +53,19 @@ public class Response
    @Override
    public String toString()
    {
-      return(path+" ["+mimetype+"] "+bytes);
+      int len = path.length();
+      String path = this.path;
+      if (len > 40) path = path.substring(len-40);
+
+      String mime = mimetype;
+      mime = mime != null ? mime : "??/??";
+
+      len = mimetype.length();
+      if (len > 15) mime = mime.substring(len-15);
+
+      String desc = String.format("%-40s %-15s %6dk",path,mime,bytes/1024);
+      if (gzip) desc += " (gzip)";
+
+      return(desc);
    }
 }

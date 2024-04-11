@@ -36,11 +36,9 @@ public class FileCache
 
    private final String appl;
    private final Logger logger;
-   private final ArrayList<String> ignore;
 
    public static void main(String[] args) throws Exception
    {
-      System.out.println(args[0]);
       Config config = Config.load(args[0],args[1]);
       FileCache cache = new FileCache(config);
       cache.deploy();
@@ -59,13 +57,21 @@ public class FileCache
    {
       this.appl = config.appl();
       this.logger = config.logger();
-      this.ignore = FileConfig.ignore();
    }
 
    private boolean deploy() throws Exception
    {
       ArrayList<File> files = list(new File(appl));
-      for(File file : files) logger.info(file.getName());
+
+      for(File file : files)
+      {
+         if (FileConfig.compress(file.getName(),file.length()))
+            logger.info("compress "+file.getName());
+            
+         if (FileConfig.cache(file.getName(),file.length()))
+            logger.info("cache "+file.getName());
+      }
+
       return(true);
    }
 
@@ -75,24 +81,11 @@ public class FileCache
 
       for(File file : root.listFiles())
       {
-         if (file.isFile())
-         {
-            boolean skip = false;
-
-            for (int i = 0; i < ignore.size(); i++)
-            {
-               if (file.getName().matches(ignore.get(i)))
-               {
-                  skip = true;
-                  break;
-               }
-            }
-
-            if (!skip) files.add(file);
-         }
-
          if (file.isDirectory() && !file.isHidden())
             files.addAll(list(file));
+
+         if (file.isFile() && !FileConfig.ignore(file.getName()))
+            files.add(file);
       }
 
       return(files);

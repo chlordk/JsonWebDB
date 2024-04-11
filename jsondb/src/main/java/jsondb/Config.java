@@ -95,6 +95,11 @@ public class Config
       return(config);
    }
 
+   public FileConfig files()
+   {
+      return(fconfig);
+   }
+
    public String getMimeType(String file)
    {
       return(FileConfig.getMimeType(file));
