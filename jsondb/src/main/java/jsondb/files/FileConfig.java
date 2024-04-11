@@ -37,22 +37,16 @@ public class FileConfig
 
    private static final String CACHE = "cache";
    private static final String IGNORE = "ignore";
+   private static final String COMPRESS = "compress";
    private static final String MIMETYPES = "mimetypes";
-   private static final String DEPLOYMENT = "deployment";
-   private static final String COMPRESSION = "compression";
-
-   private static final String FEXT = "filetype";
-   private static final String TYPE = "mimetype";
-
-   private static final String GRACE = "grace-period";
-   private static final String CHECK = "check-for-changes";
 
    private static final String PATTERN = "pattern";
    private static final String MINSIZE = "minsize";
    private static final String MAXSIZE = "maxsize";
 
-   private final int check;
-   private final int grace;
+   private static final String FILETYPE = "filetype";
+   private static final String MIMETYPE = "mimetype";
+
    private final Config config;
 
    private final ArrayList<String> ignore =
@@ -61,7 +55,7 @@ public class FileConfig
    private final ArrayList<FileSpec> cache =
       new ArrayList<FileSpec>();
 
-   private final ArrayList<FileSpec> compression =
+   private final ArrayList<FileSpec> compress =
       new ArrayList<FileSpec>();
 
    private final HashMap<String,String> mimetypes =
@@ -86,25 +80,11 @@ public class FileConfig
       this.config = config;
 
       JSONObject files = config.get(FILES);
-      JSONObject deploy = config.get(files,DEPLOYMENT);
 
-      loadIgnore(deploy);
+      loadIgnore(files);
       loadMimeTypes(files);
       loadCacheRules(files);
       loadCompressionRules(files);
-
-      this.check = deploy.getInt(CHECK) * 1000;
-      this.grace = deploy.getInt(GRACE) * 1000;
-   }
-
-   public static int check()
-   {
-      return(instance.check);
-   }
-
-   public static int grace()
-   {
-      return(instance.grace);
    }
 
    public static ArrayList<String> ignore()
@@ -112,15 +92,45 @@ public class FileConfig
       return(instance.ignore);
    }
 
+   public static boolean cache(String file, long size)
+   {
+      for (int i = 0; i < instance.cache.size(); i++)
+      {
+         if (instance.cache.get(i).matchSmallFile(file,size))
+            return(true);
+      }
+
+      return(false);
+   }
+
+   public static boolean ignore(String file)
+   {
+      for (int i = 0; i < instance.ignore.size(); i++)
+      {
+         if (file.matches(instance.ignore.get(i)))
+            return(true);
+      }
+
+      return(false);
+   }
+
+   public static boolean compress(String file, long size)
+   {
+      for (int i = 0; i < instance.compress.size(); i++)
+      {
+         if (instance.compress.get(i).matchLargeFile(file,size))
+            return(true);
+      }
+
+      return(false);
+   }
+
    public static String getMimeType(String file)
    {
       String ext = file;
 
-      int pos = file.lastIndexOf("/");
-      if (pos >= 0) file = file.substring(pos+1);
-
-      pos = file.lastIndexOf('.');
-      if (pos >= 0) ext = file.substring(pos+1);
+      int pos = ext.lastIndexOf('.');
+      if (pos >= 0) ext = ext.substring(pos+1);
 
       return(instance.mimetypes.get(ext));
    }
@@ -153,7 +163,7 @@ public class FileConfig
       for (int i = 0; i < types.length(); i++)
       {
          JSONObject mt = types.getJSONObject(i);
-         mimetypes.put(mt.getString(FEXT).toLowerCase(),mt.getString(TYPE));
+         mimetypes.put(mt.getString(FILETYPE).toLowerCase(),mt.getString(MIMETYPE));
       }
    }
 
@@ -171,13 +181,13 @@ public class FileConfig
 
    private void loadCompressionRules(JSONObject def)
    {
-      compression.clear();
-      JSONArray rules = config.get(def,COMPRESSION);
+      compress.clear();
+      JSONArray rules = config.get(def,COMPRESS);
 
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
-         compression.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
+         compress.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
       }
    }
 }

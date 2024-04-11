@@ -27,64 +27,39 @@ package jsondb.files;
 import java.io.File;
 import jsondb.Config;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class FileCache extends Thread
+public class FileCache
 {
    private static FileCache instance = null;
 
-   private final int check;
-   private final int grace;
    private final String appl;
    private final Logger logger;
    private final ArrayList<String> ignore;
 
+   public static void main(String[] args) throws Exception
+   {
+      System.out.println(args[0]);
+      Config config = Config.load(args[0],args[1]);
+      FileCache cache = new FileCache(config);
+      cache.deploy();
+   }
 
-   public static FileCache observe(Config config) throws Exception
+   public static FileCache load(Config config) throws Exception
    {
       if (instance != null)
          return(instance);
 
       instance = new FileCache(config);
-
-      instance.deploy();
-      instance.start();
-
       return(instance);
    }
 
    private FileCache(Config config)
    {
-      this.setDaemon(true);
-      this.setName("deployment");
-
       this.appl = config.appl();
       this.logger = config.logger();
-      this.check = FileConfig.check();
-      this.grace = FileConfig.grace();
       this.ignore = FileConfig.ignore();
-   }
-
-   @Override
-   public void run()
-   {
-      try {Thread.sleep(check);}
-      catch (Exception e) {logger.log(Level.SEVERE,e.getMessage(),e);}
-
-      while (true)
-      {
-         try
-         {
-            deploy();
-            Thread.sleep(check);
-         }
-         catch (Throwable e)
-         {
-            logger.log(Level.SEVERE,e.getMessage(),e);
-         }
-      }
    }
 
    private boolean deploy() throws Exception

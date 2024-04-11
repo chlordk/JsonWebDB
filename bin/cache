@@ -1,0 +1,3 @@
+#!/bin/bash
+LOCATION=$(dirname "$0")
+java -cp "../libraries/*" jsondb.files.FileCache $LOCATION/.. cache

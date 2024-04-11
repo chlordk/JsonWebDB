@@ -44,7 +44,7 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Starting JsonDB version "+version);
       JsonDB.config.logger().info(".......................................");
-      FileCache.observe(JsonDB.config);
+      FileCache.load(JsonDB.config);
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Ready to accept requests");
       JsonDB.config.logger().info(".......................................");
