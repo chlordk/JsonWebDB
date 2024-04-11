@@ -67,7 +67,7 @@ public class FileCache
       {
          if (FileConfig.compress(file.getName(),file.length()))
             logger.info("compress "+file.getName());
-            
+
          if (FileConfig.cache(file.getName(),file.length()))
             logger.info("cache "+file.getName());
       }
@@ -83,9 +83,6 @@ public class FileCache
       {
          if (file.isDirectory() && !file.isHidden())
             files.addAll(list(file));
-
-         if (file.isFile() && !FileConfig.ignore(file.getName()))
-            files.add(file);
       }
 
       return(files);

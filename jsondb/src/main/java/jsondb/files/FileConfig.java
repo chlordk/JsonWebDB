@@ -38,7 +38,6 @@ public class FileConfig
    private static final String CACHE = "cache";
    private static final String SMALL = "small";
    private static final String LARGE = "large";
-   private static final String IGNORE = "ignore";
    private static final String MIMETYPES = "mimetypes";
 
    private static final String PATTERN = "pattern";
@@ -49,9 +48,6 @@ public class FileConfig
    private static final String MIMETYPE = "mimetype";
 
    private final Config config;
-
-   private final ArrayList<String> ignore =
-      new ArrayList<String>();
 
    private final ArrayList<FileSpec> cache =
       new ArrayList<FileSpec>();
@@ -83,15 +79,9 @@ public class FileConfig
       JSONObject files = config.get(FILES);
       JSONObject cache = config.get(files,CACHE);
 
-      loadIgnore(cache);
       loadMimeTypes(files);
       loadCacheRules(cache);
       loadCompressionRules(cache);
-   }
-
-   public static ArrayList<String> ignore()
-   {
-      return(instance.ignore);
    }
 
    public static boolean cache(String file, long size)
@@ -99,17 +89,6 @@ public class FileConfig
       for (int i = 0; i < instance.cache.size(); i++)
       {
          if (instance.cache.get(i).matchSmallFile(file,size))
-            return(true);
-      }
-
-      return(false);
-   }
-
-   public static boolean ignore(String file)
-   {
-      for (int i = 0; i < instance.ignore.size(); i++)
-      {
-         if (file.matches(instance.ignore.get(i)))
             return(true);
       }
 
@@ -137,26 +116,6 @@ public class FileConfig
       return(instance.mimetypes.get(ext));
    }
 
-   private void loadIgnore(JSONObject def)
-   {
-      ignore.clear();
-
-      if (def.has(IGNORE))
-      {
-         JSONArray list = def.optJSONArray(IGNORE);
-
-         for (int i = 0; i < list.length(); i++)
-         {
-            String pattern = list.getString(i);
-
-            pattern = pattern.replace(".","\\.");
-            pattern = pattern.replace("*",".*");
-
-            ignore.add(pattern);
-         }
-      }
-   }
-
    private void loadMimeTypes(JSONObject def)
    {
       mimetypes.clear();
@@ -177,7 +136,6 @@ public class FileConfig
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
-         System.out.println("small "+rule.toString(2));
          cache.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
       }
    }
@@ -190,7 +148,6 @@ public class FileConfig
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
-         System.out.println("large "+rule.toString(2));
          compress.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
       }
    }

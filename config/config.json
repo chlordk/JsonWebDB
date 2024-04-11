@@ -48,12 +48,6 @@
 		,
 		"cache":
 		{
-			"ignore":
-			[
-				"*.ts",
-				"*.json"
-			]
-			,
 			"small":
 			[
 				{"pattern": "*.js", "maxsize": 1024},
