@@ -45,6 +45,6 @@ public class Response
    @Override
    public String toString()
    {
-      return("["+mimetype+"] "+bytes+" "+path);
+      return(path+" ["+mimetype+"] "+bytes);
    }
 }

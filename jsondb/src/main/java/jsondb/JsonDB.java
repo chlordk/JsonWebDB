@@ -27,7 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.database.Pool;
 import java.io.OutputStream;
-import jsondb.files.Deployment;
+import jsondb.files.FileCache;
 import jsondb.files.FileHandler;
 import java.io.ByteArrayOutputStream;
 
@@ -44,7 +44,7 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Starting JsonDB version "+version);
       JsonDB.config.logger().info(".......................................");
-      Deployment.observe(JsonDB.config);
+      FileCache.observe(JsonDB.config);
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Ready to accept requests");
       JsonDB.config.logger().info(".......................................");

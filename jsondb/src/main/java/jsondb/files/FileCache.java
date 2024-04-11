@@ -31,9 +31,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class Deployment extends Thread
+public class FileCache extends Thread
 {
-   private static Deployment instance = null;
+   private static FileCache instance = null;
 
    private final int check;
    private final int grace;
@@ -42,13 +42,12 @@ public class Deployment extends Thread
    private final ArrayList<String> ignore;
 
 
-   public static Deployment observe(Config config) throws Exception
+   public static FileCache observe(Config config) throws Exception
    {
       if (instance != null)
          return(instance);
 
-      Repository.init(config);
-      instance = new Deployment(config);
+      instance = new FileCache(config);
 
       instance.deploy();
       instance.start();
@@ -56,7 +55,7 @@ public class Deployment extends Thread
       return(instance);
    }
 
-   private Deployment(Config config)
+   private FileCache(Config config)
    {
       this.setDaemon(true);
       this.setName("deployment");
