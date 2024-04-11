@@ -25,66 +25,58 @@ SOFTWARE.
 package jsondb.files;
 
 import java.io.File;
-import jsondb.Config;
-import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class FileCache
 {
-   private static FileCache instance = null;
+   private static ConcurrentHashMap<String,CacheEntry> cache =
+      new ConcurrentHashMap<String,CacheEntry>();
 
-   private final String appl;
-   private final Logger logger;
 
-   public static void main(String[] args) throws Exception
+   public static CacheEntry get(String path)
    {
-      Config config = Config.load(args[0],args[1]);
-      FileCache cache = new FileCache(config);
-      cache.deploy();
-   }
+      File file = new File(path);
+      CacheEntry centry = cache.get(path);
 
-   public static FileCache load(Config config) throws Exception
-   {
-      if (instance != null)
-         return(instance);
-
-      instance = new FileCache(config);
-      return(instance);
-   }
-
-   private FileCache(Config config)
-   {
-      this.appl = config.appl();
-      this.logger = config.logger();
-   }
-
-   private boolean deploy() throws Exception
-   {
-      ArrayList<File> files = list(new File(appl));
-
-      for(File file : files)
+      if (centry != null)
       {
-         if (FileConfig.compress(file.getName(),file.length()))
-            logger.info("compress "+file.getName());
+         if (!file.exists())
+         {
+            cache.remove(path);
+            return(null);
+         }
 
-         if (FileConfig.cache(file.getName(),file.length()))
-            logger.info("cache "+file.getName());
+         if (file.lastModified() != centry.modified)
+         {
+            System.out.println("reload "+path);
+         }
+      }
+      else
+      {
+         if (FileConfig.cache(file))
+         {
+            System.out.println("cache "+path);
+         }
+         else if (FileConfig.compress(file))
+         {
+            System.out.println("compress "+path);
+         }
       }
 
-      return(true);
+      return(centry);
    }
 
-   private ArrayList<File> list(File root)
+
+   public static class CacheEntry
    {
-      ArrayList<File> files = new ArrayList<File>();
+      public final boolean gzip;
+      public final long modified;
 
-      for(File file : root.listFiles())
+      private CacheEntry(File file, boolean gzip)
       {
-         if (file.isDirectory() && !file.isHidden())
-            files.addAll(list(file));
+         this.gzip = gzip;
+         this.modified = file.lastModified();
       }
-
-      return(files);
    }
 }

@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb.files;
 
+import java.io.File;
 import jsondb.Config;
 import java.util.HashMap;
 import org.json.JSONArray;
@@ -84,22 +85,22 @@ public class FileConfig
       loadCompressionRules(cache);
    }
 
-   public static boolean cache(String file, long size)
+   public static boolean cache(File file)
    {
       for (int i = 0; i < instance.cache.size(); i++)
       {
-         if (instance.cache.get(i).matchSmallFile(file,size))
+         if (instance.cache.get(i).matchSmallFile(file.getName(),file.length()))
             return(true);
       }
 
       return(false);
    }
 
-   public static boolean compress(String file, long size)
+   public static boolean compress(File file)
    {
       for (int i = 0; i < instance.compress.size(); i++)
       {
-         if (instance.compress.get(i).matchLargeFile(file,size))
+         if (instance.compress.get(i).matchLargeFile(file.getName(),file.length()))
             return(true);
       }
 

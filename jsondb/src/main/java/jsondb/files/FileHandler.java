@@ -27,6 +27,8 @@ package jsondb.files;
 import java.io.File;
 import jsondb.Config;
 import jsondb.Response;
+import jsondb.files.FileCache.CacheEntry;
+
 import java.io.OutputStream;
 import java.io.FileInputStream;
 
@@ -45,6 +47,7 @@ public class FileHandler
    public Response load(String path, OutputStream out) throws Exception
    {
       String mime = config.getMimeType(path);
+      CacheEntry centry = FileCache.get(path);
 
       path = config.appl() + path;
       long bytes = readFile(path,out);
