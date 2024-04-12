@@ -26,18 +26,16 @@ package jsonwebdb;
 
 import jsondb.Config;
 import jsondb.JsonDB;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 import jsondb.files.FileResponse;
-import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
 
 
 public class JsonWebDB extends HttpServlet
@@ -79,7 +77,6 @@ public class JsonWebDB extends HttpServlet
   {
     JsonDB jsondb = new JsonDB();
     String meth = request.getMethod();
-    logger.info("Method: "+meth);
 
     if (meth.equals("GET"))
     {
@@ -118,28 +115,15 @@ public class JsonWebDB extends HttpServlet
   private String getPath(HttpServletRequest request)
   {
     String path = request.getRequestURI().substring(request.getContextPath().length());
-    if (path.length() == 1) path += "index.html";
+    if (path.length() <= 1) path = "/index.html";
     return(path);
   }
 
 
   private String getBody(HttpServletRequest request) throws IOException
   {
-    int read = 0;
-    byte[] buf = new byte[4196];
-
     InputStream in = request.getInputStream();
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    while (read >= 0)
-    {
-      read = in.read(buf);
-      if (read > 0) out.write(buf,0,read);
-    }
-
-    in.close();
-    out.close();
-
-    return(out.toString());
+    byte[] bytes = in.readAllBytes(); in.close();
+    return(new String(bytes));
   }
 }
