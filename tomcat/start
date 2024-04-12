@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ARGS=$#
-PORT=8080
+PORT=8000
+SSLPORT=8043
 INST="inst01"
 
 CWD=$(pwd)
@@ -17,13 +18,19 @@ then
   PORT=$2
 fi
 
+if [[ ARGS -gt 2 ]]
+then
+  SSLPORT=$3
+fi
+
 cd $LOCATION
 rm -rf $LOCATION/../logs/*
 
 NAME=jsonwebdb.$INST
 
 docker run -dit --name $NAME \
- -p $PORT:8443 \
+ -p $PORT:8080 \
+ -p $SSLPORT:8443 \
  -e TZ=Europe/Copenhagen \
  -e JsonWebDB_Inst=$INST \
  -e JsonWebDB_Home=/jsonwebdb \
