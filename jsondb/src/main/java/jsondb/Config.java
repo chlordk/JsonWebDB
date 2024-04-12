@@ -128,7 +128,7 @@ public class Config
       return((T) section.get(attr));
    }
 
-   /** Build a path */
+   /** Get path to a given file or folder */
    public static String path(String... parts)
    {
       String path = root;
