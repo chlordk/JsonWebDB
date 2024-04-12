@@ -58,7 +58,7 @@ public class FileResponse
    {
       int len = path.length();
       String path = this.path;
-      if (len > 40) path = path.substring(len-40);
+      if (len > 40) path = "..."+path.substring(len-37);
 
       String mime = mimetype;
       mime = mime != null ? mime : "text/plain";

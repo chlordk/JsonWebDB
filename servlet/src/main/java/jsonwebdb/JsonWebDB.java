@@ -64,8 +64,8 @@ public class JsonWebDB extends HttpServlet
     String inst = System.getenv("JsonWebDB_Inst");
 
     config = Config.load(home,inst);
-    logger = config.logger();
 
+    logger = config.logger();
     Pool pool = new Pool(config);
 
     JsonDB.register(pool);
@@ -79,6 +79,7 @@ public class JsonWebDB extends HttpServlet
   {
     JsonDB jsondb = new JsonDB();
     String meth = request.getMethod();
+    logger.info("Method: "+meth);
 
     if (meth.equals("GET"))
     {
