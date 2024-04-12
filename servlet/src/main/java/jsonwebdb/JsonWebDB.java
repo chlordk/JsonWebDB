@@ -37,6 +37,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 
 public class JsonWebDB extends HttpServlet
 {
@@ -75,6 +77,7 @@ public class JsonWebDB extends HttpServlet
 
   private void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws Exception
   {
+    JsonDB jsondb = new JsonDB();
     String meth = request.getMethod();
 
     if (meth.equals("GET"))
@@ -82,16 +85,11 @@ public class JsonWebDB extends HttpServlet
       FileResponse file = null;
       String path = getPath(request);
 
-      JsonDB jsondb = new JsonDB();
-
-      file = jsondb.getFile(path);
-
+      file = jsondb.get(path);
       logger.info(file.toString());
-      logger.info(file.path+" size "+file.content.length);
-      response.setContentType(file.mimetype);
 
-      if (file.gzip)
-        response.setHeader("Content-Encoding","gzip");
+      response.setContentType(file.mimetype);
+      if (file.gzip) response.setHeader("Content-Encoding","gzip");
 
       OutputStream out = response.getOutputStream();
       out.write(file.content);
@@ -102,6 +100,13 @@ public class JsonWebDB extends HttpServlet
     if (meth.equals("POST"))
     {
       String body = getBody(request);
+      JSONObject json = jsondb.execute(body);
+      logger.info(json.toString());
+
+      response.setContentType(jsondb.mimetype("json"));
+      OutputStream out = response.getOutputStream();
+      out.write(json.toString().getBytes());
+      out.close();
       return;
     }
 

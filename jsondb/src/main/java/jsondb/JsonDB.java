@@ -26,10 +26,8 @@ package jsondb;
 
 import org.json.JSONObject;
 import jsondb.database.Pool;
-import java.io.OutputStream;
-import jsondb.files.FileResponse;
 import jsondb.files.FileHandler;
-import java.io.ByteArrayOutputStream;
+import jsondb.files.FileResponse;
 
 
 public class JsonDB
@@ -59,7 +57,12 @@ public class JsonDB
          JsonDB.config = config;
    }
 
-   public FileResponse getFile(String path) throws Exception
+   public String mimetype(String filetype)
+   {
+      return(config.getMimeType(filetype));
+   }
+
+   public FileResponse get(String path) throws Exception
    {
       FileHandler handler = new FileHandler();
       FileResponse response = handler.get(path);
@@ -73,6 +76,9 @@ public class JsonDB
 
    public JSONObject execute(JSONObject request) throws Exception
    {
-      return(request);
+      JSONObject response = new JSONObject();
+      response.put("success",true);
+      response.put("version",version);
+      return(response);
    }
 }
