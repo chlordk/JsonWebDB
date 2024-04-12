@@ -30,7 +30,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 import jsondb.files.FileResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,90 +39,82 @@ import javax.servlet.http.HttpServletResponse;
 
 public class JsonWebDB extends HttpServlet
 {
-  private Config config = null;
-  private Logger logger = null;
+   public void init() throws ServletException
+   {
+      try {start();}
+      catch (Exception e) {throw new ServletException(e);}
+   }
 
-  public void init() throws ServletException
-  {
-    try {start();}
-    catch (Exception e) {throw new ServletException(e);}
-  }
-
-  public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-  {
-    try {jsonwebdb(request,response);}
-    catch (Exception e) {throw new ServletException(e);}
-  }
+   public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+   {
+      try {jsonwebdb(request,response);}
+      catch (Exception e) {throw new ServletException(e);}
+   }
 
 
-  private void start() throws Exception
-  {
-    String home = System.getenv("JsonWebDB_Home");
-    String inst = System.getenv("JsonWebDB_Inst");
+   private void start() throws Exception
+   {
+      String home = System.getenv("JsonWebDB_Home");
+      String inst = System.getenv("JsonWebDB_Inst");
 
-    config = Config.load(home,inst);
+      Config config = Config.load(home,inst);
+      Pool pool = new Pool(config);
 
-    logger = config.logger();
-    Pool pool = new Pool(config);
+      JsonDB.register(pool);
+      JsonDB.register(config);
 
-    JsonDB.register(pool);
-    JsonDB.register(config);
-
-    JsonDB.start();
-  }
+      JsonDB.start();
+   }
 
 
-  private void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws Exception
-  {
-    JsonDB jsondb = new JsonDB();
-    String meth = request.getMethod();
+   private void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws Exception
+   {
+      JsonDB jsondb = new JsonDB();
+      String meth = request.getMethod();
 
-    if (meth.equals("GET"))
-    {
-      FileResponse file = null;
-      String path = getPath(request);
+      if (meth.equals("GET"))
+      {
+         FileResponse file = null;
+         String path = getPath(request);
 
-      file = jsondb.get(path);
-      logger.info(file.toString());
+         file = jsondb.get(path);
+         response.setContentType(file.mimetype);
+         if (file.gzip) response.setHeader("Content-Encoding","gzip");
 
-      response.setContentType(file.mimetype);
-      if (file.gzip) response.setHeader("Content-Encoding","gzip");
+         OutputStream out = response.getOutputStream();
+         out.write(file.content);
+         out.close();
+         return;
+      }
 
-      OutputStream out = response.getOutputStream();
-      out.write(file.content);
-      out.close();
-      return;
-    }
+      if (meth.equals("POST"))
+      {
+         String body = getBody(request);
+         JSONObject json = jsondb.execute(body);
 
-    if (meth.equals("POST"))
-    {
-      String body = getBody(request);
-      JSONObject json = jsondb.execute(body);
-      logger.info(json.toString());
+         response.setContentType(jsondb.mimetype("json"));
+         OutputStream out = response.getOutputStream();
+         out.write(json.toString().getBytes());
+         out.close();
+         return;
+      }
 
-      response.setContentType(jsondb.mimetype("json"));
-      OutputStream out = response.getOutputStream();
-      out.write(json.toString().getBytes());
-      out.close();
-      return;
-    }
-
-    throw new ServletException("Method '"+meth+"'' not supported");
-  }
+      throw new ServletException("Method '"+meth+"'' not supported");
+   }
 
 
-  private String getPath(HttpServletRequest request)
-  {
-    String path = request.getRequestURI().substring(request.getContextPath().length());
-    if (path.length() <= 1) path = "/index.html";
-    return(path);
-  }
+   private String getPath(HttpServletRequest request)
+   {
+      String path = request.getRequestURI().substring(request.getContextPath().length());
+      if (path.length() <= 1) path = "/index.html";
+      return(path);
+   }
 
 
-  private String getBody(HttpServletRequest request) throws IOException
-  {
-    InputStream in = request.getInputStream();
-    byte[] bytes = in.readAllBytes(); in.close();
-    return(new String(bytes));
-  }
+   private String getBody(HttpServletRequest request) throws IOException
+   {
+      InputStream in = request.getInputStream();
+      byte[] bytes = in.readAllBytes(); in.close();
+      return(new String(bytes));
+   }
 }

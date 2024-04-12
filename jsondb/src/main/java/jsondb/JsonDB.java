@@ -66,6 +66,7 @@ public class JsonDB
    {
       FileHandler handler = new FileHandler();
       FileResponse response = handler.get(path);
+      log(response);
       return(response);
    }
 
@@ -79,6 +80,17 @@ public class JsonDB
       JSONObject response = new JSONObject();
       response.put("success",true);
       response.put("version",version);
+      log(request,response);
       return(response);
+   }
+
+   private void log(FileResponse response)
+   {
+      config.logger().info(response.toString());
+   }
+
+   private void log(JSONObject request,JSONObject response)
+   {
+      config.logger().info("/jsonwebdb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }
 }
