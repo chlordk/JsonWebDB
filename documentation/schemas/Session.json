@@ -1,0 +1,51 @@
+{
+   "$id": "https://example.com/product.schema.json",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+   "type": "object",
+   "title": "Session",
+   "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
+
+   "properties":
+   {
+      "method":
+      {
+         "type": "string",
+         "description": "Method to invoke",
+         "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
+      }
+      ,
+      "id":
+      {
+         "type": "string",
+         "description": "Unique identifier. Handed out after successful connect"
+      }
+      ,
+      "connection":
+      {
+         "type": "object",
+         "description": "Information required for connecting",
+         "properties":
+         {
+            "token": {"type": "string"},
+            "username": {"type": "string"},
+            "password": {"type": "string"},
+            "scope": {"type": "string", "enum": ["stateful","stateless","hybrid"]}
+            ,
+            "client-info":
+            {
+               "type": "array",
+               "description": "Name value pairs to apply when connecting",
+               "data":
+               {
+                  "properties":
+                  {
+                     "name": {"type": "string"},
+                     "value": {"type": "string"}
+                  }
+               }
+            }
+         }
+      }
+   }
+}
