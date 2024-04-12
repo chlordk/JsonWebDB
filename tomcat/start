@@ -23,7 +23,7 @@ rm -rf $LOCATION/../logs/*
 NAME=jsonwebdb.$INST
 
 docker run -dit --name $NAME \
- -p $PORT:8080 \
+ -p $PORT:8443 \
  -e TZ=Europe/Copenhagen \
  -e JsonWebDB_Inst=$INST \
  -e JsonWebDB_Home=/jsonwebdb \

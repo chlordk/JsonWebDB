@@ -104,20 +104,19 @@
          Either JSSE or OpenSSL style configuration may be used. OpenSSL style
          configuration is used below.
     -->
-    <!--
+
     <Connector port="8443" protocol="org.apache.coyote.http11.Http11AprProtocol"
                maxThreads="150" SSLEnabled="true"
                maxParameterCount="1000"
                >
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig>
-            <Certificate certificateKeyFile="conf/localhost-rsa-key.pem"
-                         certificateFile="conf/localhost-rsa-cert.pem"
-                         certificateChainFile="conf/localhost-rsa-chain.pem"
+            <Certificate certificateKeyFile="conf/security/demo.key"
+                         certificateFile="conf/security/demo.crt"
+                         certificateChainFile=""
                          type="RSA" />
         </SSLHostConfig>
     </Connector>
-    -->
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
     <!--
