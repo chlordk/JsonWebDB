@@ -4,21 +4,22 @@
 
    "type": "object",
    "title": "Session",
+   "required": ["method"],
    "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
 
    "properties":
    {
+      "id":
+      {
+         "type": "string",
+         "description": "Unique identifier. Handed out after successful connect"
+      }
+      ,
       "method":
       {
          "type": "string",
          "description": "Method to invoke",
          "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
-      }
-      ,
-      "id":
-      {
-         "type": "string",
-         "description": "Unique identifier. Handed out after successful connect"
       }
       ,
       "connection":
