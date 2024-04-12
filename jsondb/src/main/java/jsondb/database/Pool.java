@@ -29,6 +29,7 @@ import java.sql.Connection;
  */
 public interface Pool
 {
+   String token();
    Type type() throws Exception;
    Connection getConnection() throws Exception;
    void release(Connection conn) throws Exception;
