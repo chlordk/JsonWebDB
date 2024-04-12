@@ -23,7 +23,10 @@ package jsondb.database;
 
 import java.sql.Connection;
 
-
+/**
+ * The methods needed for JsonDB to work
+ * Methods are hopefully self explanatory.
+ */
 public interface Pool
 {
    Type type() throws Exception;

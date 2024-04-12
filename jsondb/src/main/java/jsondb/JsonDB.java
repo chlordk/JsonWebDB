@@ -29,7 +29,9 @@ import jsondb.database.Pool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
 
-
+/**
+ * Public interface to the backend
+ */
 public class JsonDB
 {
    public static String version = "4.0.1";
@@ -38,6 +40,11 @@ public class JsonDB
    private static Config config = null;
 
 
+   /**
+    * Finalizes setup and starts necessary services.
+    * After this, the server is ready to accept requests.
+    * @throws Exception
+    */
    public static void start() throws Exception
    {
       JsonDB.config.logger().info(".......................................");
@@ -45,23 +52,47 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
    }
 
+
+   /**
+    * Register the database pool
+    * @param pool
+    */
    public static void register(Pool pool)
    {
       if (JsonDB.pool == null)
          JsonDB.pool = pool;
    }
 
+
+   /**
+    * Register the configuration
+    * @param config
+    */
    public static void register(Config config)
    {
       if (JsonDB.config == null)
          JsonDB.config = config;
    }
 
+
+   /**
+    * Get the mimetype for a given filetype.
+    * Mimetypes are defined in the config.json file.
+    * @param filetype
+    * @return mimetype
+    */
    public String mimetype(String filetype)
    {
       return(config.getMimeType(filetype));
    }
 
+
+   /**
+    * Get a file from the application
+    * @param path
+    * @return data and meta-data for the file
+    * @throws Exception
+    */
    public FileResponse get(String path) throws Exception
    {
       FileHandler handler = new FileHandler();
@@ -70,11 +101,25 @@ public class JsonDB
       return(response);
    }
 
+
+   /**
+    * Executes request
+    * @param request (json)
+    * @return response
+    * @throws Exception
+    */
    public JSONObject execute(String request) throws Exception
    {
       return(execute(new JSONObject(request)));
    }
 
+
+   /**
+    * Executes request
+    * @param request
+    * @return response
+    * @throws Exception
+    */
    public JSONObject execute(JSONObject request) throws Exception
    {
       JSONObject response = new JSONObject();
@@ -84,6 +129,7 @@ public class JsonDB
       return(response);
    }
 
+
    private void log(FileResponse response)
    {
       config.logger().info(response.toString());
@@ -91,6 +137,6 @@ public class JsonDB
 
    private void log(JSONObject request,JSONObject response)
    {
-      config.logger().info("/jsonwebdb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
+      config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }
 }

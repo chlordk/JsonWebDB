@@ -50,11 +50,13 @@ public class Config
    private static String root = null;
    private static Config instance = null;
 
-   public static void main(String[] args) throws Exception
-   {
-      Config.load(args[0],args[1]);
-   }
-
+   /**
+    *
+    * @param root the root directory of JsonWebDB
+    * @param inst the instance name. Most often more servers will run
+    * @return The parsed config with some helper methods to navigate the config.
+    * @throws Exception
+    */
    public static synchronized Config load(String root, String inst) throws Exception
    {
       if (instance != null)
@@ -76,48 +78,57 @@ public class Config
       this.fconfig = FileConfig.load(this);
    }
 
+   /** The instance name */
    public String inst()
    {
       return(inst);
    }
 
+   /** Path to application */
    public String appl()
    {
       return(appl);
    }
 
+   /** The logger */
    public Logger logger()
    {
       return(logger);
    }
 
+   /** The config json */
    public JSONObject get()
    {
       return(config);
    }
 
+   /** The FileConfig configuration */
    public FileConfig files()
    {
       return(fconfig);
    }
 
+   /** Get the mimetype from file(name) */
    public String getMimeType(String file)
    {
       return(FileConfig.getMimeType(file));
    }
 
+   /** Get an object from the config json */
    @SuppressWarnings({ "unchecked" })
    public <T> T get(String section)
    {
       return((T) config.get(section));
    }
 
+   /** Get an object from a json */
    @SuppressWarnings({ "unchecked" })
    public <T> T get(JSONObject section, String attr)
    {
       return((T) section.get(attr));
    }
 
+   /** Build a path */
    public static String path(String... parts)
    {
       String path = root;
