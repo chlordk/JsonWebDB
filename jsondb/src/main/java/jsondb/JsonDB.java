@@ -27,6 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.database.Pool;
 import java.io.OutputStream;
+import jsondb.files.Response;
 import jsondb.files.FileHandler;
 import java.io.ByteArrayOutputStream;
 
@@ -38,7 +39,7 @@ public class JsonDB
    private static Pool pool = null;
    private static Config config = null;
 
-   
+
    public static void start() throws Exception
    {
       JsonDB.config.logger().info(".......................................");
@@ -60,32 +61,17 @@ public class JsonDB
 
    public Response getFile(String path) throws Exception
    {
-      return(getFile(path,new ByteArrayOutputStream()));
-   }
-
-   public Response getFile(String path, OutputStream out) throws Exception
-   {
       FileHandler handler = new FileHandler();
-      Response response = handler.load(path,out);
+      Response response = handler.get(path);
       return(response);
    }
 
    public JSONObject execute(String request) throws Exception
    {
-      return(execute(request,new ByteArrayOutputStream()));
-   }
-
-   public JSONObject execute(String request, OutputStream out) throws Exception
-   {
-      return(execute(new JSONObject(request),out));
+      return(execute(new JSONObject(request)));
    }
 
    public JSONObject execute(JSONObject request) throws Exception
-   {
-      return(execute(request,new ByteArrayOutputStream()));
-   }
-
-   public JSONObject execute(JSONObject request, OutputStream out) throws Exception
    {
       return(request);
    }

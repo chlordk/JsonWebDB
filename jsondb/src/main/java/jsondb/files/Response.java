@@ -22,40 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb;
-
-import java.io.OutputStream;
+package jsondb.files;
 
 import jsondb.files.FileCache.CacheEntry;
 
 
 public class Response
 {
-   public final long bytes;
+   public final long size;
    public final String path;
    public final boolean gzip;
+   public final byte[] content;
    public final String mimetype;
-   public final OutputStream out;
 
-   public Response(String path, OutputStream out, long bytes, String mimetype)
+   public Response(String path, byte[] content, String mimetype)
    {
-      this.out = out;
       this.path = path;
       this.gzip = false;
-      this.bytes = bytes;
+      this.content = content;
       this.mimetype = mimetype;
+      this.size = content.length;
    }
 
-   public Response(CacheEntry entry, OutputStream out, String mimetype) throws Exception
+   public Response(CacheEntry entry, String mimetype) throws Exception
    {
-      this.out = out;
       this.mimetype = mimetype;
-
       this.path = entry.path();
+      this.size = entry.bytes();
       this.gzip = entry.gzipped();
-
-      this.bytes = entry.bytes();
-      out.write(entry.content());
+      this.content = entry.content();
    }
 
    @Override
@@ -66,12 +61,12 @@ public class Response
       if (len > 40) path = path.substring(len-40);
 
       String mime = mimetype;
-      mime = mime != null ? mime : "??/??";
+      mime = mime != null ? mime : "text/plain";
 
       len = mimetype.length();
       if (len > 15) mime = mime.substring(len-15);
 
-      String desc = String.format("%-40s %-15s %6dk",path,mime,bytes/1024);
+      String desc = String.format("%-40s %-15s %6dk",path,mime,size/1024);
       if (gzip) desc += " (gz)";
 
       return(desc);

@@ -26,11 +26,8 @@ package jsondb.files;
 
 import java.io.File;
 import jsondb.Config;
-import jsondb.Response;
-import jsondb.files.FileCache.CacheEntry;
-
-import java.io.OutputStream;
 import java.io.FileInputStream;
+import jsondb.files.FileCache.CacheEntry;
 
 
 public class FileHandler
@@ -44,7 +41,7 @@ public class FileHandler
    }
 
 
-   public Response load(String path, OutputStream out) throws Exception
+   public Response get(String path) throws Exception
    {
       Response response = null;
 
@@ -53,40 +50,31 @@ public class FileHandler
 
       if (centry == null)
       {
-         long bytes = readFile(path,out);
-         response = new Response(path,out,bytes,mime);
+         byte[] content = readFile(path);
+         response = new Response(path,content,mime);
       }
       else
       {
-         response = new Response(centry,out,mime);
+         response = new Response(centry,mime);
       }
 
       return(response);
    }
 
 
-   private long readFile(String path, OutputStream out) throws Exception
+   private byte[] readFile(String path) throws Exception
    {
-      int read = 0;
-      long bytes = 0;
-      path = config.appl() + path;
+      byte[] content = null;
+      File file = new File(config.appl() + path);
 
-      File file = new File(path);
-      byte[] buf = new byte[8192];
 
       if (file.exists())
       {
          FileInputStream in = new FileInputStream(file);
-
-         while((read = in.read(buf)) >= 0)
-         {
-            bytes += read;
-            out.write(buf,0,read);
-         }
-
+         content = in.readAllBytes();
          in.close();
       }
 
-      return(bytes);
+      return(content);
    }
 }

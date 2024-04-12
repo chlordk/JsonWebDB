@@ -37,6 +37,7 @@ public class Config
 {
    private static final String PATH = "path";
    private static final String CONF = "config";
+   private static final String FILE = "config.json";
    private static final String APPL = "application";
 
    private final String inst;
@@ -60,7 +61,7 @@ public class Config
          return(instance);
 
       Config.root = root;
-      String path = path(CONF,"config.json");
+      String path = path(CONF,FILE);
       FileInputStream in = new FileInputStream(path);
       instance = new Config(inst,new JSONObject(new JSONTokener(in)));
       return(instance);

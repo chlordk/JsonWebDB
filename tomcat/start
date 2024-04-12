@@ -1,27 +1,30 @@
 #!/bin/bash
 
+ARGS=$#
+INST="inst01"
+
 CWD=$(pwd)
 LOCATION=$(dirname "$0")
 
+if [[ ARGS -gt 0 ]]
+then
+  INST=$1
+fi
+
 cd $LOCATION
-
-../jsondb/build
-../servlet/build
-
 rm -rf $LOCATION/../logs/*
 
-NAME=jsonwebdb
+NAME=jsonwebdb.$INST
 
 docker run -dit --name $NAME \
  -p 8080:8080 \
  -e TZ=Europe/Copenhagen \
- -e JsonWebDB_Inst=inst01 \
+ -e JsonWebDB_Inst=$INST \
  -e JsonWebDB_Home=/jsonwebdb \
  -v /Users/alhof/Repository/JsonWebDB:/jsonwebdb \
  -v /Users/alhof/Repository/forms42/demo/dist:/dist \
-$NAME
+jsonwebdb
 
-
-./deploy
+./deploy $INST
 
 cd $CWD

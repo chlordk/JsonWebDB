@@ -26,10 +26,10 @@ package jsonwebdb;
 
 import jsondb.Config;
 import jsondb.JsonDB;
-import jsondb.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import jsondb.files.Response;
 import java.util.logging.Logger;
 import java.io.ByteArrayOutputStream;
 import javax.servlet.ServletException;
@@ -77,22 +77,23 @@ public class JsonWebDB extends HttpServlet
       String path = getPath(request);
 
       JsonDB jsondb = new JsonDB();
-      OutputStream out = response.getOutputStream();
 
-      try {wrap = jsondb.getFile(path,out);}
+      try {wrap = jsondb.getFile(path);}
       catch (Exception e) {throw new AnyException(e);}
 
       logger.info(wrap.toString());
-
       response.setContentType(wrap.mimetype);
 
       if (wrap.gzip)
       {
-        response.setContentLength((int) wrap.bytes);
+        //response.setContentLength((int) wrap.bytes);
         response.setHeader("Content-Encoding","gzip");
       }
 
+      OutputStream out = response.getOutputStream();
+      out.write(wrap.content);
       out.close();
+
       return;
     }
 

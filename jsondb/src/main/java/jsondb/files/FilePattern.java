@@ -24,12 +24,12 @@ SOFTWARE.
 
 package jsondb.files;
 
-public class FileSpec
+public class FilePattern
 {
    private final long size;
    private final String pattern;
 
-   public FileSpec(String pattern, long size)
+   public FilePattern(String pattern, long size)
    {
       this.size = size;
       pattern = pattern.replace(".","\\.");

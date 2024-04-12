@@ -30,5 +30,4 @@ public interface Pool
    Connection getConnection() throws Exception;
    void release(Connection conn) throws Exception;
    boolean authenticate(String username, String password) throws Exception;
-
 }

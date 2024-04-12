@@ -1,2 +1,10 @@
-NAME=jsonwebdb
+ARGS=$#
+INST="inst01"
+
+if [[ ARGS -gt 0 ]]
+then
+  INST=$1
+fi
+
+NAME=jsonwebdb.$INST
 docker container rm -f $NAME

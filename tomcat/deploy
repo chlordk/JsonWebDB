@@ -1,2 +1,13 @@
-NAME=jsonwebdb
+ARGS=$#
+INST="inst01"
+
+CWD=$(pwd)
+LOCATION=$(dirname "$0")
+
+if [[ ARGS -gt 0 ]]
+then
+  INST=$1
+fi
+
+NAME=jsonwebdb.$INST
 docker exec -it $NAME cp /jsonwebdb/tomcat/JsonWebDB.war /usr/local/tomcat/webapps

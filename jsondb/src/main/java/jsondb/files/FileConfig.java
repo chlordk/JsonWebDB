@@ -50,11 +50,11 @@ public class FileConfig
 
    private final Config config;
 
-   private final ArrayList<FileSpec> cache =
-      new ArrayList<FileSpec>();
+   private final ArrayList<FilePattern> cache =
+      new ArrayList<FilePattern>();
 
-   private final ArrayList<FileSpec> compress =
-      new ArrayList<FileSpec>();
+   private final ArrayList<FilePattern> compress =
+      new ArrayList<FilePattern>();
 
    private final HashMap<String,String> mimetypes =
       new HashMap<String,String>();
@@ -142,7 +142,7 @@ public class FileConfig
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
-         cache.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
+         cache.add(new FilePattern(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
       }
    }
 
@@ -154,7 +154,7 @@ public class FileConfig
       for (int i = 0; i < rules.length(); i++)
       {
          JSONObject rule = rules.getJSONObject(i);
-         compress.add(new FileSpec(rule.getString(PATTERN),rule.getLong(MINSIZE)));
+         compress.add(new FilePattern(rule.getString(PATTERN),rule.getLong(MINSIZE)));
       }
    }
 }

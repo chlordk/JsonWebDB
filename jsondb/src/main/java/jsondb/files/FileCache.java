@@ -26,7 +26,6 @@ package jsondb.files;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
