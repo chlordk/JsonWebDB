@@ -72,7 +72,7 @@ public class Response
       if (len > 15) mime = mime.substring(len-15);
 
       String desc = String.format("%-40s %-15s %6dk",path,mime,bytes/1024);
-      if (gzip) desc += " (gzip)";
+      if (gzip) desc += " (gz)";
 
       return(desc);
    }

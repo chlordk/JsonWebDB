@@ -85,7 +85,12 @@ public class JsonWebDB extends HttpServlet
       logger.info(wrap.toString());
 
       response.setContentType(wrap.mimetype);
-      if (wrap.gzip) response.setHeader("Content-Encoding","gzip");
+
+      if (wrap.gzip)
+      {
+        response.setContentLength((int) wrap.bytes);
+        response.setHeader("Content-Encoding","gzip");
+      }
 
       out.close();
       return;

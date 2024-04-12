@@ -26,6 +26,7 @@ package jsondb.files;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,6 +76,7 @@ public class FileCache
 
    public static class CacheEntry
    {
+      private long size;
       private String path;
       private long modified;
       private byte[] content;
@@ -97,7 +99,7 @@ public class FileCache
 
       public long bytes()
       {
-         return(content.length);
+         return(size);
       }
 
       public boolean gzipped()
@@ -133,6 +135,8 @@ public class FileCache
       {
          FileInputStream in = new FileInputStream(file);
          byte[] content = in.readAllBytes(); in.close();
+
+         this.size = content.length;
 
          if (this.gzipped)
          {
