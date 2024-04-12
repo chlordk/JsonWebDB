@@ -1,5 +1,5 @@
 #!/bin/bash
 LOCATION=$(dirname "$0")
 
-$LOCATION/stop
-$LOCATION/start
+$LOCATION/stop $*
+$LOCATION/start $*
