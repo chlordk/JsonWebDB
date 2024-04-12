@@ -31,7 +31,6 @@ import org.json.JSONObject;
 import java.sql.Connection;
 import jsondb.database.Type;
 import java.sql.DriverManager;
-import jsonwebdb.JsonWebDB.AnyException;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
@@ -54,7 +53,7 @@ public class Pool implements jsondb.database.Pool
    private final String url;
    private final DataSource ds;
 
-   public Pool(Config config) throws AnyException
+   public Pool(Config config) throws Exception
    {
       JSONObject def = config.get(DATABASE);
       this.type = Type.valueOf(config.get(def,TYPE));
@@ -70,17 +69,10 @@ public class Pool implements jsondb.database.Pool
       int wait = config.get(def,WAIT);
       int cval = config.get(def,VALIDATE);
 
-      try
-      {
-         JSONArray cls = config.get(def,CLASSES);
+      JSONArray cls = config.get(def,CLASSES);
 
-         for (int i = 0; i < cls.length(); i++)
-            Class.forName(cls.getString(i));
-      }
-      catch (Exception e)
-      {
-         throw new AnyException(e);
-      }
+      for (int i = 0; i < cls.length(); i++)
+         Class.forName(cls.getString(i));
 
       PoolProperties props = new PoolProperties();
 

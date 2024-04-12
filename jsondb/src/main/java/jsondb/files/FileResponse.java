@@ -27,7 +27,7 @@ package jsondb.files;
 import jsondb.files.FileCache.CacheEntry;
 
 
-public class Response
+public class FileResponse
 {
    public final long size;
    public final String path;
@@ -35,7 +35,7 @@ public class Response
    public final byte[] content;
    public final String mimetype;
 
-   public Response(String path, byte[] content, String mimetype)
+   public FileResponse(String path, byte[] content, String mimetype)
    {
       this.path = path;
       this.gzip = false;
@@ -44,7 +44,7 @@ public class Response
       this.size = content.length;
    }
 
-   public Response(CacheEntry entry, String mimetype) throws Exception
+   public FileResponse(CacheEntry entry, String mimetype) throws Exception
    {
       this.mimetype = mimetype;
       this.path = entry.path();

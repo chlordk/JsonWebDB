@@ -27,7 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.database.Pool;
 import java.io.OutputStream;
-import jsondb.files.Response;
+import jsondb.files.FileResponse;
 import jsondb.files.FileHandler;
 import java.io.ByteArrayOutputStream;
 
@@ -59,10 +59,10 @@ public class JsonDB
          JsonDB.config = config;
    }
 
-   public Response getFile(String path) throws Exception
+   public FileResponse getFile(String path) throws Exception
    {
       FileHandler handler = new FileHandler();
-      Response response = handler.get(path);
+      FileResponse response = handler.get(path);
       return(response);
    }
 

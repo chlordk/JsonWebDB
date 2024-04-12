@@ -41,9 +41,9 @@ public class FileHandler
    }
 
 
-   public Response get(String path) throws Exception
+   public FileResponse get(String path) throws Exception
    {
-      Response response = null;
+      FileResponse response = null;
 
       String mime = config.getMimeType(path);
       CacheEntry centry = FileCache.get(path);
@@ -51,11 +51,11 @@ public class FileHandler
       if (centry == null)
       {
          byte[] content = readFile(path);
-         response = new Response(path,content,mime);
+         response = new FileResponse(path,content,mime);
       }
       else
       {
-         response = new Response(centry,mime);
+         response = new FileResponse(centry,mime);
       }
 
       return(response);
