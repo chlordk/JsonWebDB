@@ -27,11 +27,12 @@ import java.sql.Connection;
  * The methods needed for JsonDB to work
  * Methods are hopefully self explanatory.
  */
-public interface Pool
+public interface JsonDBPool
 {
    String token();
-   Type type() throws Exception;
-   Connection getConnection() throws Exception;
+   boolean proxyuser();
+   DatabaseType type() throws Exception;
+   Connection reserve() throws Exception;
    void release(Connection conn) throws Exception;
    boolean authenticate(String username, String password) throws Exception;
 }

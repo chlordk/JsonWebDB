@@ -25,7 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
-import jsondb.database.Pool;
+import jsondb.database.JsonDBPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
 
@@ -36,7 +36,7 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
-   private static Pool pool = null;
+   private static JsonDBPool pool = null;
    private static Config config = null;
 
 
@@ -57,7 +57,7 @@ public class JsonDB
     * Register the database pool
     * @param pool
     */
-   public static void register(Pool pool)
+   public static void register(JsonDBPool pool)
    {
       if (JsonDB.pool == null)
          JsonDB.pool = pool;

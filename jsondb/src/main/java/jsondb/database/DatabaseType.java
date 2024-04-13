@@ -21,16 +21,16 @@
 
 package jsondb.database;
 
-public enum Type
+public enum DatabaseType
 {
    Oracle,
    Postgres,
    Generic;
 
-   public Type getType(String name)
+   public DatabaseType getType(String name)
    {
       String f = name.substring(0,1);
       String type = f.toUpperCase() + name.substring(1).toLowerCase();
-      return(Type.valueOf(type));
+      return(DatabaseType.valueOf(type));
    }
 }

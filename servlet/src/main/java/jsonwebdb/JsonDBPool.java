@@ -29,13 +29,13 @@ import java.sql.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
-import jsondb.database.Type;
 import java.sql.DriverManager;
+import jsondb.database.DatabaseType;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 
-public class Pool implements jsondb.database.Pool
+public class JsonDBPool implements jsondb.database.JsonDBPool
 {
    private static final String URL = "jdbc-url";
    private static final String MIN = "min";
@@ -43,20 +43,25 @@ public class Pool implements jsondb.database.Pool
    private static final String TYPE = "type";
    private static final String WAIT = "max-wait";
    private static final String QUERY = "test";
+   private static final String TOKEN = "token";
+   private static final String PROXY = "proxyuser";
    private static final String CLASSES = "classes";
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
    private static final String DATABASE = "database";
 
-   private final Type type;
-   private final String url;
-   private final DataSource ds;
+   public final String url;
+   public final String token;
+   public final boolean proxy;
+   public final DataSource ds;
+   public final DatabaseType type;
 
-   public Pool(Config config) throws Exception
+
+   public JsonDBPool(Config config) throws Exception
    {
       JSONObject def = config.get(DATABASE);
-      this.type = Type.valueOf(config.get(def,TYPE));
+      this.type = DatabaseType.valueOf(config.get(def,TYPE));
 
       String url = config.get(def,URL);
       String sql = config.get(def,QUERY);
@@ -92,24 +97,38 @@ public class Pool implements jsondb.database.Pool
       this.url = url;
       this.ds = new DataSource();
       this.ds.setPoolProperties(props);
+      this.token = def.getString(TOKEN);
+      this.proxy = def.getBoolean(PROXY);
    }
 
    @Override
-   public Type type()
+   public boolean proxyuser()
+   {
+      return(proxy);
+   }
+
+   @Override
+   public String token()
+   {
+      return(token);
+   }
+
+   @Override
+   public DatabaseType type()
    {
       return(type);
+   }
+
+   @Override
+   public Connection reserve() throws Exception
+   {
+      return(ds.getConnection());
    }
 
    @Override
    public void release(Connection conn) throws Exception
    {
       conn.close();
-   }
-
-   @Override
-   public Connection getConnection() throws Exception
-   {
-      return(ds.getConnection());
    }
 
    @Override

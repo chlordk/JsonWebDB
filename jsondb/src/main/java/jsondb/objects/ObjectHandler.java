@@ -47,16 +47,22 @@ public class ObjectHandler
    public static void main(String[] args) throws Exception
    {
       Config.load(args[0],args[1]);
+      Test(new File(Config.path(SCHEMAS,EXAMPLES)));
+   }
 
-      for(File example : new File(Config.path(SCHEMAS,EXAMPLES)).listFiles())
+
+   public static void Test(File repos) throws Exception
+   {
+      for(File test : repos.listFiles())
       {
-         FileInputStream in = new FileInputStream(example);
+         FileInputStream in = new FileInputStream(test);
          String json = new String(in.readAllBytes());
          in.close();
 
          JSONObject response = handle(new JSONObject(json));
          System.out.println(response);
       }
+
    }
 
 
