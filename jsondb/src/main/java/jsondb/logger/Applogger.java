@@ -33,13 +33,16 @@ import java.util.logging.FileHandler;
 
 public class Applogger
 {
-   private static String SIZE = "size";
-   private static String LEVEL = "level";
-   private static String FILES = "files";
+   private static final boolean REDIRECT = false;
 
-   private static String LOGFLD = "logs";
-   private static String LOGDEF = "logger";
-   private static String LOGFILE = "server.log";
+   private static final String SIZE = "size";
+   private static final String LEVEL = "level";
+   private static final String FILES = "files";
+
+   private static final String LOGFLD = "logs";
+   private static final String LOGDEF = "logger";
+   private static final String LOGFILE = "server.log";
+
 
    public static Logger setup(Config config) throws Exception
    {
@@ -76,9 +79,12 @@ public class Applogger
       logger.addHandler(handler);
       logger.setUseParentHandlers(false);
 
-      PrintStream out = new PrintStream(new FileOutputStream(file,true));
-      System.setOut(out);
-      System.setErr(out);
+      if (REDIRECT)
+      {
+         PrintStream out = new PrintStream(new FileOutputStream(file,true));
+         System.setOut(out);
+         System.setErr(out);
+      }
 
       return(logger);
    }

@@ -31,51 +31,57 @@
       <artifactId>json</artifactId>
       <version>20240303</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>1.4.0</version>
+    </dependency>
   </dependencies>
 
-      <build>
-        <resources>
-          <resource>
-            <directory>${basedir}</directory>
-            <includes>
-              <include>*</include>
-            </includes>
-          </resource>
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}</directory>
+        <includes>
+          <include>*</include>
+        </includes>
+      </resource>
 
-          <resource>
-            <directory>src/main/resources/</directory>
-            <includes>
-              <include>*</include>
-            </includes>
-          </resource>
-        </resources>
+      <resource>
+        <directory>src/main/resources/</directory>
+        <includes>
+          <include>*</include>
+        </includes>
+      </resource>
+    </resources>
 
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
-            <configuration>
-              <release>14</release>
-            </configuration>
-          </plugin>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>14</release>
+        </configuration>
+      </plugin>
 
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.2.0</version>
-            <configuration>
-              <includes>
-                <include>**/*.class</include>
-              </includes>
-              <archive>
-                <manifest>
-                  <mainClass>database.json.control.Launcher</mainClass>
-                </manifest>
-                <addMavenDescriptor>false</addMavenDescriptor>
-              </archive>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <includes>
+            <include>**/*.class</include>
+          </includes>
+          <archive>
+            <manifest>
+              <mainClass>jsondb.objects.Schema</mainClass>
+            </manifest>
+            <addMavenDescriptor>false</addMavenDescriptor>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
