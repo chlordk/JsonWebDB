@@ -21,28 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 package jsondb.objects;
 
 import org.json.JSONObject;
 
 
-public class Session implements DatabaseRequest
+public interface DatabaseRequest
 {
-   private final JSONObject definition;
-
-
-   public Session(JSONObject definition)
-   {
-      this.definition = definition;
-   }
-
-
-   @Override
-   public JSONObject invoke() throws Exception
-   {
-      JSONObject response = new JSONObject();
-      response.put("success",true);
-      return(response);
-   }
+   JSONObject invoke() throws Exception;
 }

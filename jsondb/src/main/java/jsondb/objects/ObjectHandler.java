@@ -24,7 +24,67 @@ SOFTWARE.
 
 package jsondb.objects;
 
+import jsondb.Config;
+import org.json.JSONObject;
+import jsondb.messages.Messages;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.concurrent.ConcurrentHashMap;
+
+
 public class ObjectHandler
 {
+   private static final String SCHEMAS = "schemas";
+   private static final String EXAMPLES = "examples";
 
+   private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
+      new ConcurrentHashMap<String,Class<DatabaseRequest>>();
+
+   private static final String location = ObjectHandler.class.getPackage().getName();
+
+
+   public static void main(String[] args) throws Exception
+   {
+      Config.load(args[0],args[1]);
+
+      for(File example : new File(Config.path(SCHEMAS,EXAMPLES)).listFiles())
+      {
+         FileInputStream in = new FileInputStream(example);
+         String json = new String(in.readAllBytes());
+         in.close();
+
+         JSONObject response = handle(new JSONObject(json));
+         System.out.println(response);
+      }
+   }
+
+
+   public static JSONObject handle(JSONObject request) throws Exception
+   {
+      String names[] = JSONObject.getNames(request);
+
+      if (names != null && names.length == 1)
+         return(getInstance(names[0],request).invoke());
+      else
+      {
+         throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE","\n",request.toString(2)));
+      }
+   }
+
+
+   @SuppressWarnings("unchecked")
+   private static DatabaseRequest getInstance(String name, JSONObject definition) throws Exception
+   {
+      String cname = location+"."+name;
+      Class<DatabaseRequest> clazz = classes.get(cname);
+
+      if (clazz == null)
+      {
+         clazz = (Class<DatabaseRequest>) Class.forName(cname);
+         classes.put(cname,clazz);
+      }
+
+      return(clazz.getConstructor(JSONObject.class).newInstance(definition));
+   }
 }

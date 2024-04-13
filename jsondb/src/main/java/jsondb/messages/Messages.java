@@ -27,7 +27,9 @@ package jsondb.messages;
 import java.io.File;
 import jsondb.Config;
 import java.util.Locale;
+import java.io.PrintStream;
 import java.io.FileInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.PropertyResourceBundle;
 
 
@@ -38,10 +40,36 @@ public class Messages
    private static final PropertyResourceBundle messages = load();
 
 
-   public static String get(String name) throws Exception
+   public static String get(String name, Object ...args) throws Exception
    {
-      if (messages == null) return("?");
-      else return(messages.getString(name));
+      if (messages == null)
+         return("No message files were found. Language: "+Locale.getDefault().getLanguage());
+
+      else return(messages.getString(name)+concat(args));
+   }
+
+   private static String concat(Object ...args) throws Exception
+   {
+      String str = "";
+
+      for (int i = 0; i < args.length; i++)
+         str += " " + toString(args[i]);
+
+      return(str);
+   }
+
+   private static String toString(Object obj)
+   {
+      return(obj+"");
+   }
+
+   @SuppressWarnings("unused")
+   private static String toString(Exception e) throws Exception
+   {
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      e.printStackTrace(new PrintStream(out));
+      out.close();
+      return(new String(out.toByteArray()));
    }
 
    private static PropertyResourceBundle load()

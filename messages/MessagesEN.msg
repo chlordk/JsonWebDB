@@ -1,1 +1,1 @@
-test = This is a test
+UNKNOWN_REQUEST_TYPE = Unknown Request
