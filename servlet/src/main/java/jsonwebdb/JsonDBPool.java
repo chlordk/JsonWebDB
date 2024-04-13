@@ -43,7 +43,7 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    private static final String TYPE = "type";
    private static final String WAIT = "max-wait";
    private static final String QUERY = "test";
-   private static final String TOKEN = "token";
+   private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
    private static final String CLASSES = "classes";
    private static final String VALIDATE = "validate";
@@ -102,21 +102,21 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    }
 
    @Override
+   public DatabaseType type()
+   {
+      return(type);
+   }
+
+   @Override
    public boolean proxyuser()
    {
       return(proxy);
    }
 
    @Override
-   public String token()
+   public String passtoken()
    {
       return(token);
-   }
-
-   @Override
-   public DatabaseType type()
-   {
-      return(type);
    }
 
    @Override

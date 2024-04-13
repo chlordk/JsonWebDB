@@ -29,7 +29,7 @@ import java.sql.Connection;
  */
 public interface JsonDBPool
 {
-   String token();
+   String passtoken();
    boolean proxyuser();
    DatabaseType type() throws Exception;
    Connection reserve() throws Exception;
