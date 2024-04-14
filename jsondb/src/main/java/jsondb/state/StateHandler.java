@@ -25,6 +25,8 @@ SOFTWARE.
 package jsondb.state;
 
 import java.io.File;
+import java.io.FileInputStream;
+
 import jsondb.Config;
 import java.util.UUID;
 import java.io.FileOutputStream;
@@ -44,8 +46,8 @@ public class StateHandler
    {
       Config config = Config.load(args[0],args[1]);
       prepare(config); /* GGG */
-      String conn = addConnection("hr");
-      touch(conn);
+      String conn = createConnection("hr");
+      getConnection(conn);
    }
 
 
@@ -62,15 +64,19 @@ public class StateHandler
       (new File(conn)).mkdirs();
    }
 
-   public static synchronized void touch(String guid) throws Exception
+   public static synchronized String getConnection(String guid) throws Exception
    {
       int pos = guid.indexOf(':');
       guid = guid.substring(pos+1);
       File file = new File(connpath(guid));
       file.setLastModified(System.currentTimeMillis());
+      FileInputStream in = new FileInputStream(file);
+      String username = new String(in.readAllBytes());
+      in.close(); return(username);
    }
 
-   public static synchronized String addConnection(String username) throws Exception
+   
+   public static synchronized String createConnection(String username) throws Exception
    {
       String guid = null;
       boolean done = false;

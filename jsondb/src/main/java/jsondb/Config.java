@@ -39,9 +39,12 @@ public class Config
 {
    private static final String PATH = "path";
    private static final String CONF = "config";
+   private static final String SESS = "session";
+   private static final String STTL = "timeout";
    private static final String FILE = "config.json";
    private static final String APPL = "application";
 
+   private final int sttl;
    private final String inst;
    private final String appl;
 
@@ -80,6 +83,7 @@ public class Config
       this.inst = inst;
       this.config = config;
       this.appl = get(get(APPL),PATH);
+      this.sttl = get(get(SESS),STTL);
       this.logger = Applogger.setup(this);
       this.fconfig = FileConfig.load(this);
    }
@@ -94,6 +98,12 @@ public class Config
    public String appl()
    {
       return(appl);
+   }
+
+   /** Session timeout (or TimeToLive) */
+   public int sesttl()
+   {
+      return(sttl);
    }
 
    /** The logger */
