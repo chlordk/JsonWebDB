@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectHandler
 {
-   public static final String SESSION = "session";
+   private static Config config = null;
    private static final String EXAMPLES = "examples";
 
    private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
@@ -46,8 +46,14 @@ public class ObjectHandler
 
    public static void main(String[] args) throws Exception
    {
-      Config.load(args[0],args[1]);
-      Test(new File(Config.path(EXAMPLES)));
+      Config config = Config.load(args[0],args[1]);
+      setConfig(config); Test(new File(Config.path(EXAMPLES)));
+   }
+
+
+   public static void setConfig(Config config)
+   {
+      ObjectHandler.config = config;
    }
 
 
@@ -94,6 +100,6 @@ public class ObjectHandler
          classes.put(cname,clazz);
       }
 
-      return(clazz.getConstructor(JSONObject.class).newInstance(definition));
+      return(clazz.getConstructor(Config.class,JSONObject.class).newInstance(config,definition));
    }
 }

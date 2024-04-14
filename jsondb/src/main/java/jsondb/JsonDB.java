@@ -27,6 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
+import jsondb.objects.ObjectHandler;
 import jsondb.state.StateHandler;
 import jsondb.database.JsonDBPool;
 
@@ -53,6 +54,7 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
 
       StateHandler.handle(config);
+      ObjectHandler.setConfig(config);
    }
 
 
@@ -75,6 +77,16 @@ public class JsonDB
    {
       if (JsonDB.config == null)
          JsonDB.config = config;
+   }
+
+
+   /**
+    * Get the default user
+    * @return username
+    */
+   public String getDefaultUser()
+   {
+      return(pool.defaultuser());
    }
 
 

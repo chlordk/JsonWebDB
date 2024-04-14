@@ -27,6 +27,8 @@ package jsondb;
 import java.io.File;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import jsondb.database.JsonDBPool;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
 import jsondb.messages.Messages;
@@ -50,10 +52,11 @@ public class Config
 
    private final Logger logger;
    private final JSONObject config;
-   private final FileConfig fconfig;
 
    private static String root = null;
    private static Config instance = null;
+   private static JsonDBPool pool = null;
+   private static FileConfig fconfig = null;
 
    /**
     *
@@ -85,7 +88,7 @@ public class Config
       this.appl = get(get(APPL),PATH);
       this.sttl = get(get(SESS),STTL);
       this.logger = Applogger.setup(this);
-      this.fconfig = FileConfig.load(this);
+      Config.fconfig = FileConfig.load(this);
    }
 
    /** The instance name */
@@ -118,8 +121,20 @@ public class Config
       return(config);
    }
 
+   /** Get the pool */
+   public static JsonDBPool pool()
+   {
+      return(pool);
+   }
+
+   /** Inject the pool */
+   public static void pool(JsonDBPool pool)
+   {
+      Config.pool = pool;
+   }
+
    /** The FileConfig configuration */
-   public FileConfig files()
+   public static FileConfig files()
    {
       return(fconfig);
    }

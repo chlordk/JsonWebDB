@@ -25,16 +25,24 @@ SOFTWARE.
 package jsondb.objects;
 
 import org.json.JSONObject;
-import static jsondb.objects.ObjectHandler.*;
+
+import jsondb.Config;
 
 
 public class Session implements DatabaseRequest
 {
+   private final Config config;
    private final JSONObject definition;
 
+   private static final String SESSION = "session";
+   private static final String USERNAME = "username";
+   private static final String PASSWORD = "password";
+   private static final String PASSTOKEN = "password-token";
 
-   public Session(JSONObject definition) throws Exception
+
+   public Session(Config config, JSONObject definition) throws Exception
    {
+      this.config = config;
       this.definition = definition;
    }
 
@@ -42,7 +50,10 @@ public class Session implements DatabaseRequest
    public JSONObject connect() throws Exception
    {
       JSONObject response = new JSONObject();
+      String username = Config.pool().defaultuser();
+      if (definition.has(USERNAME)) username = definition.getString(USERNAME);
       response.put("success",true);
+      response.put("username",username);
       return(response);
    }
 
