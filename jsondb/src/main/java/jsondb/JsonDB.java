@@ -51,8 +51,8 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Starting JsonDB version "+version);
       JsonDB.config.logger().info(".......................................");
-      
-      StateHandler.prepare(config);
+
+      StateHandler.handle(config);
    }
 
 

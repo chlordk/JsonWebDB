@@ -25,19 +25,21 @@ SOFTWARE.
 package jsondb.state;
 
 import java.io.File;
-import java.io.FileInputStream;
-
 import jsondb.Config;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 
-public class StateHandler
+public class StateHandler extends Thread
 {
+   private static Config conf = null;
    private static String inst = null;
    private static String conn = null;
    private static String curs = null;
 
+   private static final int MAXINT = 60000;
    private static final String STATE = "state";
    private static final String CURSORS = "cursors";
    private static final String CONNECTIONS = "connections";
@@ -45,23 +47,22 @@ public class StateHandler
    public static void main(String[] args) throws Exception
    {
       Config config = Config.load(args[0],args[1]);
-      prepare(config); /* GGG */
-      String conn = createConnection("hr");
-      getConnection(conn);
+      handle(config);
+      Thread.sleep(MAXINT);
    }
 
 
-   public static void prepare(Config config) throws Exception
+   public static void handle(Config config) throws Exception
    {
+      StateHandler.conf = config;
       StateHandler.inst = config.inst();
       StateHandler.curs = Config.path(STATE,inst,CURSORS);
       StateHandler.conn = Config.path(STATE,inst,CONNECTIONS);
 
-      clearAll(conn);
-      clearAll(curs);
-
       (new File(curs)).mkdirs();
       (new File(conn)).mkdirs();
+
+      (new StateHandler()).start();
    }
 
    public static synchronized String getConnection(String guid) throws Exception
@@ -75,7 +76,7 @@ public class StateHandler
       in.close(); return(username);
    }
 
-   
+
    public static synchronized String createConnection(String username) throws Exception
    {
       String guid = null;
@@ -99,26 +100,72 @@ public class StateHandler
    }
 
 
-   private static void clearAll(String path)
-   {
-      File root = new File(path);
-
-      if (root.exists())
-      {
-         for(File file : root.listFiles())
-            file.delete();
-      }
-   }
-
-
    private static String connpath(String guid)
    {
       return(StateHandler.conn+File.separator+guid);
    }
 
 
-   private static String curspath(String guid)
+   private StateHandler()
    {
-      return(StateHandler.curs+File.separator+guid);
+      this.setDaemon(true);
+      this.setName(this.getClass().getName());
+   }
+
+
+   @Override
+   public void run()
+   {
+      int sttl = conf.sesttl() * 1000;
+      int wait = sttl > MAXINT*2 ? MAXINT : (int) (3.0/4*sttl);
+
+      while (true)
+      {
+         try
+         {
+            cleanout(sttl);
+            Thread.sleep(wait);
+         }
+         catch (Throwable t)
+         {
+            conf.logger().log(Level.SEVERE,t.getMessage(),t);
+         }
+      }
+   }
+
+
+   private void cleanout(int sttl)
+   {
+      long curr = System.currentTimeMillis();
+      File root = new File(StateHandler.conn);
+
+      if (root.exists())
+      {
+         for(File file : root.listFiles())
+         {
+            if (curr - file.lastModified() > sttl)
+            {
+               file.delete();
+               deletecursors(file.getName());
+            }
+         }
+      }
+   }
+
+
+   private void deletecursors(String conn)
+   {
+      File root = new File(StateHandler.curs);
+
+      if (root.exists())
+      {
+         for(File file : root.listFiles())
+         {
+            String name = "";
+            int pos = file.getName().lastIndexOf('.');
+            if (pos > 0) name = file.getName().substring(0,pos);
+            if (conn.equals(name)) file.delete();
+         }
+      }
    }
 }
