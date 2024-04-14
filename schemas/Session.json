@@ -21,7 +21,7 @@
                "description": "Unique identifier. Handed out after successful connect"
             }
             ,
-            "method":
+            "invoke":
             {
                "type": "string",
                "description": "Method to invoke",

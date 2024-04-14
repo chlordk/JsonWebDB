@@ -28,12 +28,14 @@ import java.io.File;
 import jsondb.Config;
 import org.json.JSONObject;
 import java.io.FileInputStream;
+import java.lang.reflect.Method;
 import jsondb.messages.Messages;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class ObjectHandler
 {
+   public static final String SESSION = "session";
    private static final String EXAMPLES = "examples";
 
    private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
@@ -67,8 +69,16 @@ public class ObjectHandler
    {
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
-      if (names != null && names.length == 1) return(getInstance(names[0],payload).invoke());
-      else throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
+
+      if (names != null && names.length == 1)
+      {
+         String invk = payload.getString("invoke");
+         DatabaseRequest dbrq = getInstance(names[0],payload);
+         Method method = dbrq.getClass().getMethod(invk);
+         return((JSONObject) method.invoke(dbrq));
+      }
+      else
+         throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
    }
 
 

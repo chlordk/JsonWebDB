@@ -23,10 +23,6 @@ SOFTWARE.
 */
 package jsondb.objects;
 
-import org.json.JSONObject;
-
-
 public interface DatabaseRequest
 {
-   JSONObject invoke() throws Exception;
 }

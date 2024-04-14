@@ -1,7 +1,7 @@
 {
    "Session":
    {
-      "method": "connect",
+      "invoke": "connect",
 
       "connection-data":
       {

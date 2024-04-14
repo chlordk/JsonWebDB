@@ -25,26 +25,17 @@ SOFTWARE.
 package jsondb.objects;
 
 import org.json.JSONObject;
-import java.lang.reflect.Method;
+import static jsondb.objects.ObjectHandler.*;
 
 
 public class Session implements DatabaseRequest
 {
-   private final Method method;
    private final JSONObject definition;
 
 
    public Session(JSONObject definition) throws Exception
    {
       this.definition = definition;
-      this.method = this.getClass().getMethod(definition.getString("method"));
-   }
-
-
-   @Override
-   public JSONObject invoke() throws Exception
-   {
-      return((JSONObject) this.method.invoke(this));
    }
 
 
@@ -52,6 +43,16 @@ public class Session implements DatabaseRequest
    {
       JSONObject response = new JSONObject();
       response.put("success",true);
+      return(response);
+   }
+
+
+   public JSONObject disconnect() throws Exception
+   {
+      JSONObject response = new JSONObject();
+      String session = definition.optString(SESSION);
+      response.put("success",true);
+      response.put("session",session);
       return(response);
    }
 }
