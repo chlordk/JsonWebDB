@@ -11,7 +11,7 @@
       {
          "type": "object",
          "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
-         "required": ["scope"],
+         "required": ["method"],
 
          "properties":
          {
@@ -28,10 +28,10 @@
                "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
             }
             ,
-            "connection":
+            "connection-data":
             {
                "type": "object",
-               "required": ["method"],
+               "required": ["scope"],
                "description": "Information required for connecting",
 
                "properties":

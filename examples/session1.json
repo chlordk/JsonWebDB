@@ -3,7 +3,7 @@
    {
       "method": "connect",
 
-      "connection":
+      "connection-data":
       {
          "username": "hr",
          "password": "hr",

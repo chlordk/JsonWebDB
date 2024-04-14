@@ -31,6 +31,7 @@ public interface JsonDBPool
 {
    String passtoken();
    boolean proxyuser();
+   String defaultuser();
    DatabaseType type() throws Exception;
    Connection reserve() throws Exception;
    void release(Connection conn) throws Exception;

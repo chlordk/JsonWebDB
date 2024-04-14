@@ -42,6 +42,7 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    private static final String MAX = "max";
    private static final String TYPE = "type";
    private static final String WAIT = "max-wait";
+   private static final String USER = "defaultuser";
    private static final String QUERY = "test";
    private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
@@ -52,6 +53,7 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    private static final String DATABASE = "database";
 
    public final String url;
+   public final String user;
    public final String token;
    public final boolean proxy;
    public final DataSource ds;
@@ -97,6 +99,8 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
       this.url = url;
       this.ds = new DataSource();
       this.ds.setPoolProperties(props);
+
+      this.user = def.getString(USER);
       this.token = def.getString(TOKEN);
       this.proxy = def.getBoolean(PROXY);
    }
@@ -111,6 +115,12 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    public boolean proxyuser()
    {
       return(proxy);
+   }
+
+   @Override
+   public String defaultuser()
+   {
+      return(user);
    }
 
    @Override
