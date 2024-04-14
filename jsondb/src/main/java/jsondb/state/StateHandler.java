@@ -64,7 +64,7 @@ public class StateHandler extends Thread
    {
       int pos = guid.indexOf(':');
       guid = guid.substring(pos+1);
-      File file = new File(connpath(guid));
+      File file = new File(path(guid));
       file.setLastModified(System.currentTimeMillis());
       FileInputStream in = new FileInputStream(file);
       String username = new String(in.readAllBytes());
@@ -81,7 +81,9 @@ public class StateHandler extends Thread
       {
          FileOutputStream fout = null;
          guid = UUID.randomUUID().toString();
-         File conn = new File(connpath(guid));
+
+         guid = guid.replaceAll(".","_");
+         File conn = new File(path(guid));
 
          if (!conn.exists())
          {
@@ -95,7 +97,7 @@ public class StateHandler extends Thread
    }
 
 
-   private static String connpath(String guid)
+   private static String path(String guid)
    {
       return(StateHandler.path+File.separator+guid);
    }
