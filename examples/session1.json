@@ -1,0 +1,13 @@
+{
+   "Session":
+   {
+      "method": "connect",
+
+      "connection":
+      {
+         "username": "hr",
+         "password": "hr",
+         "scope": "stateless"
+      }
+   }
+}

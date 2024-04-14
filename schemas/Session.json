@@ -3,46 +3,56 @@
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
    "type": "object",
-   "title": "Session",
-   "required": ["method"],
-   "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
+   "title": "Session-schema",
 
    "properties":
    {
-      "id":
-      {
-         "type": "string",
-         "description": "Unique identifier. Handed out after successful connect"
-      }
-      ,
-      "method":
-      {
-         "type": "string",
-         "description": "Method to invoke",
-         "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
-      }
-      ,
-      "connection":
+      "Session":
       {
          "type": "object",
-         "description": "Information required for connecting",
+         "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
+         "required": ["scope"],
+
          "properties":
          {
-            "token": {"type": "string"},
-            "username": {"type": "string"},
-            "password": {"type": "string"},
-            "scope": {"type": "string", "enum": ["stateful","stateless","hybrid"]}
-            ,
-            "client-info":
+            "id":
             {
-               "type": "array",
-               "description": "Name value pairs to apply when connecting",
-               "data":
+               "type": "string",
+               "description": "Unique identifier. Handed out after successful connect"
+            }
+            ,
+            "method":
+            {
+               "type": "string",
+               "description": "Method to invoke",
+               "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
+            }
+            ,
+            "connection":
+            {
+               "type": "object",
+               "required": ["method"],
+               "description": "Information required for connecting",
+
+               "properties":
                {
-                  "properties":
+                  "username": {"type": "string"},
+                  "password": {"type": "string"},
+                  "password-token": {"type": "string"},
+                  "scope": {"type": "string", "enum": ["stateful","stateless","hybrid"]}
+                  ,
+                  "client-info":
                   {
-                     "name": {"type": "string"},
-                     "value": {"type": "string"}
+                     "type": "array",
+                     "description": "Name value pairs to apply when connecting",
+                     "data":
+                     {
+                        "properties":
+                        {
+                           "name": {"type": "string"},
+                           "value": {"type": "string"}
+                        }
+                     }
                   }
                }
             }

@@ -25,9 +25,9 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
-import jsondb.database.JsonDBPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
+import jsondb.database.JsonDBPool;
 
 /**
  * Public interface to the backend
@@ -36,8 +36,8 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
-   private static JsonDBPool pool = null;
    private static Config config = null;
+   private static JsonDBPool pool = null;
 
 
    /**
@@ -97,8 +97,7 @@ public class JsonDB
    {
       FileHandler handler = new FileHandler();
       FileResponse response = handler.get(path);
-      log(response);
-      return(response);
+      log(response); return(response);
    }
 
 

@@ -63,10 +63,11 @@ public class Config
          return(instance);
 
       Config.root = root;
+      inst = inst.toLowerCase();
       String path = path(CONF,FILE);
       FileInputStream in = new FileInputStream(path);
       instance = new Config(inst,new JSONObject(new JSONTokener(in)));
-      return(instance);
+      in.close(); return(instance);
    }
 
    private Config(String inst, JSONObject config) throws Exception

@@ -24,18 +24,16 @@ SOFTWARE.
 
 package jsondb.objects;
 
+import java.io.File;
 import jsondb.Config;
 import org.json.JSONObject;
-import jsondb.messages.Messages;
-
-import java.io.File;
 import java.io.FileInputStream;
+import jsondb.messages.Messages;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class ObjectHandler
 {
-   private static final String SCHEMAS = "schemas";
    private static final String EXAMPLES = "examples";
 
    private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
@@ -47,7 +45,7 @@ public class ObjectHandler
    public static void main(String[] args) throws Exception
    {
       Config.load(args[0],args[1]);
-      Test(new File(Config.path(SCHEMAS,EXAMPLES)));
+      Test(new File(Config.path(EXAMPLES)));
    }
 
 
@@ -62,20 +60,15 @@ public class ObjectHandler
          JSONObject response = handle(new JSONObject(json));
          System.out.println(response);
       }
-
    }
 
 
    public static JSONObject handle(JSONObject request) throws Exception
    {
       String names[] = JSONObject.getNames(request);
-
-      if (names != null && names.length == 1)
-         return(getInstance(names[0],request).invoke());
-      else
-      {
-         throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE","\n",request.toString(2)));
-      }
+      JSONObject payload = request.getJSONObject(names[0]);
+      if (names != null && names.length == 1) return(getInstance(names[0],payload).invoke());
+      else throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE","\n",request.toString(2)));
    }
 
 
