@@ -29,6 +29,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
+import jsondb.messages.Messages;
+
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 
@@ -61,6 +63,9 @@ public class Config
    {
       if (instance != null)
          return(instance);
+
+      if (inst.contains(":"))
+         throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
 
       Config.root = root;
       inst = inst.toLowerCase();

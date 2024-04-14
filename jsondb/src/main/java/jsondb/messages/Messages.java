@@ -45,30 +45,26 @@ public class Messages
       if (messages == null)
          return("No message files were found. Language: "+Locale.getDefault().getLanguage());
 
-      else return(messages.getString(name)+concat(args));
+      else return(format(messages.getString(name),args));
    }
 
-   private static String concat(Object ...args) throws Exception
+   private static String format(String msg, Object ...args) throws Exception
    {
-      String str = "";
-
       for (int i = 0; i < args.length; i++)
-         str += " " + toString(args[i]);
+      {
+         if (args[i] instanceof Exception)
+            args[i] = toString((Exception) args[i]);
 
-      return(str);
+         msg = msg.replace("{%"+(i+1+"}"),args[i]+"");
+      }
+
+      return(msg);
    }
 
-   private static String toString(Object obj)
-   {
-      return(obj+"");
-   }
-
-   @SuppressWarnings("unused")
    private static String toString(Exception e) throws Exception
    {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
-      e.printStackTrace(new PrintStream(out));
-      out.close();
+      e.printStackTrace(new PrintStream(out)); out.close();
       return(new String(out.toByteArray()));
    }
 

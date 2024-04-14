@@ -68,7 +68,7 @@ public class ObjectHandler
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
       if (names != null && names.length == 1) return(getInstance(names[0],payload).invoke());
-      else throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE","\n",request.toString(2)));
+      else throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
    }
 
 

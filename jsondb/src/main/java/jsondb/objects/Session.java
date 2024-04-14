@@ -24,9 +24,8 @@ SOFTWARE.
 
 package jsondb.objects;
 
-import java.lang.reflect.Method;
-
 import org.json.JSONObject;
+import java.lang.reflect.Method;
 
 
 public class Session implements DatabaseRequest
