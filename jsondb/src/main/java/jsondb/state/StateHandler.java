@@ -65,6 +65,8 @@ public class StateHandler extends Thread
       int pos = guid.indexOf(':');
       guid = guid.substring(pos+1);
       File file = new File(path(guid));
+      if (!file.exists()) return(null);
+
       file.setLastModified(System.currentTimeMillis());
       FileInputStream in = new FileInputStream(file);
       String username = new String(in.readAllBytes());
@@ -148,6 +150,9 @@ public class StateHandler extends Thread
             {
                file.delete();
                deletecursors(file.getName());
+
+               file = new File(file.getPath()+".trx");
+               file.delete();
             }
          }
       }
