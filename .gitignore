@@ -2,7 +2,7 @@
 .vscode/
 
 # State
-state/
+/state/
 
 # Compiled class files
 classes/
