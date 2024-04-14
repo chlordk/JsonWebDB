@@ -34,15 +34,12 @@ import java.io.FileOutputStream;
 
 public class StateHandler extends Thread
 {
-   private static Config conf = null;
    private static String inst = null;
-   private static String conn = null;
-   private static String curs = null;
+   private static String path = null;
+   private static Config config = null;
 
    private static final int MAXINT = 60000;
    private static final String STATE = "state";
-   private static final String CURSORS = "cursors";
-   private static final String CONNECTIONS = "connections";
 
    public static void main(String[] args) throws Exception
    {
@@ -54,14 +51,12 @@ public class StateHandler extends Thread
 
    public static void handle(Config config) throws Exception
    {
-      StateHandler.conf = config;
+      StateHandler.config = config;
+
       StateHandler.inst = config.inst();
-      StateHandler.curs = Config.path(STATE,inst,CURSORS);
-      StateHandler.conn = Config.path(STATE,inst,CONNECTIONS);
+      StateHandler.path = Config.path(STATE,inst);
 
-      (new File(curs)).mkdirs();
-      (new File(conn)).mkdirs();
-
+      (new File(path)).mkdirs();
       (new StateHandler()).start();
    }
 
@@ -102,7 +97,7 @@ public class StateHandler extends Thread
 
    private static String connpath(String guid)
    {
-      return(StateHandler.conn+File.separator+guid);
+      return(StateHandler.path+File.separator+guid);
    }
 
 
@@ -116,7 +111,7 @@ public class StateHandler extends Thread
    @Override
    public void run()
    {
-      int sttl = conf.sesttl() * 1000;
+      int sttl = config.sesttl() * 1000;
       int wait = sttl > MAXINT*2 ? MAXINT : (int) (3.0/4*sttl);
 
       while (true)
@@ -128,7 +123,7 @@ public class StateHandler extends Thread
          }
          catch (Throwable t)
          {
-            conf.logger().log(Level.SEVERE,t.getMessage(),t);
+            config.logger().log(Level.SEVERE,t.getMessage(),t);
          }
       }
    }
@@ -137,12 +132,16 @@ public class StateHandler extends Thread
    private void cleanout(int sttl)
    {
       long curr = System.currentTimeMillis();
-      File root = new File(StateHandler.conn);
+      File root = new File(StateHandler.path);
 
       if (root.exists())
       {
          for(File file : root.listFiles())
          {
+            if (file.isDirectory()) continue;
+            if (file.getName().indexOf(".c") > 0) continue;
+            if (file.getName().indexOf(".trx") > 0) continue;
+
             if (curr - file.lastModified() > sttl)
             {
                file.delete();
@@ -155,15 +154,16 @@ public class StateHandler extends Thread
 
    private void deletecursors(String conn)
    {
-      File root = new File(StateHandler.curs);
+      File root = new File(StateHandler.path);
 
       if (root.exists())
       {
          for(File file : root.listFiles())
          {
-            String name = "";
-            int pos = file.getName().lastIndexOf('.');
-            if (pos > 0) name = file.getName().substring(0,pos);
+            int pos = file.getName().lastIndexOf(".c");
+            if (pos < 0) continue;
+
+            String name = file.getName().substring(0,pos);
             if (conn.equals(name)) file.delete();
          }
       }
