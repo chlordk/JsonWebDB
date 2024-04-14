@@ -27,6 +27,7 @@ package jsondb;
 import org.json.JSONObject;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
+import jsondb.state.StateHandler;
 import jsondb.database.JsonDBPool;
 
 /**
@@ -50,6 +51,8 @@ public class JsonDB
       JsonDB.config.logger().info(".......................................");
       JsonDB.config.logger().info("Starting JsonDB version "+version);
       JsonDB.config.logger().info(".......................................");
+      
+      StateHandler.prepare(config);
    }
 
 
