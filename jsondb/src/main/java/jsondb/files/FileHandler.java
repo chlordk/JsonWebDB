@@ -32,20 +32,11 @@ import jsondb.files.FileCache.CacheEntry;
 
 public class FileHandler
 {
-   private static Config config = null;
-
-
-   public static void setConfig(Config config)
-   {
-      FileHandler.config = config;
-   }
-
-
-   public FileResponse get(String path) throws Exception
+   public static FileResponse get(String path) throws Exception
    {
       FileResponse response = null;
 
-      String mime = config.getMimeType(path);
+      String mime = Config.getMimeType(path);
       CacheEntry centry = FileCache.get(path);
 
       if (centry == null)
@@ -62,11 +53,10 @@ public class FileHandler
    }
 
 
-   private byte[] readFile(String path) throws Exception
+   private static byte[] readFile(String path) throws Exception
    {
       byte[] content = null;
-      File file = new File(config.appl() + path);
-
+      File file = new File(Config.appl() + path);
 
       if (file.exists())
       {

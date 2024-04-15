@@ -41,7 +41,7 @@ public class FileResponse
       this.gzip = false;
       this.content = content;
       this.mimetype = mimetype;
-      this.size = content.length;
+      this.size = content == null ? 0 : content.length;
    }
 
    public FileResponse(CacheEntry entry, String mimetype) throws Exception

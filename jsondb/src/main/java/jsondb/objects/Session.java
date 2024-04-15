@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 public class Session implements DatabaseRequest
 {
-   private final Config config;
    private final JSONObject definition;
 
    private static final String SESSION = "session";
@@ -39,9 +38,8 @@ public class Session implements DatabaseRequest
    private static final String PASSTOKEN = "password-token";
 
 
-   public Session(Config config, JSONObject definition) throws Exception
+   public Session(JSONObject definition) throws Exception
    {
-      this.config = config;
       this.definition = definition;
    }
 

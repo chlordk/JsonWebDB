@@ -24,10 +24,7 @@ SOFTWARE.
 
 package jsondb.objects;
 
-import java.io.File;
-import jsondb.Config;
 import org.json.JSONObject;
-import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import jsondb.messages.Messages;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,40 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectHandler
 {
-   private static Config config = null;
-   private static final String EXAMPLES = "examples";
-
    private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
       new ConcurrentHashMap<String,Class<DatabaseRequest>>();
 
    private static final String location = ObjectHandler.class.getPackage().getName();
-
-
-   public static void main(String[] args) throws Exception
-   {
-      Config config = Config.load(args[0],args[1]);
-      setConfig(config); Test(new File(Config.path(EXAMPLES)));
-   }
-
-
-   public static void setConfig(Config config)
-   {
-      ObjectHandler.config = config;
-   }
-
-
-   public static void Test(File repos) throws Exception
-   {
-      for(File test : repos.listFiles())
-      {
-         FileInputStream in = new FileInputStream(test);
-         String json = new String(in.readAllBytes());
-         in.close();
-
-         JSONObject response = handle(new JSONObject(json));
-         System.out.println(response);
-      }
-   }
 
 
    public static JSONObject handle(JSONObject request) throws Exception
@@ -100,6 +67,6 @@ public class ObjectHandler
          classes.put(cname,clazz);
       }
 
-      return(clazz.getConstructor(Config.class,JSONObject.class).newInstance(config,definition));
+      return(clazz.getConstructor(JSONObject.class).newInstance(definition));
    }
 }

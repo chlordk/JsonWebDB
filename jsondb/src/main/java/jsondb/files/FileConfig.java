@@ -48,37 +48,20 @@ public class FileConfig
    private static final String FILETYPE = "filetype";
    private static final String MIMETYPE = "mimetype";
 
-   private final Config config;
-
-   private final ArrayList<FilePattern> cache =
+   private static final ArrayList<FilePattern> cache =
       new ArrayList<FilePattern>();
 
-   private final ArrayList<FilePattern> compress =
+   private static final ArrayList<FilePattern> compress =
       new ArrayList<FilePattern>();
 
-   private final HashMap<String,String> mimetypes =
+   private static final HashMap<String,String> mimetypes =
       new HashMap<String,String>();
 
-   private static FileConfig instance = null;
 
-
-   public static FileConfig load(Config config) throws Exception
+   public static void initialize() throws Exception
    {
-      if (instance != null)
-         return(instance);
-
-      FileHandler.setConfig(config);
-      instance = new FileConfig(config);
-
-      return(instance);
-   }
-
-   private FileConfig(Config config)
-   {
-      this.config = config;
-
-      JSONObject files = config.get(FILES);
-      JSONObject cache = config.get(files,CACHE);
+      JSONObject files = Config.get(FILES);
+      JSONObject cache = Config.get(files,CACHE);
 
       loadMimeTypes(files);
       loadCacheRules(cache);
@@ -87,14 +70,14 @@ public class FileConfig
 
    public static String root()
    {
-      return(instance.config.appl());
+      return(Config.appl());
    }
 
    public static boolean cache(File file)
    {
-      for (int i = 0; i < instance.cache.size(); i++)
+      for (int i = 0; i < cache.size(); i++)
       {
-         if (instance.cache.get(i).matchSmallFile(file.getName(),file.length()))
+         if (cache.get(i).matchSmallFile(file.getName(),file.length()))
             return(true);
       }
 
@@ -103,9 +86,9 @@ public class FileConfig
 
    public static boolean compress(File file)
    {
-      for (int i = 0; i < instance.compress.size(); i++)
+      for (int i = 0; i < compress.size(); i++)
       {
-         if (instance.compress.get(i).matchLargeFile(file.getName(),file.length()))
+         if (compress.get(i).matchLargeFile(file.getName(),file.length()))
             return(true);
       }
 
@@ -119,13 +102,13 @@ public class FileConfig
       int pos = ext.lastIndexOf('.');
       if (pos >= 0) ext = ext.substring(pos+1);
 
-      return(instance.mimetypes.get(ext));
+      return(mimetypes.get(ext));
    }
 
-   private void loadMimeTypes(JSONObject def)
+   private static void loadMimeTypes(JSONObject def)
    {
       mimetypes.clear();
-      JSONArray types = config.get(def,MIMETYPES);
+      JSONArray types = Config.get(def,MIMETYPES);
 
       for (int i = 0; i < types.length(); i++)
       {
@@ -134,10 +117,10 @@ public class FileConfig
       }
    }
 
-   private void loadCacheRules(JSONObject def)
+   private static void loadCacheRules(JSONObject def)
    {
       cache.clear();
-      JSONArray rules = config.get(def,SMALL);
+      JSONArray rules = Config.get(def,SMALL);
 
       for (int i = 0; i < rules.length(); i++)
       {
@@ -146,10 +129,10 @@ public class FileConfig
       }
    }
 
-   private void loadCompressionRules(JSONObject def)
+   private static void loadCompressionRules(JSONObject def)
    {
       compress.clear();
-      JSONArray rules = config.get(def,LARGE);
+      JSONArray rules = Config.get(def,LARGE);
 
       for (int i = 0; i < rules.length(); i++)
       {

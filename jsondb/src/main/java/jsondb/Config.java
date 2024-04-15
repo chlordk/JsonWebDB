@@ -44,17 +44,16 @@ public class Config
    private static final String FILE = "config.json";
    private static final String APPL = "application";
 
-   private final int sttl;
-   private final String inst;
-   private final String appl;
+   private static int sttl = 0;
+   private static String inst = null;
+   private static String appl = null;
 
-   private final Logger logger;
-   private final JSONObject config;
+   private static Logger logger = null;
+   private static JSONObject config = null;
 
    private static String root = null;
-   private static Config instance = null;
    private static JsonDBPool pool = null;
-   private static FileConfig fconfig = null;
+
 
    /**
     *
@@ -63,72 +62,55 @@ public class Config
     * @return The parsed config with some helper methods to navigate the config.
     * @throws Exception
     */
-    public static synchronized Config load(String root, String inst) throws Exception
-    {
-      return(load(root,inst,FILE));
-    }
-
-
-   /**
-    *
-    * @param root the root directory of JsonWebDB
-    * @param inst the instance name. Most often more servers will run
-    * @param file the configuration file
-    * @return The parsed config with some helper methods to navigate the config.
-    * @throws Exception
-    */
-   public static synchronized Config load(String root, String inst, String file) throws Exception
+   protected static synchronized void load(String root, String inst) throws Exception
    {
-      if (instance != null)
-         return(instance);
-
       if (inst.contains(":"))
          throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
 
       Config.root = root;
       inst = inst.toLowerCase();
-      String path = path(CONF,file);
-      FileInputStream in = new FileInputStream(path);
-      instance = new Config(inst,new JSONObject(new JSONTokener(in)));
-      in.close(); return(instance);
-   }
+      String path = path(CONF,FILE);
 
-   private Config(String inst, JSONObject config) throws Exception
-   {
-      this.inst = inst;
-      this.config = config;
-      this.appl = get(get(APPL),PATH);
-      this.sttl = get(get(SESS),STTL);
-      this.logger = Applogger.setup(this);
-      Config.fconfig = FileConfig.load(this);
+      FileInputStream in = new FileInputStream(path);
+      JSONTokener tokener = new JSONTokener(in);
+      JSONObject config = new JSONObject(tokener);
+      in.close();
+
+      Config.inst = inst;
+      Config.config = config;
+      Config.appl = get(get(APPL),PATH);
+      Config.sttl = get(get(SESS),STTL);
+      Config.logger = Applogger.setup();
+
+      FileConfig.initialize();
    }
 
    /** The instance name */
-   public String inst()
+   public static String inst()
    {
       return(inst);
    }
 
    /** Path to application */
-   public String appl()
+   public static String appl()
    {
       return(appl);
    }
 
    /** Session timeout (or TimeToLive) */
-   public int sesttl()
+   public static int sesttl()
    {
       return(sttl);
    }
 
    /** The logger */
-   public Logger logger()
+   public static Logger logger()
    {
       return(logger);
    }
 
    /** The config json */
-   public JSONObject get()
+   public static JSONObject get()
    {
       return(config);
    }
@@ -140,33 +122,27 @@ public class Config
    }
 
    /** Inject the pool */
-   public static void pool(JsonDBPool pool)
+   protected static void pool(JsonDBPool pool)
    {
       Config.pool = pool;
    }
 
-   /** The FileConfig configuration */
-   public static FileConfig files()
-   {
-      return(fconfig);
-   }
-
    /** Get the mimetype from file(name) */
-   public String getMimeType(String file)
+   public static String getMimeType(String file)
    {
       return(FileConfig.getMimeType(file));
    }
 
    /** Get an object from the config json */
    @SuppressWarnings({ "unchecked" })
-   public <T> T get(String section)
+   public static <T> T get(String section)
    {
       return((T) config.get(section));
    }
 
    /** Get an object from a json */
    @SuppressWarnings({ "unchecked" })
-   public <T> T get(JSONObject section, String attr)
+   public static <T> T get(JSONObject section, String attr)
    {
       return((T) section.get(attr));
    }

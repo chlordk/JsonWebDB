@@ -26,6 +26,8 @@ package jsondb.state;
 
 import java.io.File;
 import jsondb.Config;
+import jsondb.JsonDB;
+
 import java.util.UUID;
 import java.util.logging.Level;
 import java.io.FileInputStream;
@@ -36,23 +38,19 @@ public class StateHandler extends Thread
 {
    private static String inst = null;
    private static String path = null;
-   private static Config config = null;
 
    private static final int MAXINT = 60000;
    private static final String STATE = "state";
 
    public static void main(String[] args) throws Exception
    {
-      Config config = Config.load(args[0],args[1]);
-      handle(config); Thread.sleep(MAXINT);
+      JsonDB.initialize(args[0],args[1]);
    }
 
 
-   public static void handle(Config config) throws Exception
+   public static void initialize() throws Exception
    {
-      StateHandler.config = config;
-
-      StateHandler.inst = config.inst();
+      StateHandler.inst = Config.inst();
       StateHandler.path = Config.path(STATE,inst);
 
       (new File(path)).mkdirs();
@@ -114,7 +112,7 @@ public class StateHandler extends Thread
    @Override
    public void run()
    {
-      int sttl = config.sesttl() * 1000;
+      int sttl = Config.sesttl() * 1000;
       int wait = sttl > MAXINT*2 ? MAXINT : (int) (3.0/4*sttl);
 
       while (true)
@@ -126,7 +124,7 @@ public class StateHandler extends Thread
          }
          catch (Throwable t)
          {
-            config.logger().log(Level.SEVERE,t.getMessage(),t);
+            Config.logger().log(Level.SEVERE,t.getMessage(),t);
          }
       }
    }

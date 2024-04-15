@@ -44,15 +44,15 @@ public class Applogger
    private static final String LOGFILE = "server.log";
 
 
-   public static Logger setup(Config config) throws Exception
+   public static Logger setup() throws Exception
    {
-      String inst = config.inst();
-      JSONObject logd = config.get(LOGDEF);
+      String inst = Config.inst();
+      JSONObject logd = Config.get(LOGDEF);
 
-      int files = config.get(logd,FILES);
-      int fsize = logsize(config.get(logd,SIZE));
+      int files = Config.get(logd,FILES);
+      int fsize = logsize((String) Config.get(logd,SIZE));
 
-      String levl = config.get(logd,LEVEL);
+      String levl = Config.get(logd,LEVEL);
       String path = Config.path(LOGFLD,inst);
 
       Level level = Level.parse(levl.toUpperCase());

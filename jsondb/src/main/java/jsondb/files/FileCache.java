@@ -52,6 +52,7 @@ public class FileCache
       else
       {
          File file = open(path);
+         if (!file.exists()) return(null);
 
          if (FileConfig.cache(file))
          {
@@ -132,6 +133,9 @@ public class FileCache
 
       private byte[] readFile(File file) throws Exception
       {
+         if (!file.exists())
+            return(null);
+
          FileInputStream in = new FileInputStream(file);
          byte[] content = in.readAllBytes(); in.close();
 

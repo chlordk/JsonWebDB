@@ -24,7 +24,6 @@ SOFTWARE.
 
 package http;
 
-import jsondb.Config;
 import jsondb.JsonDB;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -35,8 +34,7 @@ public class Server
 {
    public static void main(String[] args) throws Exception
    {
-      Config config = Config.load(args[0],args[1],"local.json");
-      JsonDB.register(config);
+      JsonDB.initialize(args[0],args[1]);
 
       HttpServer server = HttpServer.create(new InetSocketAddress("localhost",6000),16);
       server.setExecutor(Executors.newFixedThreadPool(16));

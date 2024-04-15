@@ -25,14 +25,14 @@ SOFTWARE.
 package http;
 
 import jsondb.JsonDB;
-import jsondb.files.FileResponse;
-
+import jsondb.Config;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
 
-import org.json.JSONObject;
-
+import jsondb.files.FileResponse;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -55,16 +55,6 @@ public class Handler implements HttpHandler
          doPost(exchange);
          return;
       }
-
-      /*
-      InputStream in = exchange.getRequestBody();
-      OutputStream out = exchange.getResponseBody();
-
-      exchange.sendResponseHeaders(200,5);
-      out.write("Hello".getBytes());
-      out.flush();
-      out.close();
-      */
    }
 
 
@@ -89,7 +79,8 @@ public class Handler implements HttpHandler
       }
       catch (Throwable t)
       {
-        throw new IOException(t);
+         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         throw new IOException(t);
       }
    }
 
@@ -106,18 +97,25 @@ public class Handler implements HttpHandler
       {
          FileResponse file = jsondb.get(path);
 
-         if (file.gzip)
-            exchange.getResponseHeaders().set("Content-Encoding","gzip");
+         if (file.content == null)
+         {
+            exchange.sendResponseHeaders(404,0);
+         }
+         else
+         {
+            if (file.gzip)
+               exchange.getResponseHeaders().set("Content-Encoding","gzip");
 
-         exchange.sendResponseHeaders(200,file.size);
-         out.write(file.content);
+            exchange.sendResponseHeaders(200,file.size);
+            out.write(file.content);
+         }
 
          out.flush();
          out.close();
       }
       catch (Throwable t)
       {
-        throw new IOException(t);
+         throw new IOException(t);
       }
    }
 }

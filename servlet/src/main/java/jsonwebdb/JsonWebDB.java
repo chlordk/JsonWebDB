@@ -57,13 +57,8 @@ public class JsonWebDB extends HttpServlet
       String home = System.getenv("JsonWebDB_Home");
       String inst = System.getenv("JsonWebDB_Inst");
 
-      Config config = Config.load(home,inst);
-      JsonDBPool pool = new JsonDBPool(config);
-
-      JsonDB.register(pool);
-      JsonDB.register(config);
-
-      JsonDB.start();
+      Config.load(home,inst);
+      JsonDB.initialize();
    }
 
 

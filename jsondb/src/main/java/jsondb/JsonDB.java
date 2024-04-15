@@ -25,11 +25,11 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
+
+import jsondb.database.JsonDBPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
-import jsondb.objects.ObjectHandler;
 import jsondb.state.StateHandler;
-import jsondb.database.JsonDBPool;
 
 /**
  * Public interface to the backend
@@ -38,55 +38,30 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
-   private static Config config = null;
-   private static JsonDBPool pool = null;
-
 
    /**
     * Finalizes setup and starts necessary services.
     * After this, the server is ready to accept requests.
     * @throws Exception
     */
-   public static void start() throws Exception
+   public static void initialize(String root, String inst) throws Exception
    {
-      JsonDB.config.logger().info(".......................................");
-      JsonDB.config.logger().info("Starting JsonDB version "+version);
-      JsonDB.config.logger().info(".......................................");
+      Config.load(root,inst);
+      StateHandler.initialize();
 
-      StateHandler.handle(config);
-      ObjectHandler.setConfig(config);
+      Config.logger().info(".......................................");
+      Config.logger().info("Starting JsonDB version "+version);
+      Config.logger().info(".......................................");
    }
 
 
    /**
-    * Register the database pool
-    * @param pool
+    * Inject custom pool implementation
+    * @param pool the custom pool
     */
-   public static void register(JsonDBPool pool)
+   public static void setPool(JsonDBPool pool)
    {
-      if (JsonDB.pool == null)
-         JsonDB.pool = pool;
-   }
-
-
-   /**
-    * Register the configuration
-    * @param config
-    */
-   public static void register(Config config)
-   {
-      if (JsonDB.config == null)
-         JsonDB.config = config;
-   }
-
-
-   /**
-    * Get the default user
-    * @return username
-    */
-   public String getDefaultUser()
-   {
-      return(pool.defaultuser());
+      Config.pool(pool);
    }
 
 
@@ -94,11 +69,11 @@ public class JsonDB
     * Get the mimetype for a given filetype.
     * Mimetypes are defined in the config.json file.
     * @param filetype
-    * @return mimetype
+    * @return the mimetype
     */
    public String mimetype(String filetype)
    {
-      return(config.getMimeType(filetype));
+      return(Config.getMimeType(filetype));
    }
 
 
@@ -110,8 +85,7 @@ public class JsonDB
     */
    public FileResponse get(String path) throws Exception
    {
-      FileHandler handler = new FileHandler();
-      FileResponse response = handler.get(path);
+      FileResponse response = FileHandler.get(path);
       log(response); return(response);
    }
 
@@ -131,7 +105,7 @@ public class JsonDB
    /**
     * Executes request
     * @param request
-    * @return response
+    * @return the response
     * @throws Exception
     */
    public JSONObject execute(JSONObject request) throws Exception
@@ -146,11 +120,11 @@ public class JsonDB
 
    private void log(FileResponse response)
    {
-      config.logger().info(response.toString());
+      Config.logger().info(response.toString());
    }
 
    private void log(JSONObject request,JSONObject response)
    {
-      config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
+      Config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }
 }
