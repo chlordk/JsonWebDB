@@ -11,7 +11,7 @@
       {
          "type": "object",
          "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
-         "required": ["method"],
+         "required": ["invoke"],
 
          "properties":
          {
@@ -25,21 +25,19 @@
             {
                "type": "string",
                "description": "Method to invoke",
-               "enum": ["connect", "disconnect", "commit", "rollback", "keepalive"]
+               "enum": ["connect()", "disconnect()", "commit()", "rollback()", "keepalive()"]
             }
             ,
             "connection-data":
             {
                "type": "object",
-               "required": ["scope"],
                "description": "Information required for connecting",
 
                "properties":
                {
                   "username": {"type": "string"},
                   "password": {"type": "string"},
-                  "password-token": {"type": "string"},
-                  "scope": {"type": "string", "enum": ["stateful","stateless","hybrid"]}
+                  "dedicated": {"type": "boolean"}
                   ,
                   "client-info":
                   {

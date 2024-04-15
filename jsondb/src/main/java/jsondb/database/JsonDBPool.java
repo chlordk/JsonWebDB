@@ -33,7 +33,7 @@ public interface JsonDBPool
    boolean proxyuser();
    String defaultuser();
    DatabaseType type() throws Exception;
-   Connection reserve() throws Exception;
    void release(Connection conn) throws Exception;
+   Connection reserve(boolean write) throws Exception;
    boolean authenticate(String username, String password) throws Exception;
 }

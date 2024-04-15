@@ -14,8 +14,17 @@
       "type": "Postgres",
       "test": "select user",
 
-      "min": 5,
-      "max": 600,
+		"primary":
+		{
+			"min": 5,
+			"max": 60
+		},
+
+		"secondary":
+		{
+			"min": 5,
+			"max": 600
+		},
 
       "max-wait": 10000,
       "validate": 30000,
@@ -29,7 +38,9 @@
 		"password-token": "e3887d1f-bda1-425a-b30d-4065403a5be1",
 
       "classes": ["org.postgresql.Driver"],
-      "jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+
+      "primary-jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB",
+      "secondary-jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
    }
    ,
    "files":

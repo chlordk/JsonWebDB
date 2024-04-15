@@ -47,17 +47,20 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
    private static final String CLASSES = "classes";
+   private static final String PRIMARY = "primary";
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
    private static final String DATABASE = "database";
+   private static final String SECONDARY = "secondary";
 
-   public final String url;
-   public final String user;
-   public final String token;
-   public final boolean proxy;
-   public final DataSource ds;
-   public final DatabaseType type;
+   private final String rurl;
+   private final String user;
+   private final String token;
+   private final boolean proxy;
+   private final DataSource read;
+   private final DataSource write;
+   private final DatabaseType type;
 
 
    public JsonDBPool(Config config) throws Exception
@@ -65,44 +68,26 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
       JSONObject def = config.get(DATABASE);
       this.type = DatabaseType.valueOf(config.get(def,TYPE));
 
-      String url = config.get(def,URL);
-      String sql = config.get(def,QUERY);
-      String usr = config.get(def,USERNAME);
-      String pwd = config.get(def,PASSWORD);
-
-      int min = config.get(def,MIN);
-      int max = config.get(def,MAX);
-
-      int wait = config.get(def,WAIT);
-      int cval = config.get(def,VALIDATE);
 
       JSONArray cls = config.get(def,CLASSES);
 
       for (int i = 0; i < cls.length(); i++)
          Class.forName(cls.getString(i));
 
-      PoolProperties props = new PoolProperties();
+      PoolProperties prim = getProps(config,def,PRIMARY);
+      PoolProperties secd = getProps(config,def,SECONDARY);
 
-      props.setUrl(url);
+      this.read = new DataSource();
+      this.read.setPoolProperties(prim);
 
-      props.setUsername(usr);
-      props.setPassword(pwd);
-
-      props.setValidationQuery(sql);
-      props.setValidationInterval(cval);
-
-      props.setMinIdle(min);
-      props.setInitialSize(0);
-      props.setMaxActive(max);
-      props.setMaxWait(wait);
-
-      this.url = url;
-      this.ds = new DataSource();
-      this.ds.setPoolProperties(props);
+      this.write = new DataSource();
+      this.write.setPoolProperties(secd);
 
       this.user = def.getString(USER);
       this.token = def.getString(TOKEN);
       this.proxy = def.getBoolean(PROXY);
+
+      this.rurl = config.get(def,SECONDARY+"-"+URL);
    }
 
    @Override
@@ -130,9 +115,11 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    }
 
    @Override
-   public Connection reserve() throws Exception
+   public Connection reserve(boolean write) throws Exception
    {
-      return(ds.getConnection());
+      if (!write)
+      return(this.read.getConnection());
+      return(this.write.getConnection());
    }
 
    @Override
@@ -146,7 +133,7 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
    {
       String user = null;
 
-      Connection conn = DriverManager.getConnection(url,username,password);
+      Connection conn = DriverManager.getConnection(rurl,username,password);
       ResultSet  rset = conn.createStatement().executeQuery("select user");
 
       if (rset.next()) user = rset.getString(1);
@@ -156,5 +143,39 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
          return(false);
 
       return(username.equalsIgnoreCase(user));
+   }
+
+
+   public PoolProperties getProps(Config config, JSONObject def, String type)
+   {
+      PoolProperties props = new PoolProperties();
+
+      String sql = config.get(def,QUERY);
+      String usr = config.get(def,USERNAME);
+      String pwd = config.get(def,PASSWORD);
+      String url = config.get(def,type+"-"+URL);
+
+      JSONObject sub = def.getJSONObject(type);
+
+      int min = config.get(sub,MIN);
+      int max = config.get(sub,MAX);
+
+      int wait = config.get(def,WAIT);
+      int cval = config.get(def,VALIDATE);
+
+      props.setUrl(url);
+
+      props.setUsername(usr);
+      props.setPassword(pwd);
+
+      props.setValidationQuery(sql);
+      props.setValidationInterval(cval);
+
+      props.setMinIdle(min);
+      props.setInitialSize(0);
+      props.setMaxActive(max);
+      props.setMaxWait(wait);
+
+      return(props);
    }
 }

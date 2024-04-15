@@ -1,13 +1,13 @@
 {
    "Session":
    {
-      "invoke": "connect",
+      "invoke": "connect()",
 
       "connection-data":
       {
          "username": "hr",
          "password": "hr",
-         "scope": "stateless"
+         "dedicated": true
       }
    }
 }
