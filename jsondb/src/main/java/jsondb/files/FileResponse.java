@@ -80,8 +80,17 @@ public class FileResponse
       len = mime.length();
       if (len > 15) mime = mime.substring(len-15);
 
-      String desc = String.format("%-40s %-15s %6dk",path,mime,size/1024);
-      if (gzip) desc += " (gz)";
+      String desc = null;
+
+      if (!exists())
+      {
+         desc = String.format("%-40s %-15s %7s",path,mime,"na");
+      }
+      else
+      {
+         desc = String.format("%-40s %-15s %6dk",path,mime,size/1024);
+         if (gzip) desc += " (gz)";
+      }
 
       return(desc);
    }
