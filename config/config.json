@@ -33,7 +33,7 @@
 			"password": "hr",
 
 			"classes": ["org.postgresql.Driver"],
-			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB",
+			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
 		,
 		"secondary":
@@ -56,7 +56,7 @@
 			"password-token": "e3887d1f-bda1-425a-b30d-4065403a5be1",
 
 			"classes": ["org.postgresql.Driver"],
-			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB",
+			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
    }
    ,

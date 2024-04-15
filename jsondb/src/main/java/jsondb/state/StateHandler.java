@@ -26,8 +26,6 @@ package jsondb.state;
 
 import java.io.File;
 import jsondb.Config;
-import jsondb.JsonDB;
-
 import java.util.UUID;
 import java.util.logging.Level;
 import java.io.FileInputStream;
@@ -41,11 +39,6 @@ public class StateHandler extends Thread
 
    private static final int MAXINT = 60000;
    private static final String STATE = "state";
-
-   public static void main(String[] args) throws Exception
-   {
-      JsonDB.initialize(args[0],args[1]);
-   }
 
 
    public static void initialize() throws Exception

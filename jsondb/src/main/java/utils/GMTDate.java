@@ -22,23 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package http;
+package utils;
 
-import jsondb.JsonDB;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-import com.sun.net.httpserver.HttpServer;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 
-public class Server
+public class GMTDate
 {
-   public static void main(String[] args) throws Exception
+   public static void main(String[] args)
    {
-      JsonDB.initialize(args[0],args[1]);
+      String gmt = format((new Date()).getTime());
+      System.out.println(gmt);
+   }
 
-      HttpServer server = HttpServer.create(new InetSocketAddress("localhost",6001),16);
-      server.setExecutor(Executors.newFixedThreadPool(16));
-      server.createContext("/",new Handler());
-      server.start();
+
+   public static String format(long time)
+   {
+      return(format(new Date(time)));
+   }
+
+
+   public static String format(Date date)
+   {
+      SimpleDateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z",Locale.ENGLISH);
+      fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+      return(fmt.format(date));
    }
 }

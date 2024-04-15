@@ -25,11 +25,10 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
-
-import jsondb.database.JsonDBPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
 import jsondb.state.StateHandler;
+import jsondb.database.JsonDBPool;
 
 /**
  * Public interface to the backend
@@ -76,6 +75,18 @@ public class JsonDB
       return(Config.getMimeType(filetype));
    }
 
+   /**
+    *
+    * @param path uri
+    * @param date gmt formatted date
+    * @return if the file was modified
+    */
+   public boolean modified(String path, String date)
+   {
+      if (date == null) return(true);
+      String modified = FileHandler.lastModified(path);
+      return(!date.equals(modified));
+   }
 
    /**
     * Get a file from the application

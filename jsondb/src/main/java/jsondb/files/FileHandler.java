@@ -28,10 +28,20 @@ import java.io.File;
 import jsondb.Config;
 import java.io.FileInputStream;
 import jsondb.files.FileCache.CacheEntry;
+import utils.GMTDate;
 
 
 public class FileHandler
 {
+   public static String lastModified(String path)
+   {
+      long modified = 0;
+      File file = new File(Config.appl() + path);
+      if (file.exists()) modified = file.lastModified();
+      return(GMTDate.format(modified));
+   }
+
+
    public static FileResponse get(String path) throws Exception
    {
       FileResponse response = null;
@@ -41,8 +51,17 @@ public class FileHandler
 
       if (centry == null)
       {
-         byte[] content = readFile(path);
-         response = new FileResponse(path,content,mime);
+         long modified = 0;
+         byte[] content = null;
+         File file = new File(Config.appl() + path);
+
+         if (file.exists())
+         {
+            content = readFile(file);
+            modified = file.lastModified();
+         }
+
+         response = new FileResponse(path,content,mime,modified);
       }
       else
       {
@@ -53,10 +72,9 @@ public class FileHandler
    }
 
 
-   private static byte[] readFile(String path) throws Exception
+   private static byte[] readFile(File file) throws Exception
    {
       byte[] content = null;
-      File file = new File(Config.appl() + path);
 
       if (file.exists())
       {

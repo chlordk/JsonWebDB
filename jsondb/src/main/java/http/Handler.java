@@ -30,10 +30,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.logging.Level;
 
 import jsondb.files.FileResponse;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -93,21 +95,31 @@ public class Handler implements HttpHandler
       String path = exchange.getRequestURI().getPath();
       if (path.length() <= 2) path = "/index.html";
 
+      String lastmod = null;
+      List<String> values = exchange.getRequestHeaders().get("If-modified-since");
+      if (values != null && values.size() == 1) lastmod = values.get(0);
+
       try
       {
+         if (!jsondb.modified(path,lastmod))
+         {
+            exchange.sendResponseHeaders(304,-1);
+            return;
+         }
+
          FileResponse file = jsondb.get(path);
 
-         if (file.content == null)
+         if (!file.exists())
          {
             exchange.sendResponseHeaders(404,0);
+            return;
          }
-         else
-         {
-            if (file.gzip) exchange.getResponseHeaders().set("Content-Encoding","gzip");
-            exchange.sendResponseHeaders(200,file.size);
-            out.write(file.content);
-            out.close();
-         }
+
+         if (file.gzip) exchange.getResponseHeaders().set("Content-Encoding","gzip");
+         exchange.getResponseHeaders().set("Last-Modified",file.gmt());
+         exchange.sendResponseHeaders(200,file.size);
+         out.write(file.content);
+         out.close();
       }
       catch (Throwable t)
       {

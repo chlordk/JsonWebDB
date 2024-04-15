@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb.files;
 
 import jsondb.files.FileCache.CacheEntry;
+import utils.GMTDate;
 
 
 public class FileResponse
@@ -32,15 +33,17 @@ public class FileResponse
    public final long size;
    public final String path;
    public final boolean gzip;
+   public final long modified;
    public final byte[] content;
    public final String mimetype;
 
-   public FileResponse(String path, byte[] content, String mimetype)
+   public FileResponse(String path, byte[] content, String mimetype, long modified)
    {
       this.path = path;
       this.gzip = false;
       this.content = content;
       this.mimetype = mimetype;
+      this.modified = modified;
       this.size = content == null ? 0 : content.length;
    }
 
@@ -51,6 +54,17 @@ public class FileResponse
       this.size = entry.bytes();
       this.gzip = entry.gzipped();
       this.content = entry.content();
+      this.modified = entry.modified();
+   }
+
+   public boolean exists()
+   {
+      return(modified != 0);
+   }
+
+   public String gmt()
+   {
+      return(GMTDate.format(modified));
    }
 
    @Override
@@ -61,9 +75,9 @@ public class FileResponse
       if (len > 40) path = "..."+path.substring(len-37);
 
       String mime = mimetype;
-      mime = mime != null ? mime : "text/plain";
+      mime = mime != null ? mime : "";
 
-      len = mimetype.length();
+      len = mime.length();
       if (len > 15) mime = mime.substring(len-15);
 
       String desc = String.format("%-40s %-15s %6dk",path,mime,size/1024);

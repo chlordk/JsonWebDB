@@ -80,6 +80,7 @@ public class FileCache
       private String path;
       private long modified;
       private byte[] content;
+      private String mimetype;
       private boolean gzipped;
 
       private CacheEntry(String path, boolean gzip) throws Exception
@@ -102,6 +103,11 @@ public class FileCache
          return(size);
       }
 
+      public long modified()
+      {
+         return(modified);
+      }
+
       public boolean gzipped()
       {
          return(gzipped);
@@ -115,7 +121,13 @@ public class FileCache
       private boolean ensure() throws Exception
       {
          File file = open(path);
-         if (!file.exists()) return(false);
+
+         if (!file.exists())
+         {
+            this.modified = 0;
+            this.content = null;
+            return(false);
+         }
 
          if (file.lastModified() != modified)
          {
