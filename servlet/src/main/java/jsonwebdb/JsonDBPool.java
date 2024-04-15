@@ -68,7 +68,6 @@ public class JsonDBPool implements jsondb.database.JsonDBPool
       JSONObject def = config.get(DATABASE);
       this.type = DatabaseType.valueOf(config.get(def,TYPE));
 
-
       JSONArray cls = config.get(def,CLASSES);
 
       for (int i = 0; i < cls.length(); i++)
