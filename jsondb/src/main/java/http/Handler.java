@@ -26,16 +26,14 @@ package http;
 
 import jsondb.JsonDB;
 import jsondb.Config;
+import java.util.List;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.logging.Level;
-
 import jsondb.files.FileResponse;
 import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -111,7 +109,7 @@ public class Handler implements HttpHandler
 
          if (!file.exists())
          {
-            exchange.sendResponseHeaders(404,0);
+            exchange.sendResponseHeaders(404,-1);
             return;
          }
 
