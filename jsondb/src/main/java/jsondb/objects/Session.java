@@ -24,9 +24,8 @@ SOFTWARE.
 
 package jsondb.objects;
 
-import org.json.JSONObject;
-
 import jsondb.Config;
+import org.json.JSONObject;
 
 
 public class Session implements DatabaseRequest

@@ -27,14 +27,12 @@ package jsondb;
 import java.io.File;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
-import jsondb.database.JsonDBPool;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
-import jsondb.messages.Messages;
-
 import java.io.FileInputStream;
 import java.util.logging.Logger;
+import jsondb.messages.Messages;
+import jsondb.database.JsonDBPool;
 
 
 public class Config
@@ -65,7 +63,21 @@ public class Config
     * @return The parsed config with some helper methods to navigate the config.
     * @throws Exception
     */
-   public static synchronized Config load(String root, String inst) throws Exception
+    public static synchronized Config load(String root, String inst) throws Exception
+    {
+      return(load(root,inst,FILE));
+    }
+
+
+   /**
+    *
+    * @param root the root directory of JsonWebDB
+    * @param inst the instance name. Most often more servers will run
+    * @param file the configuration file
+    * @return The parsed config with some helper methods to navigate the config.
+    * @throws Exception
+    */
+   public static synchronized Config load(String root, String inst, String file) throws Exception
    {
       if (instance != null)
          return(instance);
@@ -75,7 +87,7 @@ public class Config
 
       Config.root = root;
       inst = inst.toLowerCase();
-      String path = path(CONF,FILE);
+      String path = path(CONF,file);
       FileInputStream in = new FileInputStream(path);
       instance = new Config(inst,new JSONObject(new JSONTokener(in)));
       in.close(); return(instance);
