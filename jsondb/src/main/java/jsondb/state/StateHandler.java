@@ -44,8 +44,7 @@ public class StateHandler extends Thread
    public static void main(String[] args) throws Exception
    {
       Config config = Config.load(args[0],args[1]);
-      handle(config);
-      Thread.sleep(MAXINT);
+      handle(config); Thread.sleep(MAXINT);
    }
 
 

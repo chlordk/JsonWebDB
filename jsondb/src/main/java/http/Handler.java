@@ -24,13 +24,16 @@ SOFTWARE.
 
 package http;
 
+import jsondb.JsonDB;
+import jsondb.files.FileResponse;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.json.JSONObject;
+
 import com.sun.net.httpserver.HttpHandler;
-
-import jsondb.JsonDB;
-
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -47,6 +50,12 @@ public class Handler implements HttpHandler
          return;
       }
 
+      if (meth.equals("POST"))
+      {
+         doPost(exchange);
+         return;
+      }
+
       /*
       InputStream in = exchange.getRequestBody();
       OutputStream out = exchange.getResponseBody();
@@ -58,9 +67,57 @@ public class Handler implements HttpHandler
       */
    }
 
+
+   public void doPost(HttpExchange exchange) throws IOException
+   {
+      JsonDB jsondb = new JsonDB();
+
+      InputStream in = exchange.getRequestBody();
+      OutputStream out = exchange.getResponseBody();
+      String request = new String(in.readAllBytes());
+
+      try
+      {
+         JSONObject response = jsondb.execute(request);
+         byte[] content = response.toString(2).getBytes();
+
+         exchange.sendResponseHeaders(200,content.length);
+         out.write(content);
+
+         out.flush();
+         out.close();
+      }
+      catch (Throwable t)
+      {
+        throw new IOException(t);
+      }
+   }
+
+
    public void doGet(HttpExchange exchange) throws IOException
    {
       JsonDB jsondb = new JsonDB();
       OutputStream out = exchange.getResponseBody();
+
+      String path = exchange.getRequestURI().getPath();
+      if (path.length() <= 2) path = "/index.html";
+
+      try
+      {
+         FileResponse file = jsondb.get(path);
+
+         if (file.gzip)
+            exchange.getResponseHeaders().set("Content-Encoding","gzip");
+
+         exchange.sendResponseHeaders(200,file.size);
+         out.write(file.content);
+
+         out.flush();
+         out.close();
+      }
+      catch (Throwable t)
+      {
+        throw new IOException(t);
+      }
    }
 }

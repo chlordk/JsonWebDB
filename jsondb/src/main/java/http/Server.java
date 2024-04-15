@@ -38,7 +38,7 @@ public class Server
       Config config = Config.load(args[0],args[1],"local.json");
       JsonDB.register(config);
 
-      HttpServer server = HttpServer.create(new InetSocketAddress("localhost",6001),16);
+      HttpServer server = HttpServer.create(new InetSocketAddress("localhost",6000),16);
       server.setExecutor(Executors.newFixedThreadPool(16));
       server.createContext("/",new Handler());
       server.start();
