@@ -25,6 +25,8 @@ SOFTWARE.
 package jsondb;
 
 import java.io.File;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import jsondb.files.FileConfig;
@@ -37,10 +39,10 @@ import jsondb.database.JsonDBPool;
 
 public class Config
 {
-   private static final String PATH = "path";
    private static final String CONF = "config";
    private static final String SESS = "session";
    private static final String STTL = "timeout";
+   private static final String PATH = "location";
    private static final String FILE = "config.json";
    private static final String APPL = "application";
 
@@ -78,10 +80,18 @@ public class Config
 
       Config.inst = inst;
       Config.config = config;
-      Config.appl = get(get(APPL),PATH);
-      Config.sttl = get(get(SESS),STTL);
-      Config.logger = Applogger.setup();
 
+      JSONArray roots = get(get(APPL),PATH);
+
+      for (int i = 0; i < roots.length(); i++)
+      {
+         File test = new File(roots.getString(i));
+         if (test.exists()) {Config.appl = roots.getString(i); break;}
+      }
+
+      Config.sttl = get(get(SESS),STTL);
+
+      Config.logger = Applogger.setup();
       FileConfig.initialize();
    }
 

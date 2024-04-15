@@ -1,8 +1,7 @@
 {
    "application":
    {
-      "path": "/dist",
-		"local-path": "/Users/alhof/Repository/forms42/demo/dist"
+      "location": ["/dist","/Users/alhof/Repository/forms42/demo/dist"]
    }
    ,
    "session":

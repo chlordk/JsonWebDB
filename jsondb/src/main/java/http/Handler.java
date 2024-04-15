@@ -103,15 +103,11 @@ public class Handler implements HttpHandler
          }
          else
          {
-            if (file.gzip)
-               exchange.getResponseHeaders().set("Content-Encoding","gzip");
-
+            if (file.gzip) exchange.getResponseHeaders().set("Content-Encoding","gzip");
             exchange.sendResponseHeaders(200,file.size);
             out.write(file.content);
+            out.close();
          }
-
-         out.flush();
-         out.close();
       }
       catch (Throwable t)
       {
