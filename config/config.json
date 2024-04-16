@@ -11,46 +11,40 @@
    ,
 	"database":
    {
+		"enabled": true,
+		"use-secondary": true,
+		"replication-latency": 10,
+
 		"type": "Postgres",
+		"test": "select user",
 
 		"proxyuser": true,
 		"defaultuser": "hr",
 
-		"use-secondary": true,
-		"use-default-pool": true,
-		"replication-latency": 10,
+		"username": "hr",
+		"password": "hr",
 
 		"classes": ["org.postgresql.Driver"],
 		"password-token": "e3887d1f-bda1-425a-b30d-4065403a5be1",
 
 		"primary":
 		{
-			"test": "select user",
-
 			"min": 5,
 			"max": 60,
 
 			"max-wait": 10000,
 			"validate": 30000,
-
-			"username": "hr",
-			"password": "hr",
 
 			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
 		,
 		"secondary":
 		{
-			"test": "select user",
-
-			"min": 5,
-			"max": 60,
+			"min": 10,
+			"max": 600,
 
 			"max-wait": 10000,
 			"validate": 30000,
-
-			"username": "hr",
-			"password": "hr",
 
 			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}

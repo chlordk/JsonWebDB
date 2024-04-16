@@ -40,6 +40,7 @@ public class DefaultPool implements JsonDBPool
    private static final String QUERY = "test";
    private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
+   private static final String USESEC = "use-secondary";
    private static final String CLASSES = "classes";
    private static final String LATENCY = "replication-latency";
    private static final String PRIMARY = "primary";
@@ -49,6 +50,8 @@ public class DefaultPool implements JsonDBPool
    private static final String SECONDARY = "secondary";
 
    private final int latency;
+   private final String token;
+   private final String defusr;
    private final DatabaseType type;
 
    private final DataSource primary;
@@ -57,16 +60,37 @@ public class DefaultPool implements JsonDBPool
 
    public DefaultPool(JSONObject def)
    {
-      if (!def.has(LATENCY)) latency = 0;
-      else latency = def.getInt(LATENCY);
+      PoolProperties prm = new PoolProperties();
+      PoolProperties sec = new PoolProperties();
 
       JSONObject prmdef = def.getJSONObject(PRIMARY);
       JSONObject secdef = def.getJSONObject(SECONDARY);
 
-      primary = new DataSource(getProps(prmdef));
-      secondary = new DataSource(getProps(secdef));
+      int lat = def.getInt(LATENCY);
+      String type = def.getString(TYPE);
+      boolean secondary = def.getBoolean(USESEC);
 
-      type = DatabaseType.valueOf(prmdef.getString(TYPE));
+      String sql = Config.get(def,QUERY);
+      String usr = Config.get(def,USERNAME);
+      String pwd = Config.get(def,PASSWORD);
+
+      prm.setUsername(usr);
+      prm.setPassword(pwd);
+      prm.setValidationQuery(sql);
+
+      sec.setUsername(usr);
+      sec.setPassword(pwd);
+      sec.setValidationQuery(sql);
+
+      getCommonProps(prmdef,prm);
+      getCommonProps(secdef,sec);
+
+      this.latency = lat;
+      this.primary = new DataSource(prm);
+      this.type = DatabaseType.valueOf(type);
+
+      if (!secondary) this.secondary = null;
+      else this.secondary = new DataSource(sec);
    }
 
 
@@ -126,14 +150,9 @@ public class DefaultPool implements JsonDBPool
    }
 
 
-   public PoolProperties getProps(JSONObject def)
+   public PoolProperties getCommonProps(JSONObject def, PoolProperties props)
    {
-      PoolProperties props = new PoolProperties();
-
       String url = Config.get(def,URL);
-      String sql = Config.get(def,QUERY);
-      String usr = Config.get(def,USERNAME);
-      String pwd = Config.get(def,PASSWORD);
 
       int min = Config.get(def,MIN);
       int max = Config.get(def,MAX);
@@ -143,16 +162,12 @@ public class DefaultPool implements JsonDBPool
 
       props.setUrl(url);
 
-      props.setUsername(usr);
-      props.setPassword(pwd);
-
-      props.setValidationQuery(sql);
-      props.setValidationInterval(cval);
-
       props.setMinIdle(min);
       props.setInitialSize(0);
       props.setMaxActive(max);
+
       props.setMaxWait(wait);
+      props.setValidationInterval(cval);
 
       return(props);
    }

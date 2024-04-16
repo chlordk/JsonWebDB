@@ -41,13 +41,13 @@ import jsondb.database.JsonDBPool;
 public class Config
 {
    private static final String CONF = "config";
+   private static final String POOL = "enabled";
    private static final String SESS = "session";
    private static final String STTL = "timeout";
    private static final String PATH = "location";
    private static final String DBSC = "database";
    private static final String FILE = "config.json";
    private static final String APPL = "application";
-   private static final String POOL = "use-default-pool";
 
    private static int sttl = 0;
    private static String inst = null;
