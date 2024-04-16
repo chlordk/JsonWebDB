@@ -8,7 +8,7 @@ req_extensions         = req_ext
 x509_extensions        = x509_ext
 
 [ subject ]
-CN                     = demo
+CN                     = jsonwebdb
 
 [ req_ext ]
 subjectKeyIdentifier   = hash

@@ -76,7 +76,7 @@
           </includes>
           <archive>
             <manifest>
-              <mainClass>jsondb.objects.Test</mainClass>
+              <mainClass>http.Server</mainClass>
             </manifest>
             <addMavenDescriptor>false</addMavenDescriptor>
           </archive>

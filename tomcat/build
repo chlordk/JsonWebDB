@@ -1,2 +1,7 @@
+LOCATION=$(dirname "$0")
+
+cp $LOCATION/../security/jsonwebdb.crt $LOCATION/security
+cp $LOCATION/../security/jsonwebdb.key $LOCATION/security
+
 NAME=jsonwebdb
 docker build -t $NAME .

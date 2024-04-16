@@ -8,6 +8,14 @@
    {
       "timeout": 600
    }
+	,
+	"embedded":
+	{
+		"port": 6080,
+		"sslport": 6043,
+		"queue-length": 16,
+		"worker-threads": 16
+	}
    ,
 	"database":
    {

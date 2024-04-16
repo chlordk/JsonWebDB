@@ -111,8 +111,8 @@
                >
         <UpgradeProtocol className="org.apache.coyote.http2.Http2Protocol" />
         <SSLHostConfig>
-            <Certificate certificateKeyFile="conf/security/demo.key"
-                         certificateFile="conf/security/demo.crt"
+            <Certificate certificateKeyFile="conf/security/jsonwebdb.key"
+                         certificateFile="conf/security/jsonwebdb.crt"
                          certificateChainFile=""
                          type="RSA" />
         </SSLHostConfig>

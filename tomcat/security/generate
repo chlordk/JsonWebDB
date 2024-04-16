@@ -1,6 +1,0 @@
-keyl=2048
-rm demo* trust*
-
-openssl req -config cert.cnf \
--new -sha256 -newkey rsa:$keyl -nodes -keyout demo.key \
--x509 -days 825 -out demo.crt
