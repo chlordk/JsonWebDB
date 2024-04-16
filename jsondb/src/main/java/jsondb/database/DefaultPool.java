@@ -23,12 +23,13 @@ package jsondb.database;
 
 
 import jsondb.Config;
+import java.sql.Connection;
 import org.json.JSONObject;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 
-public class DefaultPool
+public class DefaultPool implements JsonDBPool
 {
    private static final String URL = "jdbc-url";
    private static final String MIN = "min";
@@ -44,7 +45,6 @@ public class DefaultPool
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
-   private static final String DATABASE = "database";
    private static final String SECONDARY = "secondary";
 
    private final DataSource read;
@@ -52,12 +52,63 @@ public class DefaultPool
    private final DatabaseType type;
 
 
-   public DefaultPool(JSONObject primary, JSONObject secondary)
+   public DefaultPool(JSONObject def)
    {
+      type = null;
       read = null;
       write = null;
-      type = null;
-      //PoolProperties prim = getProps(null, null)
+
+      PoolProperties prm = getProps(def.getJSONObject(PRIMARY));
+      PoolProperties sec = getProps(def.getJSONObject(SECONDARY));
+   }
+
+
+   @Override
+   public String passtoken() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'passtoken'");
+   }
+
+
+   @Override
+   public boolean proxyuser() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'proxyuser'");
+   }
+
+
+   @Override
+   public String defaultuser() {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'defaultuser'");
+   }
+
+
+   @Override
+   public DatabaseType type() throws Exception {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'type'");
+   }
+
+
+   @Override
+   public void release(Connection conn) throws Exception {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'release'");
+   }
+
+
+   @Override
+   public Connection reserve(boolean write) throws Exception {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'reserve'");
+   }
+
+
+   @Override
+   public boolean authenticate(String username, String password) throws Exception {
+      // TODO Auto-generated method stub
+      throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
    }
 
 

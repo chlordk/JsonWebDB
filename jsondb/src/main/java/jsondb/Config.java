@@ -34,6 +34,7 @@ import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import jsondb.messages.Messages;
+import jsondb.database.DefaultPool;
 import jsondb.database.JsonDBPool;
 
 
@@ -43,8 +44,10 @@ public class Config
    private static final String SESS = "session";
    private static final String STTL = "timeout";
    private static final String PATH = "location";
+   private static final String DBSC = "database";
    private static final String FILE = "config.json";
    private static final String APPL = "application";
+   private static final String POOL = "use-default-pool";
 
    private static int sttl = 0;
    private static String inst = null;
@@ -99,9 +102,11 @@ public class Config
       }
 
       Config.sttl = get(get(SESS),STTL);
-
       Config.logger = Applogger.setup();
+
       FileConfig.initialize();
+      JSONObject dbsc = config.getJSONObject(DBSC);
+      if (dbsc.getBoolean(POOL)) Config.pool = new DefaultPool(dbsc);
    }
 
    /** The instance name */
