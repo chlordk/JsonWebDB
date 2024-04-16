@@ -23,8 +23,11 @@ package jsondb.database;
 
 
 import jsondb.Config;
-import java.sql.Connection;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.logging.Level;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
@@ -52,13 +55,14 @@ public class DefaultPool implements JsonDBPool
    private final int latency;
    private final String token;
    private final String defusr;
+   private final boolean proxy;
    private final DatabaseType type;
 
    private final DataSource primary;
    private final DataSource secondary;
 
 
-   public DefaultPool(JSONObject def)
+   public DefaultPool(JSONObject def) throws Exception
    {
       PoolProperties prm = new PoolProperties();
       PoolProperties sec = new PoolProperties();
@@ -66,8 +70,11 @@ public class DefaultPool implements JsonDBPool
       JSONObject prmdef = def.getJSONObject(PRIMARY);
       JSONObject secdef = def.getJSONObject(SECONDARY);
 
-      int lat = def.getInt(LATENCY);
+      int latency = def.getInt(LATENCY);
       String type = def.getString(TYPE);
+      String token = def.getString(TOKEN);
+      String defusr = def.getString(USER);
+      boolean proxy = def.getBoolean(PROXY);
       boolean secondary = def.getBoolean(USESEC);
 
       String sql = Config.get(def,QUERY);
@@ -85,7 +92,15 @@ public class DefaultPool implements JsonDBPool
       getCommonProps(prmdef,prm);
       getCommonProps(secdef,sec);
 
-      this.latency = lat;
+      JSONArray classes = def.getJSONArray(CLASSES);
+
+      for (int i = 0; i < classes.length(); i++)
+         Class.forName(classes.getString(i));
+
+      this.proxy = proxy;
+      this.token = token;
+      this.defusr = defusr;
+      this.latency = latency;
       this.primary = new DataSource(prm);
       this.type = DatabaseType.valueOf(type);
 
@@ -95,58 +110,71 @@ public class DefaultPool implements JsonDBPool
 
 
    @Override
+   public int latency()
+   {
+      return(latency);
+   }
+
+
+   @Override
    public String passtoken()
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'passtoken'");
+      return(token);
    }
 
 
    @Override
    public boolean proxyuser()
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'proxyuser'");
+      return(proxy);
    }
 
 
    @Override
    public String defaultuser()
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'defaultuser'");
+      return(defusr);
    }
 
 
    @Override
-   public DatabaseType type() throws Exception
+   public DatabaseType type(boolean write)
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'type'");
+      return(type);
    }
 
 
    @Override
    public void release(Connection conn) throws Exception
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'release'");
+      conn.close();
    }
 
 
    @Override
    public Connection reserve(boolean write) throws Exception
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'reserve'");
+      if (write || secondary == null) return(primary.getConnection());
+      return(secondary.getConnection());
    }
 
 
    @Override
    public boolean authenticate(String username, String password) throws Exception
    {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
+      try
+      {
+         String url = secondary.getUrl();
+         Connection conn = DriverManager.getConnection(url,username,password);
+         conn.close();
+      }
+      catch (Exception e)
+      {
+         Config.logger().log(Level.INFO,username,e);
+         return(false);
+      }
+
+      return(true);
    }
 
 

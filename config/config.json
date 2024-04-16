@@ -13,7 +13,7 @@
    {
 		"enabled": true,
 		"use-secondary": true,
-		"replication-latency": 10,
+		"replication-latency": 1000,
 
 		"type": "Postgres",
 		"test": "select user",

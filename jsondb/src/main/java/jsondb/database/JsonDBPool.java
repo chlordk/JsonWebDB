@@ -29,10 +29,11 @@ import java.sql.Connection;
  */
 public interface JsonDBPool
 {
+   int latency();
    String passtoken();
    boolean proxyuser();
    String defaultuser();
-   DatabaseType type() throws Exception;
+   DatabaseType type(boolean write);
    void release(Connection conn) throws Exception;
    Connection reserve(boolean write) throws Exception;
    boolean authenticate(String username, String password) throws Exception;
