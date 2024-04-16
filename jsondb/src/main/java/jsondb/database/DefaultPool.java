@@ -71,49 +71,56 @@ public class DefaultPool implements JsonDBPool
 
 
    @Override
-   public String passtoken() {
+   public String passtoken()
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'passtoken'");
    }
 
 
    @Override
-   public boolean proxyuser() {
+   public boolean proxyuser()
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'proxyuser'");
    }
 
 
    @Override
-   public String defaultuser() {
+   public String defaultuser()
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'defaultuser'");
    }
 
 
    @Override
-   public DatabaseType type() throws Exception {
+   public DatabaseType type() throws Exception
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'type'");
    }
 
 
    @Override
-   public void release(Connection conn) throws Exception {
+   public void release(Connection conn) throws Exception
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'release'");
    }
 
 
    @Override
-   public Connection reserve(boolean write) throws Exception {
+   public Connection reserve(boolean write) throws Exception
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'reserve'");
    }
 
 
    @Override
-   public boolean authenticate(String username, String password) throws Exception {
+   public boolean authenticate(String username, String password) throws Exception
+   {
       // TODO Auto-generated method stub
       throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
    }
