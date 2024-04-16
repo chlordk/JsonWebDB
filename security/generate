@@ -1,6 +1,13 @@
 keyl=2048
+pwd=Manager1
+
 rm jsonwebdb*
 
+echo create key and self-signed certificate, key-length: $keyl
+ 
 openssl req -config certificate.cnf \
 -new -sha256 -newkey rsa:$keyl -nodes -keyout jsonwebdb.key \
 -x509 -days 825 -out jsonwebdb.crt
+
+echo package key and certificate in a p12 keystore, password: $pwd
+openssl pkcs12 -export -in jsonwebdb.crt -inkey jsonwebdb.key -out jsonwebdb.p12 -name jsonwebdb -passout pass:$pwd
