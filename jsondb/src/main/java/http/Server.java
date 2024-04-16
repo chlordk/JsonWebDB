@@ -26,6 +26,8 @@ package http;
 
 import java.net.URL;
 import java.io.File;
+import java.io.FileInputStream;
+
 import jsondb.JsonDB;
 import java.io.FilenameFilter;
 import java.net.InetSocketAddress;
@@ -55,6 +57,23 @@ public class Server
 
       //HttpsServer secsrv = HttpsServer.create(null,0);
    }
+
+
+   private SSLContext getSSLContext()
+   {
+      String path = null;
+      String type = "PKCS12";
+      String password = null;
+
+      SSLContext ctx = SSLContext.getInstance("TLS");
+
+      KeyStore ks = KeyStore.getInstance(type);
+      FileInputStream in = new FileInputStream(path);
+      ks.load(in,password); in.close();
+
+      return(null);
+   }
+
 
    private static String findAppHome()
    {
