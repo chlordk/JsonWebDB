@@ -14,8 +14,10 @@ target/
 logs/
 
 # certificate
-tomcat/security/demo.key
-tomcat/security/demo.crt
+*.key
+*.crt
+*.p12
+*.jks
 
 # Mac
 .DS_Store
