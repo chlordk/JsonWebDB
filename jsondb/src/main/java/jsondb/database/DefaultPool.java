@@ -41,25 +41,32 @@ public class DefaultPool implements JsonDBPool
    private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
    private static final String CLASSES = "classes";
+   private static final String LATENCY = "replication-latency";
    private static final String PRIMARY = "primary";
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
    private static final String SECONDARY = "secondary";
 
-   private final DataSource read;
-   private final DataSource write;
+   private final int latency;
    private final DatabaseType type;
+
+   private final DataSource primary;
+   private final DataSource secondary;
 
 
    public DefaultPool(JSONObject def)
    {
-      type = null;
-      read = null;
-      write = null;
+      if (!def.has(LATENCY)) latency = 0;
+      else latency = def.getInt(LATENCY);
 
-      PoolProperties prm = getProps(def.getJSONObject(PRIMARY));
-      PoolProperties sec = getProps(def.getJSONObject(SECONDARY));
+      JSONObject prmdef = def.getJSONObject(PRIMARY);
+      JSONObject secdef = def.getJSONObject(SECONDARY);
+
+      primary = new DataSource(getProps(prmdef));
+      secondary = new DataSource(getProps(secdef));
+
+      type = DatabaseType.valueOf(prmdef.getString(TYPE));
    }
 
 
