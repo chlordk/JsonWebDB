@@ -81,12 +81,21 @@ public class Config
       Config.inst = inst;
       Config.config = config;
 
-      JSONArray roots = get(get(APPL),PATH);
+      Object loc = get(get(APPL),PATH);
 
-      for (int i = 0; i < roots.length(); i++)
+      if (loc instanceof String)
       {
-         File test = new File(roots.getString(i));
-         if (test.exists()) {Config.appl = roots.getString(i); break;}
+         Config.appl = (String) loc;
+      }
+      else
+      {
+         JSONArray roots = (JSONArray) loc;
+
+         for (int i = 0; i < roots.length(); i++)
+         {
+            File test = new File(roots.getString(i));
+            if (test.exists()) {Config.appl = roots.getString(i); break;}
+         }
       }
 
       Config.sttl = get(get(SESS),STTL);

@@ -84,8 +84,9 @@ public class JsonDB
    public boolean modified(String path, String date)
    {
       if (date == null) return(true);
-      String modified = FileHandler.lastModified(path);
-      return(!date.equals(modified));
+      boolean modified = !date.equals(FileHandler.lastModified(path));
+      if (!modified) log(path,"Not Modified");
+      return(modified);
    }
 
    /**
@@ -128,6 +129,11 @@ public class JsonDB
       return(response);
    }
 
+
+   private void log(String path, String status)
+   {
+      Config.logger().info(String.format("%-40s %s",path,status));
+   }
 
    private void log(FileResponse response)
    {

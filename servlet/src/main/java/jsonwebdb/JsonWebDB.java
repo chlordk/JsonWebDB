@@ -56,9 +56,7 @@ public class JsonWebDB extends HttpServlet
    {
       String home = System.getenv("JsonWebDB_Home");
       String inst = System.getenv("JsonWebDB_Inst");
-
-      Config.load(home,inst);
-      JsonDB.initialize();
+      JsonDB.initialize(home,inst);
    }
 
 
@@ -72,8 +70,22 @@ public class JsonWebDB extends HttpServlet
          FileResponse file = null;
          String path = getPath(request);
 
+         if (!jsondb.modified(path,request.getHeader("If-modified-since")))
+         {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+         }
+
          file = jsondb.get(path);
+
+         if (!file.exists())
+         {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+         }
+
          response.setContentType(file.mimetype);
+         response.setHeader("Last-Modified",file.gmt());
          if (file.gzip) response.setHeader("Content-Encoding","gzip");
 
          OutputStream out = response.getOutputStream();

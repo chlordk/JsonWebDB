@@ -84,7 +84,7 @@ public class FileResponse
 
       if (!exists())
       {
-         desc = String.format("%-40s %-15s %7s",path,mime,"na");
+         desc = String.format("%-40s %s",path,"Page Not Found");
       }
       else
       {
