@@ -16,10 +16,12 @@
 		"queue-length": 16,
 		"worker-threads": 16,
 
-		"type": "pkcs12",
-		"alias": "jsonwebdb",
-		"password": "Manager1",
-		"keystore": "jsonwebdb.p12"
+		"keystore":
+		{
+			"type": "pkcs12",
+			"file": "jsonwebdb.p12",
+			"password": "Manager1"
+		}
 	}
    ,
 	"database":

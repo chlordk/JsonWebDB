@@ -45,6 +45,10 @@ import com.sun.net.httpserver.HttpsConfigurator;
 
 public class Server
 {
+   private static final String SECTION = "embedded";
+   private static final String SECURITY = "security";
+   private static final String KEYSTORE = "keystore";
+
    private static final String PORT = "port";
    private static final String SSLPORT = "ssl-port";
 
@@ -52,12 +56,8 @@ public class Server
    private static final String THREADS = "worker-threads";
 
    private static final String TYPE = "type";
-   private static final String ALIAS = "alias";
-   private static final String STORE = "keystore";
+   private static final String STORE = "file";
    private static final String PASSWORD = "password";
-
-   private static final String SECTION = "embedded";
-   private static final String SECURITY = "security";
 
    private static int port;
    private static int sslport;
@@ -66,7 +66,6 @@ public class Server
    private static int threads;
 
    private static String store;
-   private static String alias;
    private static String password;
    private static String storetype;
 
@@ -135,11 +134,11 @@ public class Server
       queue = Config.get(conf,QUEUE);
       threads = Config.get(conf,THREADS);
 
-      store = Config.get(conf,STORE);
-      alias = Config.get(conf,ALIAS);
+      JSONObject ssl = Config.get(conf,KEYSTORE);
 
-      storetype = Config.get(conf,TYPE);
-      password = Config.get(conf,PASSWORD);
+      store = Config.get(ssl,STORE);
+      storetype = Config.get(ssl,TYPE);
+      password = Config.get(ssl,PASSWORD);
    }
 
 
