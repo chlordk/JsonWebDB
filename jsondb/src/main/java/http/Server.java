@@ -25,26 +25,22 @@ SOFTWARE.
 package http;
 
 import java.net.URL;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.io.File;
-import java.io.FileInputStream;
-
 import jsondb.Config;
 import jsondb.JsonDB;
 import org.json.JSONObject;
+import java.security.KeyStore;
 import java.io.FilenameFilter;
-
-import javax.net.ssl.KeyManagerFactory;
+import java.io.FileInputStream;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
+import java.security.SecureRandom;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpsConfigurator;
-import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
+import com.sun.net.httpserver.HttpsConfigurator;
 
 
 public class Server
