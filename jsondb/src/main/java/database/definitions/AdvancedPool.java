@@ -19,15 +19,16 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package jsondb.database;
+package database.definitions;
 
 import java.sql.Connection;
+import database.DatabaseType;
 
 /**
  * The methods needed for JsonDB to work
  * Methods are hopefully self explanatory.
  */
-public interface JsonDBPool
+public interface AdvancedPool
 {
    int latency();
    String passtoken();

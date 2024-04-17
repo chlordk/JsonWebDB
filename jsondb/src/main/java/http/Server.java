@@ -66,13 +66,11 @@ public class Server
    private static int threads;
 
    private static String store;
-   private static String password;
    private static String storetype;
-
-   private static SSLContext ctx;
 
    public static void main(String[] args) throws Exception
    {
+      String password;
       InetSocketAddress addr;
 
       if (args.length != 1)
@@ -85,25 +83,31 @@ public class Server
       String root = findAppHome();
       JsonDB.initialize(root,inst);
 
-      loadServerConfig();
-      createSSLContext();
+      password = loadServerConfig();
+      SSLContext ctx = createSSLContext(password);
 
-      addr = new InetSocketAddress(port);
-      HttpServer defsrv = HttpServer.create(addr,queue);
-      defsrv.setExecutor(Executors.newFixedThreadPool(threads));
-      defsrv.createContext("/",new Handler());
-      defsrv.start();
+      if (port > 0)
+      {
+         addr = new InetSocketAddress(port);
+         HttpServer defsrv = HttpServer.create(addr,queue);
+         defsrv.setExecutor(Executors.newFixedThreadPool(threads));
+         defsrv.createContext("/",new Handler());
+         defsrv.start();
+      }
 
-      addr = new InetSocketAddress(sslport);
-      HttpsServer secsrv = HttpsServer.create(addr,queue);
-      secsrv.setHttpsConfigurator(new HttpsConfigurator(ctx));
-      secsrv.setExecutor(Executors.newFixedThreadPool(threads));
-      secsrv.createContext("/",new Handler());
-      secsrv.start();
+      if (sslport > 0)
+      {
+         addr = new InetSocketAddress(sslport);
+         HttpsServer secsrv = HttpsServer.create(addr,queue);
+         secsrv.setHttpsConfigurator(new HttpsConfigurator(ctx));
+         secsrv.setExecutor(Executors.newFixedThreadPool(threads));
+         secsrv.createContext("/",new Handler());
+         secsrv.start();
+      }
    }
 
 
-   private static void createSSLContext() throws Exception
+   private static SSLContext createSSLContext(String password) throws Exception
    {
       String path = Config.path(SECURITY,store);
 
@@ -119,12 +123,14 @@ public class Server
       TrustManagerFactory tfac = TrustManagerFactory.getInstance(talg);
       tfac.init(ks);
 
-      ctx = SSLContext.getInstance("TLS");
+      SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(kfac.getKeyManagers(),tfac.getTrustManagers(),new SecureRandom());
+
+      return(ctx);
    }
 
 
-   private static void loadServerConfig()
+   private static String loadServerConfig()
    {
       JSONObject conf = Config.get(SECTION);
 
@@ -138,7 +144,9 @@ public class Server
 
       store = Config.get(ssl,STORE);
       storetype = Config.get(ssl,TYPE);
-      password = Config.get(ssl,PASSWORD);
+      String password = Config.get(ssl,PASSWORD);
+
+      return(password);
    }
 
 

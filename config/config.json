@@ -11,8 +11,8 @@
 	,
 	"embedded":
 	{
-		"port": 6080,
-		"ssl-port": 6043,
+		"port": 6001,
+		"ssl-port": 6002,
 		"queue-length": 16,
 		"worker-threads": 16,
 
@@ -30,7 +30,7 @@
 		"use-secondary": true,
 		"replication-latency": 1000,
 
-		"type": "Postgres",
+		"type": "PostgreSQL",
 		"test": "select user",
 
 		"proxyuser": true,

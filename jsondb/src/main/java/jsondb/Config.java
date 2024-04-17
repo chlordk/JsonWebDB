@@ -25,7 +25,6 @@ SOFTWARE.
 package jsondb;
 
 import java.io.File;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -34,8 +33,7 @@ import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import jsondb.messages.Messages;
-import jsondb.database.DefaultPool;
-import jsondb.database.JsonDBPool;
+import database.definitions.AdvancedPool;
 
 
 public class Config
@@ -57,7 +55,7 @@ public class Config
    private static JSONObject config = null;
 
    private static String root = null;
-   private static JsonDBPool pool = null;
+   private static AdvancedPool pool = null;
 
 
    /**
@@ -106,7 +104,9 @@ public class Config
 
       FileConfig.initialize();
       JSONObject dbsc = config.getJSONObject(DBSC);
-      if (dbsc.getBoolean(POOL)) Config.pool = new DefaultPool(dbsc);
+
+      if (dbsc.getBoolean(POOL))
+         Config.pool = new database.AdvancedPool(dbsc);
    }
 
    /** The instance name */
@@ -140,13 +140,13 @@ public class Config
    }
 
    /** Get the pool */
-   public static JsonDBPool pool()
+   public static AdvancedPool pool()
    {
       return(pool);
    }
 
    /** Inject the pool */
-   protected static void pool(JsonDBPool pool)
+   protected static void pool(AdvancedPool pool)
    {
       Config.pool = pool;
    }

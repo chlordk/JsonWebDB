@@ -24,9 +24,8 @@ SOFTWARE.
 
 package jsonwebdb;
 
-import jsondb.Config;
 import jsondb.JsonDB;
-import org.json.JSONObject;
+import jsondb.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -97,7 +96,7 @@ public class JsonWebDB extends HttpServlet
       if (meth.equals("POST"))
       {
          String body = getBody(request);
-         JSONObject json = jsondb.execute(body);
+         Response json = jsondb.execute(body);
 
          response.setContentType(jsondb.mimetype("json"));
          OutputStream out = response.getOutputStream();
@@ -106,7 +105,7 @@ public class JsonWebDB extends HttpServlet
          return;
       }
 
-      throw new ServletException("Method '"+meth+"'' not supported");
+      throw new ServletException("Method '"+meth+"' not supported");
    }
 
 

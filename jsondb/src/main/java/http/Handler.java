@@ -27,7 +27,7 @@ package http;
 import jsondb.JsonDB;
 import jsondb.Config;
 import java.util.List;
-import org.json.JSONObject;
+import jsondb.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,7 +68,7 @@ public class Handler implements HttpHandler
 
       try
       {
-         JSONObject response = jsondb.execute(request);
+         Response response = jsondb.execute(request);
          byte[] content = response.toString(2).getBytes();
 
          exchange.sendResponseHeaders(200,content.length);

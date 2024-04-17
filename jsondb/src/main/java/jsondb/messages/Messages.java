@@ -28,6 +28,7 @@ import java.io.File;
 import jsondb.Config;
 import java.util.Locale;
 import java.io.PrintStream;
+import java.util.logging.Level;
 import java.io.FileInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.PropertyResourceBundle;
@@ -40,12 +41,23 @@ public class Messages
    private static final PropertyResourceBundle messages = load();
 
 
-   public static String get(String name, Object ...args) throws Exception
+   public static String get(String name, Object ...args)
    {
       if (messages == null)
-         return("No message files were found. Language: "+Locale.getDefault().getLanguage());
+      {
+         Config.logger().severe("No message files were found");
+         return("No message files were found");
+      }
 
-      else return(format(messages.getString(name),args));
+      try
+      {
+         return(format(messages.getString(name),args));
+      }
+      catch (Exception e)
+      {
+         Config.logger().log(Level.SEVERE,name,e);
+         return("No message found for "+name);
+      }
    }
 
    private static String format(String msg, Object ...args) throws Exception

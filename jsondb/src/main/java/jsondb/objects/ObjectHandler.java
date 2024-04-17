@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb.objects;
 
+import jsondb.Response;
 import org.json.JSONObject;
 import java.lang.reflect.Method;
 import jsondb.messages.Messages;
@@ -38,7 +39,7 @@ public class ObjectHandler
    private static final String location = ObjectHandler.class.getPackage().getName();
 
 
-   public static JSONObject handle(JSONObject request) throws Exception
+   public static Response handle(JSONObject request) throws Exception
    {
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
@@ -48,7 +49,7 @@ public class ObjectHandler
          String invk = payload.getString("invoke");
          DatabaseRequest dbrq = getInstance(names[0],payload);
          Method method = dbrq.getClass().getMethod(invk);
-         return((JSONObject) method.invoke(dbrq));
+         return((Response) method.invoke(dbrq));
       }
       else
          throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));

@@ -19,7 +19,7 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package jsondb.database;
+package database;
 
 
 import jsondb.Config;
@@ -32,7 +32,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 
-public class DefaultPool implements JsonDBPool
+public class AdvancedPool implements database.definitions.AdvancedPool
 {
    private static final String URL = "jdbc-url";
    private static final String MIN = "min";
@@ -62,7 +62,7 @@ public class DefaultPool implements JsonDBPool
    private final DataSource secondary;
 
 
-   public DefaultPool(JSONObject def) throws Exception
+   public AdvancedPool(JSONObject def) throws Exception
    {
       PoolProperties prm = new PoolProperties();
       PoolProperties sec = new PoolProperties();
@@ -102,7 +102,7 @@ public class DefaultPool implements JsonDBPool
       this.defusr = defusr;
       this.latency = latency;
       this.primary = new DataSource(prm);
-      this.type = DatabaseType.valueOf(type);
+      this.type = DatabaseType.getType(type);
 
       if (!secondary) this.secondary = null;
       else this.secondary = new DataSource(sec);

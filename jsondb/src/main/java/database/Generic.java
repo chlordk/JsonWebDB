@@ -19,18 +19,19 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package jsondb.database;
+package database;
 
-public enum DatabaseType
+import database.definitions.AdvancedPool;
+import database.definitions.JdbcInterface;
+
+
+public class Generic extends JdbcInterface
 {
-   Oracle,
-   Postgres,
-   Generic;
+   private final AdvancedPool pool;
 
-   public DatabaseType getType(String name)
+
+   public Generic(AdvancedPool pool)
    {
-      String f = name.substring(0,1);
-      String type = f.toUpperCase() + name.substring(1).toLowerCase();
-      return(DatabaseType.valueOf(type));
+      this.pool = pool;
    }
 }

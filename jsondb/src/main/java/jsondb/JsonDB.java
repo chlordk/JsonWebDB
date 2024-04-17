@@ -25,10 +25,11 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
+
+import database.definitions.AdvancedPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
 import jsondb.state.StateHandler;
-import jsondb.database.JsonDBPool;
 
 /**
  * Public interface to the backend
@@ -58,7 +59,7 @@ public class JsonDB
     * Inject custom pool implementation
     * @param pool the custom pool
     */
-   public static void setPool(JsonDBPool pool)
+   public static void setPool(AdvancedPool pool)
    {
       Config.pool(pool);
    }
@@ -108,7 +109,7 @@ public class JsonDB
     * @return response
     * @throws Exception
     */
-   public JSONObject execute(String request) throws Exception
+   public Response execute(String request) throws Exception
    {
       return(execute(new JSONObject(request)));
    }
@@ -120,13 +121,13 @@ public class JsonDB
     * @return the response
     * @throws Exception
     */
-   public JSONObject execute(JSONObject request) throws Exception
+   public Response execute(JSONObject request) throws Exception
    {
       JSONObject response = new JSONObject();
       response.put("success",true);
       response.put("version",version);
       log(request,response);
-      return(response);
+      return(new Response(response));
    }
 
 
