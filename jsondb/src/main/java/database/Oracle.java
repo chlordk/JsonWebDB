@@ -27,11 +27,8 @@ import database.definitions.JdbcInterface;
 
 public class Oracle extends JdbcInterface
 {
-  private final AdvancedPool pool;
-
-
   public Oracle(AdvancedPool pool)
   {
-     this.pool = pool;
+    super(pool);
   }
 }

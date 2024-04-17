@@ -27,11 +27,8 @@ import database.definitions.JdbcInterface;
 
 public class Generic extends JdbcInterface
 {
-   private final AdvancedPool pool;
-
-
    public Generic(AdvancedPool pool)
    {
-      this.pool = pool;
+      super(pool);
    }
 }

@@ -21,7 +21,25 @@
 
 package database.definitions;
 
+import java.sql.Connection;
+
+
 public abstract class JdbcInterface
 {
+   protected final AdvancedPool pool;
 
+   public JdbcInterface(AdvancedPool pool)
+   {
+      this.pool = pool;
+   }
+
+   public void release(Connection conn) throws Exception
+   {
+      pool.release(conn);
+   }
+
+   public Connection reserve(boolean write) throws Exception
+   {
+      return(pool.reserve(write));
+   }
 }

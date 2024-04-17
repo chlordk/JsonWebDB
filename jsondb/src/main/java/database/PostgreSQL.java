@@ -27,11 +27,8 @@ import database.definitions.JdbcInterface;
 
 public class PostgreSQL extends JdbcInterface
 {
-  private final AdvancedPool pool;
-
-
   public PostgreSQL(AdvancedPool pool)
   {
-     this.pool = pool;
+    super(pool);
   }
 }
