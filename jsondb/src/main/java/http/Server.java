@@ -25,21 +25,61 @@ SOFTWARE.
 package http;
 
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.io.File;
 import java.io.FileInputStream;
 
+import jsondb.Config;
 import jsondb.JsonDB;
+import org.json.JSONObject;
 import java.io.FilenameFilter;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpsConfigurator;
+import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 
 
 public class Server
 {
+   private static final String PORT = "port";
+   private static final String SSLPORT = "ssl-port";
+
+   private static final String QUEUE = "queue-length";
+   private static final String THREADS = "worker-threads";
+
+   private static final String TYPE = "type";
+   private static final String ALIAS = "alias";
+   private static final String STORE = "keystore";
+   private static final String PASSWORD = "password";
+
+   private static final String SECTION = "embedded";
+   private static final String SECURITY = "security";
+
+   private static int port;
+   private static int sslport;
+
+   private static int queue;
+   private static int threads;
+
+   private static String store;
+   private static String alias;
+   private static String password;
+   private static String storetype;
+
+   private static SSLContext ctx;
+
    public static void main(String[] args) throws Exception
    {
+      InetSocketAddress addr;
+
       if (args.length != 1)
       {
          System.err.println("Program requires exactly one argument [instance name]");
@@ -50,28 +90,60 @@ public class Server
       String root = findAppHome();
       JsonDB.initialize(root,inst);
 
-      HttpServer server = HttpServer.create(new InetSocketAddress("localhost",6001),16);
-      server.setExecutor(Executors.newFixedThreadPool(16));
-      server.createContext("/",new Handler());
-      server.start();
+      loadServerConfig();
+      createSSLContext();
 
-      //HttpsServer secsrv = HttpsServer.create(null,0);
+      addr = new InetSocketAddress(port);
+      HttpServer defsrv = HttpServer.create(addr,queue);
+      defsrv.setExecutor(Executors.newFixedThreadPool(threads));
+      defsrv.createContext("/",new Handler());
+      defsrv.start();
+
+      addr = new InetSocketAddress(sslport);
+      HttpsServer secsrv = HttpsServer.create(addr,queue);
+      secsrv.setHttpsConfigurator(new HttpsConfigurator(ctx));
+      secsrv.setExecutor(Executors.newFixedThreadPool(threads));
+      secsrv.createContext("/",new Handler());
+      secsrv.start();
    }
 
 
-   private SSLContext getSSLContext()
+   private static void createSSLContext() throws Exception
    {
-      String path = null;
-      String type = "PKCS12";
-      String password = null;
+      String path = Config.path(SECURITY,store);
 
-      SSLContext ctx = SSLContext.getInstance("TLS");
-
-      KeyStore ks = KeyStore.getInstance(type);
+      KeyStore ks = KeyStore.getInstance(storetype);
       FileInputStream in = new FileInputStream(path);
-      ks.load(in,password); in.close();
+      ks.load(in,password.toCharArray()); in.close();
 
-      return(null);
+      String kalg = KeyManagerFactory.getDefaultAlgorithm();
+      KeyManagerFactory kfac = KeyManagerFactory.getInstance(kalg);
+      kfac.init(ks,password.toCharArray());
+
+      String talg = TrustManagerFactory.getDefaultAlgorithm();
+      TrustManagerFactory tfac = TrustManagerFactory.getInstance(talg);
+      tfac.init(ks);
+
+      ctx = SSLContext.getInstance("TLS");
+      ctx.init(kfac.getKeyManagers(),tfac.getTrustManagers(),new SecureRandom());
+   }
+
+
+   private static void loadServerConfig()
+   {
+      JSONObject conf = Config.get(SECTION);
+
+      port = Config.get(conf,PORT);
+      sslport = Config.get(conf,SSLPORT);
+
+      queue = Config.get(conf,QUEUE);
+      threads = Config.get(conf,THREADS);
+
+      store = Config.get(conf,STORE);
+      alias = Config.get(conf,ALIAS);
+
+      storetype = Config.get(conf,TYPE);
+      password = Config.get(conf,PASSWORD);
    }
 
 
