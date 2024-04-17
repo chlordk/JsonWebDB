@@ -80,7 +80,6 @@ public class FileCache
       private String path;
       private long modified;
       private byte[] content;
-      private String mimetype;
       private boolean gzipped;
 
       private CacheEntry(String path, boolean gzip) throws Exception

@@ -27,6 +27,8 @@ package jsondb.objects;
 import jsondb.Config;
 import jsondb.Response;
 import org.json.JSONObject;
+import jsondb.messages.Messages;
+import database.definitions.JdbcInterface;
 
 
 public class Session implements DatabaseRequest
@@ -35,6 +37,9 @@ public class Session implements DatabaseRequest
 
    private static final String SESSION = "session";
    private static final String USERNAME = "username";
+   private static final String PASSWORD = "password";
+   private static final String PASSTOKEN = "password-token";
+   private static final String DATASECTION = "connection-data";
 
 
    public Session(JSONObject definition) throws Exception
@@ -45,12 +50,54 @@ public class Session implements DatabaseRequest
 
    public Response connect() throws Exception
    {
+      String token = null;
+      String password = null;
       JSONObject response = new JSONObject();
       String username = Config.pool().defaultuser();
-      if (definition.has(USERNAME)) username = definition.getString(USERNAME);
-      response.put("success",true);
-      response.put("username",username);
-      return(new Response(response));
+
+      JSONObject data = definition.getJSONObject(DATASECTION);
+
+      if (data.has(USERNAME))
+         username = data.getString(USERNAME);
+
+      if (data.has(PASSWORD))
+         password = data.getString(PASSWORD);
+
+      if (data.has(PASSTOKEN))
+         token = data.getString(PASSTOKEN);
+
+      data.remove(PASSWORD);
+      data.remove(PASSTOKEN);
+
+      try
+      {
+         boolean authenticated = false;
+         JdbcInterface db = JdbcInterface.getInstance(false);
+
+         if (token != null && token.equals(db.passtoken())) authenticated = true;
+         else if (password != null && db.authenticate(username,password)) authenticated = true;
+
+         if (authenticated)
+         {
+            String guid = jsondb.Session.create(username).getGuid();
+
+            response.put("success",true);
+            response.put("guid",guid);
+
+            return(new Response(response));
+         }
+         else
+         {
+            response.put("success",false);
+            response.put("message",Messages.get("AUTHENTICATION_FAILED"));
+            return(new Response(response));
+
+         }
+      }
+      catch (Exception e)
+      {
+         return(new Response().exception(e));
+      }
    }
 
 

@@ -47,6 +47,7 @@ public class ObjectHandler
       if (names != null && names.length == 1)
       {
          String invk = payload.getString("invoke");
+         invk = invk.substring(0,invk.indexOf("("));
          DatabaseRequest dbrq = getInstance(names[0],payload);
          Method method = dbrq.getClass().getMethod(invk);
          return((Response) method.invoke(dbrq));

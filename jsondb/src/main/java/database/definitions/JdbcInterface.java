@@ -23,14 +23,41 @@ package database.definitions;
 
 import java.sql.Connection;
 
+import jsondb.Config;
+
 
 public abstract class JdbcInterface
 {
    protected final AdvancedPool pool;
 
+   public static JdbcInterface getInstance(boolean write) throws Exception
+   {
+      return(Config.pool().type(write).getInstance());
+   }
+
    public JdbcInterface(AdvancedPool pool)
    {
       this.pool = pool;
+   }
+
+   public int latency()
+   {
+      return(pool.latency());
+   }
+
+   public String passtoken()
+   {
+      return(pool.passtoken());
+   }
+
+   public String defaultuser()
+   {
+      return(pool.defaultuser());
+   }
+
+   public boolean proxy()
+   {
+      return(pool.proxy());
    }
 
    public void release(Connection conn) throws Exception
@@ -41,5 +68,10 @@ public abstract class JdbcInterface
    public Connection reserve(boolean write) throws Exception
    {
       return(pool.reserve(write));
+   }
+
+   public boolean authenticate(String username, String password) throws Exception
+   {
+      return(pool.authenticate(username,password));
    }
 }

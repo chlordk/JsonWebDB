@@ -37,7 +37,8 @@
                {
                   "username": {"type": "string"},
                   "password": {"type": "string"},
-                  "dedicated": {"type": "boolean"}
+                  "dedicated": {"type": "boolean"},
+                  "password-token": {"type": "string"}
                   ,
                   "client-info":
                   {

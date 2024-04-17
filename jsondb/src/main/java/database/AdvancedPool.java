@@ -124,7 +124,7 @@ public class AdvancedPool implements database.definitions.AdvancedPool
 
 
    @Override
-   public boolean proxyuser()
+   public boolean proxy()
    {
       return(proxy);
    }

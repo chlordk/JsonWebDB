@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import database.definitions.AdvancedPool;
 import jsondb.files.FileHandler;
 import jsondb.files.FileResponse;
+import jsondb.objects.ObjectHandler;
 import jsondb.state.StateHandler;
 
 /**
@@ -123,11 +124,9 @@ public class JsonDB
     */
    public Response execute(JSONObject request) throws Exception
    {
-      JSONObject response = new JSONObject();
-      response.put("success",true);
-      response.put("version",version);
+      Response response = ObjectHandler.handle(request);
       log(request,response);
-      return(new Response(response));
+      return(response);
    }
 
 
@@ -141,7 +140,7 @@ public class JsonDB
       Config.logger().info(response.toString());
    }
 
-   private void log(JSONObject request,JSONObject response)
+   private void log(JSONObject request, Response response)
    {
       Config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }

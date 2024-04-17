@@ -50,7 +50,7 @@ public class StateHandler extends Thread
       (new StateHandler()).start();
    }
 
-   public static synchronized String getConnection(String guid) throws Exception
+   public static synchronized String getSession(String guid) throws Exception
    {
       int pos = guid.indexOf(':');
       guid = guid.substring(pos+1);
@@ -64,7 +64,7 @@ public class StateHandler extends Thread
    }
 
 
-   public static synchronized String createConnection(String username) throws Exception
+   public static synchronized String createSession(String username) throws Exception
    {
       String guid = null;
       boolean done = false;

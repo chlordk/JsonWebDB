@@ -31,8 +31,8 @@ import database.DatabaseType;
 public interface AdvancedPool
 {
    int latency();
+   boolean proxy();
    String passtoken();
-   boolean proxyuser();
    String defaultuser();
    DatabaseType type(boolean write);
    void release(Connection conn) throws Exception;
