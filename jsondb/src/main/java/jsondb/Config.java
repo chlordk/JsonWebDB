@@ -61,18 +61,35 @@ public class Config
    /**
     *
     * @param root the root directory of JsonWebDB
-    * @param inst the instance name. Most often more servers will run
+    * @param inst the instance name.
     * @return The parsed config with some helper methods to navigate the config.
     * @throws Exception
     */
-   protected static synchronized void load(String root, String inst) throws Exception
+    protected static synchronized void load(String root, String inst) throws Exception
+    {
+      load(root,inst,FILE);
+    }
+
+
+   /**
+    *
+    * @param root the root directory of JsonWebDB
+    * @param inst the instance name
+    * @param file the configuration file name
+    * @return The parsed config with some helper methods to navigate the config
+    * @throws Exception
+    */
+   protected static synchronized void load(String root, String inst, String file) throws Exception
    {
       if (inst.contains(":"))
          throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
 
+      if (file.indexOf('.') < 0)
+         file += ".json";
+
       Config.root = root;
       inst = inst.toLowerCase();
-      String path = path(CONF,FILE);
+      String path = path(CONF,file);
 
       FileInputStream in = new FileInputStream(path);
       JSONTokener tokener = new JSONTokener(in);
@@ -82,23 +99,7 @@ public class Config
       Config.inst = inst;
       Config.config = config;
 
-      Object loc = get(get(APPL),PATH);
-
-      if (loc instanceof String)
-      {
-         Config.appl = (String) loc;
-      }
-      else
-      {
-         JSONArray roots = (JSONArray) loc;
-
-         for (int i = 0; i < roots.length(); i++)
-         {
-            File test = new File(roots.getString(i));
-            if (test.exists()) {Config.appl = roots.getString(i); break;}
-         }
-      }
-
+      Config.appl = get(get(APPL),PATH);
       Config.sttl = get(get(SESS),STTL);
       Config.logger = Applogger.setup();
 

@@ -43,11 +43,27 @@ public class JsonDB
    /**
     * Finalizes setup and starts necessary services.
     * After this, the server is ready to accept requests.
+    * @param root the root directory of JsonWebDB
+    * @param inst the instance name
     * @throws Exception
     */
-   public static void initialize(String root, String inst) throws Exception
+    public static void initialize(String root, String inst) throws Exception
+    {
+      initialize(root,inst,null);
+    }
+
+
+   /**
+    * Finalizes setup and starts necessary services.
+    * After this, the server is ready to accept requests.
+    * @param root the root directory of JsonWebDB
+    * @param inst the instance name
+    * @param file the configuration file name
+    * @throws Exception
+    */
+   public static void initialize(String root, String inst, String file) throws Exception
    {
-      Config.load(root,inst);
+      Config.load(root,inst,file);
       StateHandler.initialize();
 
       Config.logger().info(".......................................");

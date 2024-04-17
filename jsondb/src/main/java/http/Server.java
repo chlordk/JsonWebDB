@@ -70,18 +70,45 @@ public class Server
 
    public static void main(String[] args) throws Exception
    {
-      String password;
-      InetSocketAddress addr;
+      String config = null;
+      String password = null;
+      InetSocketAddress addr = null;
 
-      if (args.length != 1)
+      int arg = 0;
+      int len = args.length;
+
+      for(String a : args) System.out.println(a);
+
+      while (arg < len)
       {
-         System.err.println("Program requires exactly one argument [instance name]");
+         if (args[arg].equals("-c") || args[arg].equals("--config"))
+         {
+            if (args.length > arg)
+            {
+               len -= 2;
+               config = args[arg+1];
+
+               for (int j = arg; j < args.length; j++)
+                  args[j] = j < args.length - 2 ? args[j+2] : null;
+
+               for(String a : args) System.out.println(a);
+            }
+
+            continue;
+         }
+
+         arg++;
+      }
+
+      if (len != 1)
+      {
+         System.err.println("args: [--config|-c config-file] instance-name");
          System.exit(-1);
       }
 
       String inst = args[0];
       String root = findAppHome();
-      JsonDB.initialize(root,inst);
+      JsonDB.initialize(root,inst,config);
 
       password = loadServerConfig();
       SSLContext ctx = createSSLContext(password);

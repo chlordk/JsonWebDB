@@ -1,7 +1,7 @@
 {
    "application":
    {
-      "location": "/Users/alhof/Repository/forms42/demo/dist"
+      "location": "/dist"
    }
    ,
    "session":
@@ -50,7 +50,7 @@
 			"max-wait": 10000,
 			"validate": 30000,
 
-			"jdbc-url": "jdbc:postgresql://localhost:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
 		,
 		"secondary":
@@ -61,7 +61,7 @@
 			"max-wait": 10000,
 			"validate": 30000,
 
-			"jdbc-url": "jdbc:postgresql://localhost:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			"jdbc-url": "jdbc:postgresql://host.docker.internal:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
    }
    ,
