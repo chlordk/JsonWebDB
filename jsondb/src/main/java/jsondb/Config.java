@@ -84,6 +84,9 @@ public class Config
       if (inst.contains(":"))
          throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
 
+      if (file == null)
+         file = FILE;
+
       if (file.indexOf('.') < 0)
          file += ".json";
 

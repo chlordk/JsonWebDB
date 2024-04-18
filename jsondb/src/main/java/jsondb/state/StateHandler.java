@@ -74,7 +74,7 @@ public class StateHandler extends Thread
          FileOutputStream fout = null;
          guid = UUID.randomUUID().toString();
 
-         guid = guid.replaceAll(".","_");
+         guid = guid.replaceAll("\\.","_");
          File conn = new File(path(guid));
 
          if (!conn.exists())
