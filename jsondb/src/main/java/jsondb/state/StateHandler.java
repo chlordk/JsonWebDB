@@ -89,8 +89,8 @@ public class StateHandler extends Thread
             SessionInfo info = new SessionInfo(session);
 
             entry.put("user",info.user);
-            entry.put("inst",info.inst);
             entry.put("session",info.guid);
+            entry.put("instance",info.inst);
             entry.put("last-modified",info.age+" secs");
 
             File[] content = session.getParentFile().listFiles();
