@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.UUID;
 import utils.JSONOObject;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.logging.Level;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -70,20 +72,46 @@ public class StateHandler extends Thread
    }
 
 
-   public static JSONArray list() throws Exception
+   public static JSONObject list() throws Exception
    {
-      JSONArray response = new JSONArray();
+      JSONOObject response = new JSONOObject();
+
       File root = new File(StateHandler.path);
 
       if (root.exists())
       {
-         for(File file : root.listFiles())
+         File[] state = root.listFiles();
+
+         JSONArray processes = new JSONArray();
+         response.put("processes",processes);
+
+         for(File file : state)
+         {
+            if (file.getName().endsWith("."+PID))
+            {
+               String inst = file.getName();
+               inst = inst.substring(0,inst.length()-PID.length()-1);
+
+               FileInputStream in = new FileInputStream(file);
+               String pid = new String(in.readAllBytes()); in.close();
+
+               JSONOObject entry = new JSONOObject();
+               entry.put("instance",inst);
+               entry.put("process#",pid);
+               processes.put(entry);
+            }
+         }
+
+         JSONArray sessions = new JSONArray();
+         response.put("sessions",sessions);
+
+         for(File file : state)
          {
             if (!file.isDirectory())
                continue;
 
             JSONOObject entry = new JSONOObject();
-            response.put(entry);
+            sessions.put(entry);
 
             File session = sesFile(file.getName());
             SessionInfo info = new SessionInfo(session);
@@ -93,12 +121,13 @@ public class StateHandler extends Thread
             entry.put("instance",info.inst);
             entry.put("username",info.user);
 
+            /* Add cursors and transcactions
             File[] content = session.getParentFile().listFiles();
 
             for(File child : content)
             {
-
             }
+            */
          }
       }
 

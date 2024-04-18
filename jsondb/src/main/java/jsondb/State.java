@@ -25,7 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import http.Server;
-import org.json.JSONArray;
+import org.json.JSONObject;
 import jsondb.state.StateHandler;
 
 
@@ -35,7 +35,7 @@ public class State
    {
       String root = Server.findAppHome();
       JsonDB.initialize(root,"admin");
-      JSONArray list = StateHandler.list();
+      JSONObject list = StateHandler.list();
       System.out.println(list.toString(2));
    }
 }
