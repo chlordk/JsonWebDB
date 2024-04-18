@@ -19,6 +19,12 @@ public class Response
       this.payload = response;
    }
 
+   public JSONObject put(String name, Object value)
+   {
+      if (payload == null) return(null);
+      return(payload.put(name,value));
+   }
+
    public JSONObject payload()
    {
       return(payload);

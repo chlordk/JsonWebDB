@@ -140,6 +140,7 @@ public class JsonDB
    public Response execute(JSONObject request) throws Exception
    {
       Response response = ObjectHandler.handle(request);
+      response.put("version",version);
       log(request,response);
       return(response);
    }
