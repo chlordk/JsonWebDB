@@ -119,7 +119,7 @@ public class StateHandler extends Thread
       if (!file.exists()) return(false);
 
       file.delete();
-      deletecursors(session);
+      deletestate(session);
 
       return(true);
    }
@@ -203,7 +203,7 @@ public class StateHandler extends Thread
                   guid = guid.substring(0,guid.length()-4);
 
                   session.delete();
-                  deletecursors(file.getName()+":"+guid);
+                  deletestate(file.getName()+":"+guid);
                }
             }
          }
@@ -211,23 +211,24 @@ public class StateHandler extends Thread
    }
 
 
-   private static void deletecursors(String session)
+   private static void deletestate(String session)
    {
       int pos = session.indexOf(':');
-      String name = session.substring(pos+1);
-      String path = Config.path(STATE,SHARED,name);
+      String inst = session.substring(0,pos);
+      String guid = session.substring(pos+1);
+      String path = Config.path(STATE,SHARED,inst+"."+guid);
 
-      File root = new File(path);
-      System.out.println("deletecursors");
+      File state = new File(path);
+      System.out.println("deletecursors "+path);
 
-      if (root.exists())
+      if (state.exists())
       {
-         for(File file : root.listFiles())
+         for(File file : state.listFiles())
          {
             if (file.getName().endsWith("."+TRX))
                continue;
 
-            //file.delete();
+            file.delete();
          }
       }
    }
