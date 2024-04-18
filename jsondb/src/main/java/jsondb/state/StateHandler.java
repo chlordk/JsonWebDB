@@ -28,8 +28,8 @@ import java.io.File;
 import jsondb.Config;
 import java.util.Date;
 import java.util.UUID;
+import utils.JSONOObject;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import java.util.logging.Level;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -82,16 +82,16 @@ public class StateHandler extends Thread
             if (!file.isDirectory())
                continue;
 
-            JSONObject entry = new JSONObject();
+            JSONOObject entry = new JSONOObject();
             response.put(entry);
 
             File session = sesFile(file.getName());
             SessionInfo info = new SessionInfo(session);
 
-            entry.put("user",info.user);
             entry.put("session",info.guid);
+            entry.put("accessed",info.age+" secs");
             entry.put("instance",info.inst);
-            entry.put("last-modified",info.age+" secs");
+            entry.put("username",info.user);
 
             File[] content = session.getParentFile().listFiles();
 
