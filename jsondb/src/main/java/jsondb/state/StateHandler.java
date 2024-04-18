@@ -34,26 +34,45 @@ import java.io.FileOutputStream;
 
 public class StateHandler extends Thread
 {
+   private static long pid;
+
    private static String inst = null;
    private static String path = null;
 
    private static final int MAXINT = 60000;
+
+   private static final String PID = "pid";
    private static final String STATE = "state";
 
 
    public static void initialize() throws Exception
    {
+      FileOutputStream pf = null;
+
       StateHandler.inst = Config.inst();
       StateHandler.path = Config.path(STATE,inst);
 
       (new File(path)).mkdirs();
       (new StateHandler()).start();
+
+      pid = ProcessHandle.current().pid();
+      pf = new FileOutputStream(path+File.separator+PID);
+      pf.write((pid+"").getBytes()); pf.close();
+
+      Thread shutdown = new Thread(() -> StateHandler.removePidFile());
+      Runtime.getRuntime().addShutdownHook(shutdown);
+   }
+
+   public static void removePidFile()
+   {
+      File pf = new File(path+File.separator+PID);
+      pf.delete();
    }
 
    public static synchronized String getSession(String guid) throws Exception
    {
-      int pos = guid.indexOf(':');
-      guid = guid.substring(pos+1);
+      guid = toLocal(guid);
+
       File file = new File(path(guid));
       if (!file.exists()) return(null);
 
@@ -75,17 +94,39 @@ public class StateHandler extends Thread
          guid = UUID.randomUUID().toString();
 
          guid = guid.replaceAll("\\.","_");
-         File conn = new File(path(guid));
+         File sess = new File(path(guid));
 
-         if (!conn.exists())
+         if (!sess.exists())
          {
             done = true;
-            fout = new FileOutputStream(conn);
+            fout = new FileOutputStream(sess);
             fout.write(username.getBytes()); fout.close();
          }
       }
 
       return(inst+":"+guid);
+   }
+
+
+   public static boolean removeSession(String guid)
+   {
+      guid = toLocal(guid);
+
+      File file = new File(path(guid));
+      if (!file.exists()) return(false);
+
+      file.delete();
+      deletecursors(guid);
+
+      return(true);
+   }
+
+
+   public static String toLocal(String guid)
+   {
+      int pos = guid.indexOf(':');
+      if (pos > 0) guid = guid.substring(pos+1);
+      return(guid);
    }
 
 
@@ -133,6 +174,7 @@ public class StateHandler extends Thread
          for(File file : root.listFiles())
          {
             if (file.isDirectory()) continue;
+            if (file.getName().equals(PID)) continue;
             if (file.getName().indexOf(".c") > 0) continue;
             if (file.getName().indexOf(".trx") > 0) continue;
 
@@ -149,7 +191,7 @@ public class StateHandler extends Thread
    }
 
 
-   private void deletecursors(String conn)
+   private static void deletecursors(String sess)
    {
       File root = new File(StateHandler.path);
 
@@ -161,7 +203,7 @@ public class StateHandler extends Thread
             if (pos < 0) continue;
 
             String name = file.getName().substring(0,pos);
-            if (conn.equals(name)) file.delete();
+            if (sess.equals(name)) file.delete();
          }
       }
    }

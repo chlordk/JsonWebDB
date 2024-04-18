@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import jsondb.state.StateHandler;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Session
@@ -32,10 +33,24 @@ public class Session
    private final String guid;
    private final String user;
 
+   private final static ConcurrentHashMap<String,Session> sessions =
+      new ConcurrentHashMap<String,Session>();
+
    public static Session create(String user) throws Exception
    {
       String guid = StateHandler.createSession(user);
-      return(new Session(guid,user));
+
+      Session session = new Session(guid,user);
+      sessions.put(StateHandler.toLocal(guid),session);
+
+      return(session);
+   }
+
+   public static boolean remove(String guid) throws Exception
+   {
+      boolean success = StateHandler.removeSession(guid);
+      sessions.remove(StateHandler.toLocal(guid));
+      return(success);
    }
 
    private Session(String guid, String user)

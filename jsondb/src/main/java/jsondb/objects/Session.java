@@ -52,7 +52,10 @@ public class Session implements DatabaseRequest
    {
       String token = null;
       String password = null;
+
       JSONObject response = new JSONObject();
+      response.put("method","connect");
+
       String username = Config.pool().defaultuser();
 
       JSONObject data = definition.getJSONObject(DATASECTION);
@@ -79,19 +82,18 @@ public class Session implements DatabaseRequest
 
          if (authenticated)
          {
-            String guid = jsondb.Session.create(username).getGuid();
+            String session = jsondb.Session.create(username).getGuid();
 
             response.put("success",true);
-            response.put("guid",guid);
+            response.put("session",session);
 
             return(new Response(response));
          }
          else
          {
             response.put("success",false);
-            response.put("message",Messages.get("AUTHENTICATION_FAILED"));
+            response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
             return(new Response(response));
-
          }
       }
       catch (Exception e)
@@ -104,9 +106,21 @@ public class Session implements DatabaseRequest
    public Response disconnect() throws Exception
    {
       JSONObject response = new JSONObject();
+      response.put("method","disconnect");
+
       String session = definition.optString(SESSION);
-      response.put("success",true);
-      response.put("session",session);
+
+      if (jsondb.Session.remove(session))
+      {
+         response.put("success",true);
+         response.put("session",session);
+      }
+      else
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("DISCONNECT_FAILED",session));
+      }
+
       return(new Response(response));
    }
 }
