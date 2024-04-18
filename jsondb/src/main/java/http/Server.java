@@ -28,6 +28,8 @@ import java.net.URL;
 import java.io.File;
 import jsondb.Config;
 import jsondb.JsonDB;
+import jsondb.state.StateHandler;
+
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;
@@ -70,6 +72,8 @@ public class Server
 
    public static void main(String[] args) throws Exception
    {
+      String cmd = null;
+      String inst = null;
       String config = null;
       String password = null;
       InetSocketAddress addr = null;
@@ -79,6 +83,46 @@ public class Server
 
       while (arg < len)
       {
+         if (args[arg].equals("start"))
+         {
+            if (args.length > arg && len >= 2)
+            {
+               len -= 2;
+
+               cmd = "start";
+               inst = args[arg+1];
+
+               for (int j = arg; j < args.length; j++)
+                  args[j] = j < args.length - 2 ? args[j+2] : null;
+            }
+            else
+            {
+               throw new Exception("start requires instance as argument");
+            }
+
+            continue;
+         }
+
+         if (args[arg].equals("list"))
+         {
+            if (args.length > arg && len >= 2)
+            {
+               len -= 2;
+
+               cmd = "list";
+               inst = args[arg+1];
+
+               for (int j = arg; j < args.length; j++)
+                  args[j] = j < args.length - 2 ? args[j+2] : null;
+            }
+            else
+            {
+               throw new Exception("list requires instance as argument");
+            }
+
+            continue;
+         }
+
          if (args[arg].equals("-c") || args[arg].equals("--config"))
          {
             if (args.length > arg)
@@ -89,6 +133,10 @@ public class Server
                for (int j = arg; j < args.length; j++)
                   args[j] = j < args.length - 2 ? args[j+2] : null;
             }
+            else
+            {
+               throw new Exception("--config requires name as argument");
+            }
 
             continue;
          }
@@ -96,15 +144,25 @@ public class Server
          arg++;
       }
 
-      if (len != 1)
+      if (cmd == null)
       {
-         System.err.println("args: [--config|-c config-file] instance-name");
+         System.err.println("args:");
+         System.err.println("list instance");
+         System.err.println("start instance");
+         System.out.println();
+         System.out.println("options:");
+         System.err.println("-c | --config name");
          System.exit(-1);
       }
 
-      String inst = args[0];
       String root = findAppHome();
       JsonDB.initialize(root,inst,config);
+
+      if (cmd.equals("list"))
+      {
+         StateHandler.list(inst);
+         return;
+      }
 
       password = loadServerConfig();
       SSLContext ctx = createSSLContext(password);

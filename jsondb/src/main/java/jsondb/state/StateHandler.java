@@ -79,6 +79,40 @@ public class StateHandler extends Thread
    }
 
 
+   public static void list(String inst) throws Exception
+   {
+      long curr = System.currentTimeMillis();
+      File root = new File(StateHandler.path);
+
+      if (root.exists())
+      {
+         for(File file : root.listFiles())
+         {
+            if (!file.isDirectory())
+               continue;
+
+            File session = sesFile(file.getName());
+            int age = (int) (curr - session.lastModified())/1000;
+
+            FileInputStream in = new FileInputStream(session);
+            String user = new String(in.readAllBytes()); in.close();
+
+            String guid = session.getName();
+            guid = guid.substring(0,guid.length()-SES.length()-1);
+
+            System.out.println(guid+" age: "+age+"sec user: "+user);
+
+            File[] content = session.getParentFile().listFiles();
+
+            for(File child : content)
+            {
+
+            }
+         }
+      }
+   }
+
+
    public static String createSession(String username) throws Exception
    {
       boolean done = false;
@@ -237,7 +271,7 @@ public class StateHandler extends Thread
 
                File[] content = folder.listFiles();
                for(File child : content) child.delete();
-               
+
                session.getParentFile().delete();
             }
          }
