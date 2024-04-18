@@ -41,7 +41,7 @@ public class Session
       String guid = StateHandler.createSession(user);
 
       Session session = new Session(guid,user);
-      sessions.put(StateHandler.toLocal(guid),session);
+      sessions.put(StateHandler.getLocal(guid),session);
 
       return(session);
    }
@@ -49,7 +49,7 @@ public class Session
    public static boolean remove(String guid) throws Exception
    {
       boolean success = StateHandler.removeSession(guid);
-      sessions.remove(StateHandler.toLocal(guid));
+      sessions.remove(StateHandler.getLocal(guid));
       return(success);
    }
 

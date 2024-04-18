@@ -6,7 +6,7 @@
    ,
    "session":
    {
-      "timeout": 600
+      "timeout": 20
    }
 	,
 	"embedded":

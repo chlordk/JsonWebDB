@@ -42,6 +42,7 @@ public class StateHandler extends Thread
    private static final int MAXINT = 60000;
 
    private static final String PID = "pid";
+   private static final String SES = "ses";
    private static final String STATE = "state";
 
 
@@ -69,11 +70,11 @@ public class StateHandler extends Thread
       pf.delete();
    }
 
-   public static synchronized String getSession(String guid) throws Exception
+   public static synchronized String getSession(String session) throws Exception
    {
-      guid = toLocal(guid);
+      session = getLocal(session);
 
-      File file = new File(path(guid));
+      File file = new File(sesspath(session));
       if (!file.exists()) return(null);
 
       file.setLastModified(System.currentTimeMillis());
@@ -85,16 +86,18 @@ public class StateHandler extends Thread
 
    public static synchronized String createSession(String username) throws Exception
    {
-      String guid = null;
       boolean done = false;
+      String session = null;
 
       while (!done)
       {
          FileOutputStream fout = null;
-         guid = UUID.randomUUID().toString();
+         session = UUID.randomUUID().toString();
 
-         guid = guid.replaceAll("\\.","_");
-         File sess = new File(path(guid));
+         session = session.replaceAll("\\:","_");
+         session = session.replaceAll("\\.","_");
+
+         File sess = new File(sesspath(session));
 
          if (!sess.exists())
          {
@@ -104,35 +107,43 @@ public class StateHandler extends Thread
          }
       }
 
-      return(inst+":"+guid);
+      return(inst+":"+session);
    }
 
 
-   public static boolean removeSession(String guid)
+   public static boolean removeSession(String session)
    {
-      guid = toLocal(guid);
+      session = getLocal(session);
 
-      File file = new File(path(guid));
+      File file = new File(sesspath(session));
       if (!file.exists()) return(false);
 
       file.delete();
-      deletecursors(guid);
+      deletecursors(session);
 
       return(true);
    }
 
 
-   public static String toLocal(String guid)
+   public static String getLocal(String session)
    {
-      int pos = guid.indexOf(':');
-      if (pos > 0) guid = guid.substring(pos+1);
-      return(guid);
+      int pos = session.indexOf(':');
+      if (pos <= 0) return(null);
+      return(session.substring(pos+1));
    }
 
 
-   private static String path(String guid)
+   public static String getInstance(String session)
    {
-      return(StateHandler.path+File.separator+guid);
+      int pos = session.indexOf(':');
+      if (pos <= 0) return(null);
+      return(session.substring(0,pos));
+   }
+
+
+   private static String sesspath(String session)
+   {
+      return(StateHandler.path+File.separator+session+"."+SES);
    }
 
 
@@ -175,16 +186,11 @@ public class StateHandler extends Thread
          {
             if (file.isDirectory()) continue;
             if (file.getName().equals(PID)) continue;
-            if (file.getName().indexOf(".c") > 0) continue;
-            if (file.getName().indexOf(".trx") > 0) continue;
 
             if (curr - file.lastModified() > sttl)
             {
                file.delete();
                deletecursors(file.getName());
-
-               file = new File(file.getPath()+".trx");
-               file.delete();
             }
          }
       }
@@ -193,6 +199,8 @@ public class StateHandler extends Thread
 
    private static void deletecursors(String sess)
    {
+      System.out.println("deletecursors "+sess);
+
       File root = new File(StateHandler.path);
 
       if (root.exists())
