@@ -25,9 +25,8 @@ SOFTWARE.
 package jsondb.objects;
 
 import jsondb.Config;
-import jsondb.Response;
 import jsondb.Trusted;
-
+import jsondb.Response;
 import org.json.JSONObject;
 import jsondb.messages.Messages;
 import database.definitions.JdbcInterface;
