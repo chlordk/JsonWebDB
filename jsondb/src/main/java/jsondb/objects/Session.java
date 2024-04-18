@@ -76,8 +76,8 @@ public class Session implements DatabaseRequest
       if (data.has(SIGNATURE))
          signature = data.getString(SIGNATURE);
 
-      data.remove(PASSWORD);
-      data.remove(SIGNATURE);
+      if (password != null) data.put(PASSWORD,"********");
+      if (signature != null) data.put(SIGNATURE,"********");
 
       try
       {

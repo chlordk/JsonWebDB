@@ -25,12 +25,11 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
-
-import database.definitions.AdvancedPool;
 import jsondb.files.FileHandler;
+import jsondb.state.StateHandler;
 import jsondb.files.FileResponse;
 import jsondb.objects.ObjectHandler;
-import jsondb.state.StateHandler;
+import database.definitions.AdvancedPool;
 
 /**
  * Public interface to the backend

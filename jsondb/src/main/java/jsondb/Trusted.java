@@ -43,13 +43,15 @@ public class Trusted
 
    public static String getEntity(String signature)
    {
+      if (signature == null) return(null);
       return(signatures.get(signature));
    }
 
 
    public static String getSignature(String entity)
    {
-      return(signatures.get(entity.toLowerCase()));
+      if (entity == null) return(null);
+      return(entities.get(entity.toLowerCase()));
    }
 
 
