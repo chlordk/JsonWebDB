@@ -26,7 +26,6 @@ package jsondb.state;
 
 import java.io.File;
 import jsondb.Config;
-
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
