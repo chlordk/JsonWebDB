@@ -105,7 +105,9 @@ public class Config
       Config.sttl = get(get(SESS),STTL);
       Config.logger = Applogger.setup();
 
+      Trusted.initialize();
       FileConfig.initialize();
+
       JSONObject dbsc = config.getJSONObject(DBSC);
 
       if (dbsc.getBoolean(POOL))

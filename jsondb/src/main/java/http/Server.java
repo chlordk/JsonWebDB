@@ -77,8 +77,6 @@ public class Server
       int arg = 0;
       int len = args.length;
 
-      for(String a : args) System.out.println(a);
-
       while (arg < len)
       {
          if (args[arg].equals("-c") || args[arg].equals("--config"))
@@ -90,8 +88,6 @@ public class Server
 
                for (int j = arg; j < args.length; j++)
                   args[j] = j < args.length - 2 ? args[j+2] : null;
-
-               for(String a : args) System.out.println(a);
             }
 
             continue;

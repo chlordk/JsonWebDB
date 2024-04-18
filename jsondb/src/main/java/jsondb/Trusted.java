@@ -31,8 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Trusted
 {
    private static final String USER = "entity";
+   private static final String PRIV = "endorsed";
    private static final String SIGN = "signature";
-   private static final String PRIV = "privileged";
 
    private static final ConcurrentHashMap<String,String> entities =
       new  ConcurrentHashMap<String,String>();
