@@ -47,23 +47,18 @@ public class StateHandler extends Thread
    private static final String TRX = "trx";
    private static final String STATE = "state";
 
-   public static final String SHARED = "shared";
-
 
    public static void initialize() throws Exception
    {
-      String path = null;
       FileOutputStream pf = null;
 
       StateHandler.inst = Config.inst();
       StateHandler.path = Config.path(STATE);
 
-      path = Config.path(STATE,inst);
-
       (new File(path)).mkdirs();
       (new StateHandler()).start();
 
-      pid = ProcessHandle.current().pid();
+      StateHandler.pid = ProcessHandle.current().pid();
 
       pf = new FileOutputStream(pidFile(inst));
       pf.write((pid+"").getBytes()); pf.close();
@@ -72,9 +67,9 @@ public class StateHandler extends Thread
       Runtime.getRuntime().addShutdownHook(shutdown);
    }
 
-   public static synchronized String getSession(String session) throws Exception
+   public static String getSession(String session) throws Exception
    {
-      File file = new File(sesspath(session));
+      File file = sesFile(session);
       if (!file.exists()) return(null);
 
       file.setLastModified(System.currentTimeMillis());
@@ -84,28 +79,24 @@ public class StateHandler extends Thread
    }
 
 
-   public static synchronized String createSession(String username) throws Exception
+   public static String createSession(String username) throws Exception
    {
-      String guid = null;
       boolean done = false;
       String session = null;
 
       while (!done)
       {
-         FileOutputStream fout = null;
-         guid = UUID.randomUUID().toString();
+         FileOutputStream out = null;
+         session = UUID.randomUUID().toString();
 
-         guid = guid.replaceAll("\\:","_");
-         guid = guid.replaceAll("\\.","_");
-
-         session = inst+":"+guid;
-         File file = new File(sesspath(session));
+         File file = sesFile(session);
 
          if (!file.exists())
          {
             done = true;
-            fout = new FileOutputStream(file);
-            fout.write(username.getBytes()); fout.close();
+            sesPath(session).mkdirs();
+            out = new FileOutputStream(file);
+            out.write(username.getBytes()); out.close();
          }
       }
 
@@ -115,22 +106,61 @@ public class StateHandler extends Thread
 
    public static boolean removeSession(String session)
    {
-      File file = new File(sesspath(session));
+      File file = sesFile(session);
       if (!file.exists()) return(false);
 
-      file.delete();
-      deletestate(session);
-
+      file.getParentFile().delete();
       return(true);
    }
 
 
    public static boolean touchSession(String session)
    {
-      File file = new File(sesspath(session));
+      File file = sesFile(session);
       if (!file.exists()) return(false);
 
       file.setLastModified((new Date()).getTime());
+      return(true);
+   }
+
+
+   public static String createTransaction(String session, String inst) throws Exception
+   {
+      String running = null;
+      File file = trxFile(session);
+
+      if (file.exists())
+      {
+         FileInputStream in = new FileInputStream(file);
+         running = new String(in.readAllBytes()); in.close();
+      }
+
+      FileOutputStream out = new FileOutputStream(file);
+      out.write(inst.getBytes()); out.close();
+
+      return(running);
+   }
+
+
+   public static String getTransaction(String session) throws Exception
+   {
+      String running = null;
+      File file = trxFile(session);
+
+      if (file.exists())
+      {
+         FileInputStream in = new FileInputStream(file);
+         running = new String(in.readAllBytes()); in.close();
+      }
+
+      return(running);
+   }
+
+
+   public static boolean removeTransaction(String session) throws Exception
+   {
+      File file = trxFile(session);
+      if (file.exists()) return(false);
       return(true);
    }
 
@@ -141,12 +171,21 @@ public class StateHandler extends Thread
    }
 
 
-   private static String sesspath(String session)
+   private static File trxFile(String session)
    {
-      int pos = session.indexOf(':');
-      String inst = session.substring(0,pos);
-      String name = session.substring(pos+1);
-      return(Config.path(STATE,inst,name+"."+SES));
+      return(new File(Config.path(STATE,session+"."+TRX)));
+   }
+
+
+   private static File sesFile(String session)
+   {
+      return(new File(Config.path(STATE,session,session+"."+SES)));
+   }
+
+
+   private static File sesPath(String session)
+   {
+      return(new File(Config.path(STATE,session)));
    }
 
 
@@ -190,45 +229,10 @@ public class StateHandler extends Thread
             if (!file.isDirectory())
                continue;
 
-            if (file.getName().equals(SHARED))
-               continue;
+            File session = sesFile(file.getName());
 
-            File[] sessions = file.listFiles();
-
-            for(File session : sessions)
-            {
-               if (curr - file.lastModified() > sttl)
-               {
-                  String guid = session.getName();
-                  guid = guid.substring(0,guid.length()-4);
-
-                  session.delete();
-                  deletestate(file.getName()+":"+guid);
-               }
-            }
-         }
-      }
-   }
-
-
-   private static void deletestate(String session)
-   {
-      int pos = session.indexOf(':');
-      String inst = session.substring(0,pos);
-      String guid = session.substring(pos+1);
-      String path = Config.path(STATE,SHARED,inst+"."+guid);
-
-      File state = new File(path);
-      System.out.println("deletecursors "+path);
-
-      if (state.exists())
-      {
-         for(File file : state.listFiles())
-         {
-            if (file.getName().endsWith("."+TRX))
-               continue;
-
-            file.delete();
+            if (curr - session.lastModified() > sttl)
+               session.getParentFile().delete();
          }
       }
    }
