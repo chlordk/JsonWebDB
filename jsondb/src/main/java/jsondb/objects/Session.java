@@ -89,7 +89,7 @@ public class Session implements DatabaseRequest
 
          if (authenticated)
          {
-            String session = jsondb.Session.create(username).getGuid();
+            String session = jsondb.Session.create(username,dedicated).getGuid();
 
             response.put("success",true);
             response.put("session",session);

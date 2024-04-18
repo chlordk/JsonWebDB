@@ -32,15 +32,16 @@ public class Session
 {
    private final String guid;
    private final String user;
+   private final boolean dedicated;
 
    private final static ConcurrentHashMap<String,Session> sessions =
       new ConcurrentHashMap<String,Session>();
 
-   public static Session create(String user) throws Exception
+   public static Session create(String user, boolean dedicated) throws Exception
    {
       String guid = StateHandler.createSession(user);
 
-      Session session = new Session(guid,user);
+      Session session = new Session(guid,user,dedicated);
       sessions.put(StateHandler.getLocal(guid),session);
 
       return(session);
@@ -53,10 +54,11 @@ public class Session
       return(success);
    }
 
-   private Session(String guid, String user)
+   private Session(String guid, String user, boolean dedicated)
    {
       this.guid = guid;
       this.user = user;
+      this.dedicated = dedicated;
    }
 
    public String getGuid()
