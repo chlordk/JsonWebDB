@@ -41,7 +41,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String WAIT = "max-wait";
    private static final String USER = "defaultuser";
    private static final String QUERY = "test";
-   private static final String TOKEN = "password-token";
    private static final String PROXY = "proxyuser";
    private static final String USESEC = "use-secondary";
    private static final String CLASSES = "classes";
@@ -53,7 +52,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String SECONDARY = "secondary";
 
    private final int latency;
-   private final String token;
    private final String defusr;
    private final boolean proxy;
    private final DatabaseType type;
@@ -72,7 +70,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
 
       int latency = def.getInt(LATENCY);
       String type = def.getString(TYPE);
-      String token = def.getString(TOKEN);
       String defusr = def.getString(USER);
       boolean proxy = def.getBoolean(PROXY);
       boolean secondary = def.getBoolean(USESEC);
@@ -98,7 +95,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
          Class.forName(classes.getString(i));
 
       this.proxy = proxy;
-      this.token = token;
       this.defusr = defusr;
       this.latency = latency;
       this.primary = new DataSource(prm);
@@ -113,13 +109,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    public int latency()
    {
       return(latency);
-   }
-
-
-   @Override
-   public String passtoken()
-   {
-      return(token);
    }
 
 

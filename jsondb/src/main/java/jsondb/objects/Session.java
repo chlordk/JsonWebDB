@@ -26,6 +26,8 @@ package jsondb.objects;
 
 import jsondb.Config;
 import jsondb.Response;
+import jsondb.Trusted;
+
 import org.json.JSONObject;
 import jsondb.messages.Messages;
 import database.definitions.JdbcInterface;
@@ -38,7 +40,8 @@ public class Session implements DatabaseRequest
    private static final String SESSION = "session";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
-   private static final String PASSTOKEN = "password-token";
+   private static final String SIGNATURE = "signature";
+   private static final String DEDICATED = "dedicated";
    private static final String DATASECTION = "connection-data";
 
 
@@ -50,8 +53,9 @@ public class Session implements DatabaseRequest
 
    public Response connect() throws Exception
    {
-      String token = null;
       String password = null;
+      String signature = null;
+      boolean dedicated = false;
 
       JSONObject response = new JSONObject();
       response.put("method","connect");
@@ -66,19 +70,22 @@ public class Session implements DatabaseRequest
       if (data.has(PASSWORD))
          password = data.getString(PASSWORD);
 
-      if (data.has(PASSTOKEN))
-         token = data.getString(PASSTOKEN);
+      if (data.has(DEDICATED))
+         dedicated = data.getBoolean(DEDICATED);
+
+      if (data.has(SIGNATURE))
+         signature = data.getString(SIGNATURE);
 
       data.remove(PASSWORD);
-      data.remove(PASSTOKEN);
+      data.remove(SIGNATURE);
 
       try
       {
          boolean authenticated = false;
          JdbcInterface db = JdbcInterface.getInstance(false);
 
-         if (token != null && token.equals(db.passtoken())) authenticated = true;
-         else if (password != null && db.authenticate(username,password)) authenticated = true;
+         if (Trusted.getEntity(signature) != null) authenticated = true;
+         else if (db.authenticate(username,password)) authenticated = true;
 
          if (authenticated)
          {
@@ -98,7 +105,8 @@ public class Session implements DatabaseRequest
       }
       catch (Exception e)
       {
-         return(new Response().exception(e));
+         response.put("success",false);
+         return(new Response(response).exception(e));
       }
    }
 

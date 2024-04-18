@@ -32,7 +32,6 @@ public interface AdvancedPool
 {
    int latency();
    boolean proxy();
-   String passtoken();
    String defaultuser();
    DatabaseType type(boolean write);
    void release(Connection conn) throws Exception;

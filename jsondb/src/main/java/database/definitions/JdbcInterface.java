@@ -45,11 +45,6 @@ public abstract class JdbcInterface
       return(pool.latency());
    }
 
-   public String passtoken()
-   {
-      return(pool.passtoken());
-   }
-
    public String defaultuser()
    {
       return(pool.defaultuser());
@@ -72,6 +67,8 @@ public abstract class JdbcInterface
 
    public boolean authenticate(String username, String password) throws Exception
    {
+      if (username == null) return(false);
+      if (password == null) return(false);
       return(pool.authenticate(username,password));
    }
 }
