@@ -44,7 +44,10 @@ public class StateHandler extends Thread
 
    private static final String PID = "pid";
    private static final String SES = "ses";
+   private static final String TRX = "trx";
    private static final String STATE = "state";
+
+   public static final String SHARED = "shared";
 
 
    public static void initialize() throws Exception
@@ -185,34 +188,45 @@ public class StateHandler extends Thread
       {
          for(File file : root.listFiles())
          {
-            if (file.isDirectory()) continue;
-            if (file.getName().equals(PID)) continue;
+            if (!file.isDirectory())
+               continue;
 
-            if (curr - file.lastModified() > sttl)
+            if (file.getName().equals(SHARED))
+               continue;
+
+            String inst = file.getName();
+            File[] sessions = file.listFiles();
+
+            for(File session : sessions)
             {
-               file.delete();
-               deletecursors(file.getName());
+               if (curr - file.lastModified() > sttl)
+               {
+                  System.out.println("delete "+session.getName());
+                  //session.delete();
+                  //deletecursors(session.getName());
+               }
             }
          }
       }
    }
 
 
-   private static void deletecursors(String sess)
+   private static void deletecursors(String session)
    {
-      System.out.println("deletecursors "+sess);
+      int pos = session.indexOf(':');
+      String name = session.substring(pos+1);
+      String path = Config.path(STATE,SHARED,name);
 
-      File root = new File(StateHandler.path);
+      File root = new File(path);
 
       if (root.exists())
       {
          for(File file : root.listFiles())
          {
-            int pos = file.getName().lastIndexOf(".c");
-            if (pos < 0) continue;
+            if (file.getName().endsWith("."+TRX))
+               continue;
 
-            String name = file.getName().substring(0,pos);
-            if (sess.equals(name)) file.delete();
+            file.delete();
          }
       }
    }

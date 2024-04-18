@@ -32,6 +32,7 @@ import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import jsondb.messages.Messages;
+import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 
 
@@ -81,6 +82,9 @@ public class Config
    protected static synchronized void load(String root, String inst, String file) throws Exception
    {
       if (inst.contains(":"))
+         throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
+
+      if (inst.equals(StateHandler.SHARED))
          throw new Exception(Messages.get("ILLEGALE_INSTANCE_NAME",inst));
 
       if (file == null)
