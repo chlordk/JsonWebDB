@@ -28,6 +28,8 @@ import java.io.File;
 import jsondb.Config;
 import java.util.Date;
 import java.util.UUID;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.logging.Level;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -67,21 +69,10 @@ public class StateHandler extends Thread
       Runtime.getRuntime().addShutdownHook(shutdown);
    }
 
-   public static String getSession(String session) throws Exception
+
+   public static JSONArray list() throws Exception
    {
-      File file = sesFile(session);
-      if (!file.exists()) return(null);
-
-      file.setLastModified(System.currentTimeMillis());
-      FileInputStream in = new FileInputStream(file);
-      String username = new String(in.readAllBytes());
-      in.close(); return(username);
-   }
-
-
-   public static void list(String inst) throws Exception
-   {
-      long curr = System.currentTimeMillis();
+      JSONArray response = new JSONArray();
       File root = new File(StateHandler.path);
 
       if (root.exists())
@@ -91,16 +82,16 @@ public class StateHandler extends Thread
             if (!file.isDirectory())
                continue;
 
+            JSONObject entry = new JSONObject();
+            response.put(entry);
+
             File session = sesFile(file.getName());
-            int age = (int) (curr - session.lastModified())/1000;
+            SessionInfo info = new SessionInfo(session);
 
-            FileInputStream in = new FileInputStream(session);
-            String user = new String(in.readAllBytes()); in.close();
-
-            String guid = session.getName();
-            guid = guid.substring(0,guid.length()-SES.length()-1);
-
-            System.out.println(guid+" age: "+age+"sec user: "+user);
+            entry.put("user",info.user);
+            entry.put("inst",info.inst);
+            entry.put("session",info.guid);
+            entry.put("last-modified",info.age+" secs");
 
             File[] content = session.getParentFile().listFiles();
 
@@ -110,6 +101,17 @@ public class StateHandler extends Thread
             }
          }
       }
+
+      return(response);
+   }
+
+   public static SessionInfo getSession(String session) throws Exception
+   {
+      File file = sesFile(session);
+      if (!file.exists()) return(null);
+      SessionInfo info = new SessionInfo(file);
+      file.setLastModified(System.currentTimeMillis());
+      return(info);
    }
 
 
@@ -130,7 +132,7 @@ public class StateHandler extends Thread
             done = true;
             sesPath(session).mkdirs();
             out = new FileOutputStream(file);
-            out.write(username.getBytes()); out.close();
+            out.write((username+" "+inst).getBytes()); out.close();
          }
       }
 
@@ -275,6 +277,33 @@ public class StateHandler extends Thread
                session.getParentFile().delete();
             }
          }
+      }
+   }
+
+
+   public static class SessionInfo
+   {
+      public final long age;
+      public final String guid;
+      public final String user;
+      public final String inst;
+
+      private SessionInfo(File file) throws Exception
+      {
+         String guid = file.getName();
+         long now = (new Date()).getTime();
+
+         this.age = (int) (now - file.lastModified())/1000;
+         this.guid = guid.substring(0,guid.length()-SES.length()-1);
+
+         FileInputStream in = new FileInputStream(file);
+         String content = new String(in.readAllBytes());
+         in.close();
+
+         String[] args = content.split(" ");
+
+         this.user = args[0];
+         this.inst = args[1];
       }
    }
 }

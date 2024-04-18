@@ -30,6 +30,7 @@ import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.state.StateHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;
@@ -83,6 +84,26 @@ public class Server
 
       while (arg < len)
       {
+         if (args[arg].equals("list"))
+         {
+            if (args.length > arg)
+            {
+               len -= 1;
+
+               cmd = "list";
+               inst = "admin";
+
+               for (int j = arg; j < args.length; j++)
+                  args[j] = j < args.length - 1 ? args[j+1] : null;
+            }
+            else
+            {
+               throw new Exception("list requires instance as argument");
+            }
+
+            continue;
+         }
+
          if (args[arg].equals("start"))
          {
             if (args.length > arg && len >= 2)
@@ -98,26 +119,6 @@ public class Server
             else
             {
                throw new Exception("start requires instance as argument");
-            }
-
-            continue;
-         }
-
-         if (args[arg].equals("list"))
-         {
-            if (args.length > arg && len >= 2)
-            {
-               len -= 2;
-
-               cmd = "list";
-               inst = args[arg+1];
-
-               for (int j = arg; j < args.length; j++)
-                  args[j] = j < args.length - 2 ? args[j+2] : null;
-            }
-            else
-            {
-               throw new Exception("list requires instance as argument");
             }
 
             continue;
@@ -160,7 +161,8 @@ public class Server
 
       if (cmd.equals("list"))
       {
-         StateHandler.list(inst);
+         JSONArray list = StateHandler.list();
+         System.out.println(list.toString(2));
          return;
       }
 
