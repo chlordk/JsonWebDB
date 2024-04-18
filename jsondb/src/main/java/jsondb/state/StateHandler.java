@@ -26,6 +26,8 @@ package jsondb.state;
 
 import java.io.File;
 import jsondb.Config;
+
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.io.FileInputStream;
@@ -48,16 +50,21 @@ public class StateHandler extends Thread
 
    public static void initialize() throws Exception
    {
+      String path = null;
       FileOutputStream pf = null;
 
       StateHandler.inst = Config.inst();
-      StateHandler.path = Config.path(STATE,inst);
+      StateHandler.path = Config.path(STATE);
+
+      path = Config.path(STATE,inst);
 
       (new File(path)).mkdirs();
       (new StateHandler()).start();
 
+      path = Config.path(STATE,inst,PID);
       pid = ProcessHandle.current().pid();
-      pf = new FileOutputStream(path+File.separator+PID);
+
+      pf = new FileOutputStream(path);
       pf.write((pid+"").getBytes()); pf.close();
 
       Thread shutdown = new Thread(() -> StateHandler.removePidFile());
@@ -66,14 +73,12 @@ public class StateHandler extends Thread
 
    public static void removePidFile()
    {
-      File pf = new File(path+File.separator+PID);
+      File pf = new File(Config.path(STATE,inst,PID));
       pf.delete();
    }
 
    public static synchronized String getSession(String session) throws Exception
    {
-      session = getLocal(session);
-
       File file = new File(sesspath(session));
       if (!file.exists()) return(null);
 
@@ -86,35 +91,35 @@ public class StateHandler extends Thread
 
    public static synchronized String createSession(String username) throws Exception
    {
+      String guid = null;
       boolean done = false;
       String session = null;
 
       while (!done)
       {
          FileOutputStream fout = null;
-         session = UUID.randomUUID().toString();
+         guid = UUID.randomUUID().toString();
 
-         session = session.replaceAll("\\:","_");
-         session = session.replaceAll("\\.","_");
+         guid = guid.replaceAll("\\:","_");
+         guid = guid.replaceAll("\\.","_");
 
-         File sess = new File(sesspath(session));
+         session = inst+":"+guid;
+         File file = new File(sesspath(session));
 
-         if (!sess.exists())
+         if (!file.exists())
          {
             done = true;
-            fout = new FileOutputStream(sess);
+            fout = new FileOutputStream(file);
             fout.write(username.getBytes()); fout.close();
          }
       }
 
-      return(inst+":"+session);
+      return(session);
    }
 
 
    public static boolean removeSession(String session)
    {
-      session = getLocal(session);
-
       File file = new File(sesspath(session));
       if (!file.exists()) return(false);
 
@@ -125,25 +130,22 @@ public class StateHandler extends Thread
    }
 
 
-   public static String getLocal(String session)
+   public static boolean touchSession(String session)
    {
-      int pos = session.indexOf(':');
-      if (pos <= 0) return(null);
-      return(session.substring(pos+1));
-   }
+      File file = new File(sesspath(session));
+      if (!file.exists()) return(false);
 
-
-   public static String getInstance(String session)
-   {
-      int pos = session.indexOf(':');
-      if (pos <= 0) return(null);
-      return(session.substring(0,pos));
+      file.setLastModified((new Date()).getTime());
+      return(true);
    }
 
 
    private static String sesspath(String session)
    {
-      return(StateHandler.path+File.separator+session+"."+SES);
+      int pos = session.indexOf(':');
+      String inst = session.substring(0,pos);
+      String name = session.substring(pos+1);
+      return(Config.path(STATE,inst,name+SES));
    }
 
 

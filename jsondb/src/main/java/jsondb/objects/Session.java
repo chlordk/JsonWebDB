@@ -116,9 +116,10 @@ public class Session implements DatabaseRequest
       JSONObject response = new JSONObject();
       response.put("method","disconnect");
 
-      String session = definition.optString(SESSION);
+      String sessid = definition.optString(SESSION);
+      jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (jsondb.Session.remove(session))
+      if (session.remove())
       {
          response.put("success",true);
          response.put("session",session);
@@ -127,6 +128,29 @@ public class Session implements DatabaseRequest
       {
          response.put("success",false);
          response.put("message",Messages.get("DISCONNECT_FAILED",session));
+      }
+
+      return(new Response(response));
+   }
+
+
+   public Response keepalive() throws Exception
+   {
+      JSONObject response = new JSONObject();
+      response.put("method","keepalive");
+
+      String sessid = definition.optString(SESSION);
+      jsondb.Session session = jsondb.Session.get(sessid);
+
+      if (session.touch())
+      {
+         response.put("success",true);
+         response.put("session",session);
+      }
+      else
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("TOUCH_FAILED",session));
       }
 
       return(new Response(response));

@@ -37,21 +37,20 @@ public class Session
    private final static ConcurrentHashMap<String,Session> sessions =
       new ConcurrentHashMap<String,Session>();
 
+
+   public static Session get(String guid)
+   {
+      return(sessions.get(guid));
+   }
+
    public static Session create(String user, boolean dedicated) throws Exception
    {
       String guid = StateHandler.createSession(user);
 
       Session session = new Session(guid,user,dedicated);
-      sessions.put(StateHandler.getLocal(guid),session);
+      sessions.put(guid,session);
 
       return(session);
-   }
-
-   public static boolean remove(String guid) throws Exception
-   {
-      boolean success = StateHandler.removeSession(guid);
-      sessions.remove(StateHandler.getLocal(guid));
-      return(success);
    }
 
    private Session(String guid, String user, boolean dedicated)
@@ -69,5 +68,24 @@ public class Session
    public String getUser()
    {
       return user;
+   }
+
+   public boolean isDedicated()
+   {
+      return(dedicated);
+   }
+
+   public boolean touch() throws Exception
+   {
+      boolean success = StateHandler.touchSession(guid);
+      return(success);
+   }
+
+
+   public boolean remove() throws Exception
+   {
+      boolean success = StateHandler.removeSession(guid);
+      sessions.remove(guid);
+      return(success);
    }
 }
