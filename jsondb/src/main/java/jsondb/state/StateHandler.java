@@ -232,7 +232,14 @@ public class StateHandler extends Thread
             File session = sesFile(file.getName());
 
             if (curr - session.lastModified() > sttl)
+            {
+               File folder = session.getParentFile();
+
+               File[] content = folder.listFiles();
+               for(File child : content) child.delete();
+               
                session.getParentFile().delete();
+            }
          }
       }
    }
