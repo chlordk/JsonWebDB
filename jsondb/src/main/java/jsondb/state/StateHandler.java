@@ -63,20 +63,13 @@ public class StateHandler extends Thread
       (new File(path)).mkdirs();
       (new StateHandler()).start();
 
-      path = Config.path(STATE,inst,PID);
       pid = ProcessHandle.current().pid();
 
-      pf = new FileOutputStream(path);
+      pf = new FileOutputStream(pidFile(inst));
       pf.write((pid+"").getBytes()); pf.close();
 
-      Thread shutdown = new Thread(() -> StateHandler.removePidFile());
+      Thread shutdown = new Thread(() -> StateHandler.pidFile(inst).delete());
       Runtime.getRuntime().addShutdownHook(shutdown);
-   }
-
-   public static void removePidFile()
-   {
-      File pf = new File(Config.path(STATE,inst,PID));
-      pf.delete();
    }
 
    public static synchronized String getSession(String session) throws Exception
@@ -142,12 +135,18 @@ public class StateHandler extends Thread
    }
 
 
+   private static File pidFile(String inst)
+   {
+      return(new File(Config.path(STATE,inst+"."+PID)));
+   }
+
+
    private static String sesspath(String session)
    {
       int pos = session.indexOf(':');
       String inst = session.substring(0,pos);
       String name = session.substring(pos+1);
-      return(Config.path(STATE,inst,name+SES));
+      return(Config.path(STATE,inst,name+"."+SES));
    }
 
 
@@ -194,16 +193,17 @@ public class StateHandler extends Thread
             if (file.getName().equals(SHARED))
                continue;
 
-            String inst = file.getName();
             File[] sessions = file.listFiles();
 
             for(File session : sessions)
             {
                if (curr - file.lastModified() > sttl)
                {
-                  System.out.println("delete "+session.getName());
-                  //session.delete();
-                  //deletecursors(session.getName());
+                  String guid = session.getName();
+                  guid = guid.substring(0,guid.length()-4);
+
+                  session.delete();
+                  deletecursors(file.getName()+":"+guid);
                }
             }
          }
@@ -218,6 +218,7 @@ public class StateHandler extends Thread
       String path = Config.path(STATE,SHARED,name);
 
       File root = new File(path);
+      System.out.println("deletecursors");
 
       if (root.exists())
       {
@@ -226,7 +227,7 @@ public class StateHandler extends Thread
             if (file.getName().endsWith("."+TRX))
                continue;
 
-            file.delete();
+            //file.delete();
          }
       }
    }
