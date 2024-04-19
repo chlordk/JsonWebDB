@@ -33,6 +33,7 @@ public class State
 {
    public static void main(String[] args) throws Exception
    {
+      StateHandler.ignore("admin");
       String root = Server.findAppHome();
       JsonDB.initialize(root,"admin");
       JSONObject list = StateHandler.list();
