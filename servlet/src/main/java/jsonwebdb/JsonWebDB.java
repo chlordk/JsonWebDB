@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import http.Options;
 import jsondb.JsonDB;
 import jsondb.Response;
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class JsonWebDB extends HttpServlet
    private String getPath(HttpServletRequest request)
    {
       String path = request.getRequestURI().substring(request.getContextPath().length());
-      if (path.length() <= 1) path = "/index.html";
+      if (path.length() <= 1) path = Options.index();
       return(path);
    }
 

@@ -4,7 +4,8 @@
 		"admin": "/admin",
 		"index": "index.html",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-      "location": "/Users/alhof/Repository/forms42/demo/dist"
+      "location": "/Users/alhof/Repository/forms42/demo/dist",
+		"basic-auth": {"user": "admin", "password": "Manager1"}
    }
    ,
    "session":

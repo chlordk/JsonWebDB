@@ -32,13 +32,6 @@ import java.text.SimpleDateFormat;
 
 public class GMTDate
 {
-   public static void main(String[] args)
-   {
-      String gmt = format((new Date()).getTime());
-      System.out.println(gmt);
-   }
-
-
    public static String format(long time)
    {
       return(format(new Date(time)));

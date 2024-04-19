@@ -26,13 +26,18 @@ package http;
 
 import jsondb.JsonDB;
 import jsondb.Config;
+
+import java.util.Base64;
 import java.util.List;
+import java.util.Set;
+
 import jsondb.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import jsondb.files.FileResponse;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -43,6 +48,21 @@ public class Handler implements HttpHandler
    public void handle(HttpExchange exchange) throws IOException
    {
       String meth = exchange.getRequestMethod();
+
+      List<String> values = exchange.getRequestHeaders().get("Authorization");
+
+      if (values != null)
+      {
+         String header = values.get(0).substring(6);
+         String auth = new String(Base64.getDecoder().decode(header));
+         System.out.println(auth);
+      }
+
+      if (1 == 1)
+      {
+         exchange.getResponseHeaders().set("WWW-Authenticate","Basic realm=JsonWebDB");
+         exchange.sendResponseHeaders(401,0);
+      }
 
       if (meth.equals("GET"))
       {
@@ -91,7 +111,7 @@ public class Handler implements HttpHandler
       OutputStream out = exchange.getResponseBody();
 
       String path = exchange.getRequestURI().getPath();
-      if (path.length() <= 2) path = Otions.index();
+      if (path.length() <= 2) path = Options.index();
 
       String lastmod = null;
       List<String> values = exchange.getRequestHeaders().get("If-modified-since");

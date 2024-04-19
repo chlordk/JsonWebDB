@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class Otions
+public class Options
 {
    private static final String PATH = "path";
    private static final String PAGE = "page";
@@ -50,8 +50,8 @@ public class Otions
    {
       JSONObject http = Config.get(APPL);
 
-      Otions.admin = Config.get(http,ADMN);
-      Otions.index = Config.get(http,INDX);
+      Options.admin = Config.get(http,ADMN);
+      Options.index = Config.get(http,INDX);
 
       JSONArray arr = Config.get(http,VIRT);
 
