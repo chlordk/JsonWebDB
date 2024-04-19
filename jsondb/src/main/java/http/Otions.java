@@ -30,14 +30,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class HTTP
+public class Otions
 {
-   private static String admin = null;
-   private static String index = null;
-
-   private static ArrayList<VirtualPath> virtual =
-      new ArrayList<VirtualPath>();
-
    private static final String PATH = "path";
    private static final String PAGE = "page";
    private static final String ADMN = "admin";
@@ -45,15 +39,19 @@ public class HTTP
    private static final String VIRT = "virtual";
    private static final String APPL = "application";
 
+   private static String admin = null;
+   private static String index = null;
 
+   private static ArrayList<VirtualPath> virtual =
+      new ArrayList<VirtualPath>();
 
 
    public static void initialize()
    {
       JSONObject http = Config.get(APPL);
 
-      HTTP.admin = Config.get(http,ADMN);
-      HTTP.index = Config.get(http,INDX);
+      Otions.admin = Config.get(http,ADMN);
+      Otions.index = Config.get(http,INDX);
 
       JSONArray arr = Config.get(http,VIRT);
 

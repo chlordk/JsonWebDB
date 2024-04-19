@@ -91,7 +91,7 @@ public class Handler implements HttpHandler
       OutputStream out = exchange.getResponseBody();
 
       String path = exchange.getRequestURI().getPath();
-      if (path.length() <= 2) path = "/index.html";
+      if (path.length() <= 2) path = Otions.index();
 
       String lastmod = null;
       List<String> values = exchange.getRequestHeaders().get("If-modified-since");

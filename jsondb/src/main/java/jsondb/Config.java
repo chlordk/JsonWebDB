@@ -32,7 +32,7 @@ import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import database.definitions.AdvancedPool;
-import http.HTTP;
+import http.Otions;
 
 
 public class Config
@@ -102,7 +102,7 @@ public class Config
       Config.sttl = get(get(SESS),STTL);
       Config.logger = Applogger.setup();
 
-      HTTP.initialize();
+      Otions.initialize();
       Trusted.initialize();
       FileConfig.initialize();
 
