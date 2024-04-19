@@ -1,11 +1,16 @@
 {
    "application":
    {
-		"admin": "/admin",
 		"index": "index.html",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-      "location": "/Users/alhof/Repository/forms42/demo/dist",
-		"basic-auth": {"username": "admin", "password": "Manager1"}
+      "location": "/Users/alhof/Repository/forms42/demo/dist"
+		,
+		"protected":
+		{
+			"admin": "/admin",
+			"username": "admin",
+			"password": "Manager1"
+		}
    }
    ,
    "session":

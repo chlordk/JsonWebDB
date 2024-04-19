@@ -40,7 +40,7 @@ public class Options
    private static final String VIRT = "virtual";
    private static final String USER = "username";
    private static final String PASW = "password";
-   private static final String AUTH = "basic-auth";
+   private static final String AUTH = "protected";
    private static final String APPL = "application";
 
    private static String usr = null;
@@ -60,7 +60,7 @@ public class Options
       Options.usr = Config.get(auth,USER);
       Options.pwd = Config.get(auth,PASW);
 
-      Options.admin = Config.get(http,ADMN);
+      Options.admin = Config.get(auth,ADMN);
       Options.index = Config.get(http,INDX);
 
       if (!Options.index.startsWith("/"))

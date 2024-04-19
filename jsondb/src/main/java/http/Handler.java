@@ -26,19 +26,15 @@ package http;
 
 import jsondb.JsonDB;
 import jsondb.Config;
-
-import java.util.Base64;
 import java.util.List;
-import java.util.Set;
-
 import jsondb.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import jsondb.files.FileResponse;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpsExchange;
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -100,6 +96,15 @@ public class Handler implements HttpHandler
 
       if (path.startsWith(Options.admin()))
       {
+         if (!(exchange instanceof HttpsExchange))
+         {
+            byte[] page = "Access to admin requires https".getBytes();
+            exchange.sendResponseHeaders(200,page.length);
+            out.write(page);
+            out.close();
+            return;
+         }
+
          boolean authenticated = false;
          List<String> values = exchange.getRequestHeaders().get("Authorization");
          if (values != null) authenticated = Options.authenticated(values.get(0));
