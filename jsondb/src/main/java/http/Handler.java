@@ -49,21 +49,6 @@ public class Handler implements HttpHandler
    {
       String meth = exchange.getRequestMethod();
 
-      List<String> values = exchange.getRequestHeaders().get("Authorization");
-
-      if (values != null)
-      {
-         String header = values.get(0).substring(6);
-         String auth = new String(Base64.getDecoder().decode(header));
-         System.out.println(auth);
-      }
-
-      if (1 == 1)
-      {
-         exchange.getResponseHeaders().set("WWW-Authenticate","Basic realm=JsonWebDB");
-         exchange.sendResponseHeaders(401,0);
-      }
-
       if (meth.equals("GET"))
       {
          doGet(exchange);
@@ -112,6 +97,20 @@ public class Handler implements HttpHandler
 
       String path = exchange.getRequestURI().getPath();
       if (path.length() <= 2) path = Options.index();
+
+      if (path.startsWith(Options.admin()))
+      {
+         boolean authenticated = false;
+         List<String> values = exchange.getRequestHeaders().get("Authorization");
+         if (values != null) authenticated = Options.authenticated(values.get(0));
+
+         if (!authenticated)
+         {
+            exchange.getResponseHeaders().set("WWW-Authenticate","Basic realm=JsonWebDB");
+            exchange.sendResponseHeaders(401,0);
+            return;
+         }
+      }
 
       String lastmod = null;
       List<String> values = exchange.getRequestHeaders().get("If-modified-since");

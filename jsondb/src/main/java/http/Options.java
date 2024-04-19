@@ -25,6 +25,7 @@ SOFTWARE.
 package http;
 
 import jsondb.Config;
+import java.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -37,8 +38,13 @@ public class Options
    private static final String ADMN = "admin";
    private static final String INDX = "index";
    private static final String VIRT = "virtual";
+   private static final String USER = "username";
+   private static final String PASW = "password";
+   private static final String AUTH = "basic-auth";
    private static final String APPL = "application";
 
+   private static String usr = null;
+   private static String pwd = null;
    private static String admin = null;
    private static String index = null;
 
@@ -49,9 +55,19 @@ public class Options
    public static void initialize()
    {
       JSONObject http = Config.get(APPL);
+      JSONObject auth = Config.get(http,AUTH);
+
+      Options.usr = Config.get(auth,USER);
+      Options.pwd = Config.get(auth,PASW);
 
       Options.admin = Config.get(http,ADMN);
       Options.index = Config.get(http,INDX);
+
+      if (!Options.index.startsWith("/"))
+         Options.index = "/" + Options.index;
+
+      if (!Options.admin.startsWith("/"))
+         Options.admin = "/" + Options.admin;
 
       JSONArray arr = Config.get(http,VIRT);
 
@@ -87,6 +103,26 @@ public class Options
       }
 
       return(null);
+   }
+
+
+   public static boolean authenticated(String header)
+   {
+      if (header == null) return(false);
+
+      if (header.toLowerCase().startsWith("basic "))
+         header = header.substring(6);
+
+      String auth = new String(Base64.getDecoder().decode(header));
+      int pos = auth.indexOf(':');
+
+      String usr = auth.substring(0,pos);
+      String pwd = auth.substring(pos+1);
+
+      if (usr.equals(Options.usr) && pwd.equals(Options.pwd))
+         return(true);
+
+      return(false);
    }
 
 
