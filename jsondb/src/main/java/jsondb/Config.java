@@ -31,9 +31,8 @@ import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
-import jsondb.messages.Messages;
-import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
+import http.HTTP;
 
 
 public class Config
@@ -103,6 +102,7 @@ public class Config
       Config.sttl = get(get(SESS),STTL);
       Config.logger = Applogger.setup();
 
+      HTTP.initialize();
       Trusted.initialize();
       FileConfig.initialize();
 

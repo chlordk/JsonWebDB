@@ -1,6 +1,9 @@
 {
    "application":
    {
+		"admin": "/admin",
+		"index": "index.html",
+		"virtual": [{"path": "/forms", "page": "index.html"}],
       "location": "/Users/alhof/Repository/forms42/demo/dist"
    }
    ,
