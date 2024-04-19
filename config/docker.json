@@ -2,11 +2,21 @@
    "application":
    {
       "location": "/dist"
+      ,
+		"index": "index.html",
+		"virtual": [{"path": "/forms", "page": "index.html"}]
+		,
+		"protected":
+		{
+			"admin": "/admin",
+			"username": "admin",
+			"password": "Manager1"
+		}
    }
    ,
    "session":
    {
-      "timeout": 600
+      "timeout": 20
    }
 	,
 	"embedded":
@@ -24,6 +34,11 @@
 		}
 	}
    ,
+	"endorsed":
+	[
+		{"entity": "root", "signature": "e3887d1f-bda1-425a-b30d-4065403a5be1"}
+	]
+	,
 	"database":
    {
 		"enabled": true,
@@ -40,7 +55,6 @@
 		"password": "hr",
 
 		"classes": ["org.postgresql.Driver"],
-		"password-token": "e3887d1f-bda1-425a-b30d-4065403a5be1",
 
 		"primary":
 		{

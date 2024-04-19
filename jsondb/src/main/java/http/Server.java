@@ -71,8 +71,6 @@ public class Server
    public static void main(String[] args) throws Exception
    {
       String config = null;
-      String password = null;
-      InetSocketAddress addr = null;
 
       int arg = 0;
       int len = args.length;
@@ -100,20 +98,48 @@ public class Server
          arg++;
       }
 
-      if (len != 1)
-      {
-         System.out.println();
-         System.err.println("This program requires <instance> as argument");
-         System.out.println("The following options can be specified: -c | --config <name>");
-         System.out.println();
-         System.exit(-1);
-      }
+      if (len != 2)
+         syntax();
 
-      String inst = args[0];
+      String cmd = args[0];
+      String inst = args[1];
       String root = findAppHome();
       JsonDB.initialize(root,inst,config);
 
-      password = loadServerConfig();
+      switch (cmd)
+      {
+         case "stop": stop();
+            break;
+
+         case "start": start();
+            break;
+
+         case "status": status();
+            break;
+
+         default: syntax();
+            break;
+      }
+   }
+
+
+   private static void syntax()
+   {
+      System.out.println();
+      System.out.println();
+      System.out.println("usage:    jsonwebdb [options] start|stop|status <instance>");
+      System.out.println("options:      -c | --config <configuration>");
+      System.out.println();
+
+      System.exit(-1);
+   }
+
+
+   private static void start() throws Exception
+   {
+      InetSocketAddress addr = null;
+
+      String password = loadServerConfig();
       SSLContext ctx = createSSLContext(password);
 
       if (port > 0)
@@ -134,6 +160,18 @@ public class Server
          secsrv.createContext("/",new Handler());
          secsrv.start();
       }
+   }
+
+
+   private static void stop() throws Exception
+   {
+      System.out.println("stop instance "+Config.inst());
+   }
+
+
+   private static void status() throws Exception
+   {
+      System.out.println("status for instance "+Config.inst());
    }
 
 

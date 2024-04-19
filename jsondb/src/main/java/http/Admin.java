@@ -101,7 +101,7 @@ public class Admin
       {
          try
          {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
             Config.logger().info("Shutting down");
             System.exit(0);
          }

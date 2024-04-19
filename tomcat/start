@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ARGS=$#
-PORT=8000
-SSLPORT=8043
+PORT=8001
+SSLPORT=8002
 INST="inst01"
 
 CWD=$(pwd)
