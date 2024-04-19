@@ -24,12 +24,15 @@ SOFTWARE.
 
 package jsonwebdb;
 
+import http.Admin;
 import http.Options;
 import jsondb.JsonDB;
 import jsondb.Response;
+import http.AdminResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import http.AdminResponse.Header;
 import jsondb.files.FileResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -71,6 +74,12 @@ public class JsonWebDB extends HttpServlet
          FileResponse file = null;
          String path = getPath(request);
 
+         if (path.startsWith(Options.admin()))
+         {
+            admin(path,request,response);
+            return;
+         }
+
          if (!jsondb.modified(path,request.getHeader("If-modified-since")))
          {
             response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
@@ -108,6 +117,47 @@ public class JsonWebDB extends HttpServlet
       }
 
       throw new ServletException("Method '"+meth+"' not supported");
+   }
+
+
+   private void admin(String path ,HttpServletRequest request, HttpServletResponse response) throws Exception
+   {
+      if (!request.isSecure())
+      {
+         AdminResponse rsp = Admin.noSSLMessage();
+         OutputStream out = response.getOutputStream();
+         out.write(rsp.page);
+         out.close();
+      }
+
+      boolean auth = Admin.isAdminUser(request.getHeader("Authorization"));
+
+      if (!auth)
+      {
+         AdminResponse rsp = Admin.getBasicAuthMessage();
+         response.setStatus(rsp.code);
+
+         for (int i = 0; i < rsp.headers.size(); i++)
+         {
+            Header header = rsp.headers.get(i);
+            response.setHeader(header.name,header.value);
+         }
+
+         return;
+      }
+
+      AdminResponse rsp = Admin.process(path);
+      OutputStream out = response.getOutputStream();
+
+      for (int i = 0; i < rsp.headers.size(); i++)
+      {
+         Header header = rsp.headers.get(i);
+         response.setHeader(header.name,header.value);
+      }
+
+      response.setStatus(rsp.code);
+      out.write(rsp.page);
+      out.close();
    }
 
 

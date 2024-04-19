@@ -33,12 +33,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import jsondb.files.FileResponse;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpsExchange;
-
 import http.AdminResponse.Header;
-
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpsExchange;
 
 
 public class Handler implements HttpHandler
