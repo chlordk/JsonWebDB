@@ -25,7 +25,9 @@ SOFTWARE.
 package http;
 
 import java.util.Base64;
+import java.util.logging.Level;
 
+import jsondb.Config;
 import jsondb.messages.Messages;
 
 
@@ -68,5 +70,45 @@ public class Admin
          return(true);
 
       return(false);
+   }
+
+
+   public static AdminResponse process(String path)
+   {
+      AdminResponse response = null;
+
+      if (path.equals(Options.admin()+"/stop"))
+      {
+         response = new AdminResponse(200,"stopping");
+         (new DelayedStop()).start();
+         return(response);
+      }
+
+      response = new AdminResponse(200,"status");
+      return(response);
+   }
+
+
+   private static class DelayedStop extends Thread
+   {
+      DelayedStop()
+      {
+         this.setDaemon(true);
+         this.setName("Stopping");
+      }
+
+      public void run()
+      {
+         try
+         {
+            Thread.sleep(5000);
+            Config.logger().info("Shutting down");
+            System.exit(0);
+         }
+         catch(Exception e)
+         {
+            Config.logger().log(Level.SEVERE,"Unable to stop process",e);
+         }
+      }
    }
 }

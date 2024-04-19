@@ -99,7 +99,7 @@ public class Handler implements HttpHandler
 
       if (path.startsWith(Options.admin()))
       {
-         admin(exchange);
+         admin(path,exchange);
          return;
       }
 
@@ -134,7 +134,7 @@ public class Handler implements HttpHandler
    }
 
 
-   private void admin(HttpExchange exchange) throws IOException
+   private void admin(String path, HttpExchange exchange) throws IOException
    {
       OutputStream out = exchange.getResponseBody();
 
@@ -163,8 +163,16 @@ public class Handler implements HttpHandler
          return;
       }
 
-      exchange.sendResponseHeaders(200,5);
-      out.write("admin".getBytes());
+      AdminResponse response = Admin.process(path);
+      exchange.sendResponseHeaders(response.code,response.size);
+
+      for (int i = 0; i < response.headers.size(); i++)
+      {
+         Header header = response.headers.get(i);
+         exchange.getResponseHeaders().set(header.name,header.value);
+      }
+
+      out.write(response.page);
       out.close();
    }
 
