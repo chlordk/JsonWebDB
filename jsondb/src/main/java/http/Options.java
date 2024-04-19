@@ -25,7 +25,6 @@ SOFTWARE.
 package http;
 
 import jsondb.Config;
-import java.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -50,6 +49,18 @@ public class Options
 
    private static ArrayList<VirtualPath> virtual =
       new ArrayList<VirtualPath>();
+
+
+   public static String username()
+   {
+      return(usr);
+   }
+
+
+   public static String password()
+   {
+      return(pwd);
+   }
 
 
    public static void initialize()
@@ -103,26 +114,6 @@ public class Options
       }
 
       return(null);
-   }
-
-
-   public static boolean authenticated(String header)
-   {
-      if (header == null) return(false);
-
-      if (header.toLowerCase().startsWith("basic "))
-         header = header.substring(6);
-
-      String auth = new String(Base64.getDecoder().decode(header));
-      int pos = auth.indexOf(':');
-
-      String usr = auth.substring(0,pos);
-      String pwd = auth.substring(pos+1);
-
-      if (usr.equals(Options.usr) && pwd.equals(Options.pwd))
-         return(true);
-
-      return(false);
    }
 
 

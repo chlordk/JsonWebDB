@@ -35,6 +35,9 @@ import java.util.logging.Level;
 import jsondb.files.FileResponse;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsExchange;
+
+import http.AdminResponse.Header;
+
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -96,33 +99,14 @@ public class Handler implements HttpHandler
 
       if (path.startsWith(Options.admin()))
       {
-         if (!(exchange instanceof HttpsExchange))
-         {
-            byte[] page = "Access to admin requires https".getBytes();
-            exchange.sendResponseHeaders(200,page.length);
-            out.write(page);
-            out.close();
-            return;
-         }
-
-         boolean authenticated = false;
-         List<String> values = exchange.getRequestHeaders().get("Authorization");
-         if (values != null) authenticated = Options.authenticated(values.get(0));
-
-         if (!authenticated)
-         {
-            exchange.getResponseHeaders().set("WWW-Authenticate","Basic realm=JsonWebDB");
-            exchange.sendResponseHeaders(401,0);
-            return;
-         }
+         admin(exchange);
+         return;
       }
-
-      String lastmod = null;
-      List<String> values = exchange.getRequestHeaders().get("If-modified-since");
-      if (values != null && values.size() == 1) lastmod = values.get(0);
 
       try
       {
+         String lastmod = getRequestHeader(exchange,"If-modified-since");
+
          if (!jsondb.modified(path,lastmod))
          {
             exchange.sendResponseHeaders(304,-1);
@@ -147,5 +131,58 @@ public class Handler implements HttpHandler
       {
          throw new IOException(t);
       }
+   }
+
+
+   private void admin(HttpExchange exchange) throws IOException
+   {
+      OutputStream out = exchange.getResponseBody();
+
+      if (!(exchange instanceof HttpsExchange))
+      {
+         AdminResponse response = Admin.noSSLMessage();
+         exchange.sendResponseHeaders(response.code,response.size);
+         out.write(response.page);
+         out.close();
+         return;
+      }
+
+      boolean auth = Admin.isAdminUser(getRequestHeader(exchange,"Authorization"));
+
+      if (!auth)
+      {
+         AdminResponse response = Admin.getBasicAuthMessage();
+         exchange.sendResponseHeaders(response.code,response.size);
+
+         for (int i = 0; i < response.headers.size(); i++)
+         {
+            Header header = response.headers.get(i);
+            exchange.getResponseHeaders().set(header.name,header.value);
+         }
+
+         return;
+      }
+
+      exchange.sendResponseHeaders(200,5);
+      out.write("admin".getBytes());
+      out.close();
+   }
+
+
+   private String getRequestHeader(HttpExchange exchange, String name)
+   {
+      String value = null;
+      List<String> values = exchange.getRequestHeaders().get(name);
+
+      if (values != null)
+      {
+         for(String part : values)
+         {
+            if (value == null) value = part;
+            else value += " " + part;
+         }
+      }
+
+      return(value);
    }
 }
