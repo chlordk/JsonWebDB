@@ -165,7 +165,15 @@ public class Server
 
    private static void stop() throws Exception
    {
-      System.out.println("stop instance "+Config.inst());
+      String server = Cluster.getServer();
+      if (!server.endsWith("/")) server += "/";
+
+      System.out.println(server+Options.admin()+"/stop");
+      Client client = new Client(server+Options.admin()+"/stop");
+      client.setAuthorizationHeader();
+
+      String resp = new String(client.get());
+      System.out.println(resp);
    }
 
 
