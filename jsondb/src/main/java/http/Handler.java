@@ -136,7 +136,6 @@ public class Handler implements HttpHandler
    {
       OutputStream out = exchange.getResponseBody();
 
-      /*
       if (!(exchange instanceof HttpsExchange))
       {
          AdminResponse response = Admin.noSSLMessage();
@@ -145,7 +144,6 @@ public class Handler implements HttpHandler
          out.close();
          return;
       }
-      */
 
       boolean auth = Admin.isAdminUser(getRequestHeader(exchange,"Authorization"));
 
