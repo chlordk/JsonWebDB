@@ -36,10 +36,10 @@ public class Options
    private static final String PAGE = "page";
    private static final String ADMN = "admin";
    private static final String INDX = "index";
+   private static final String AUTH = "admin";
    private static final String VIRT = "virtual";
    private static final String USER = "username";
    private static final String PASW = "password";
-   private static final String AUTH = "protected";
    private static final String APPL = "application";
 
    private static String usr = null;

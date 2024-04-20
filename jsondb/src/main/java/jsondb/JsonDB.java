@@ -30,6 +30,7 @@ import jsondb.state.StateHandler;
 import jsondb.files.FileResponse;
 import jsondb.objects.ObjectHandler;
 import database.definitions.AdvancedPool;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Public interface to the backend
@@ -38,6 +39,8 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
+   private static final AtomicInteger dbreqs = new AtomicInteger(0);
+   private static final AtomicInteger fireqs = new AtomicInteger(0);
 
    /**
     * Finalizes setup and starts necessary services.
@@ -102,7 +105,13 @@ public class JsonDB
    {
       if (date == null) return(true);
       boolean modified = !date.equals(FileHandler.lastModified(path));
-      if (!modified) log(path,"Not Modified");
+
+      if (!modified)
+      {
+         fireqs.incrementAndGet();
+         log(path,"Not Modified");
+      }
+
       return(modified);
    }
 
@@ -114,6 +123,7 @@ public class JsonDB
     */
    public FileResponse get(String path) throws Exception
    {
+      fireqs.incrementAndGet();
       FileResponse response = FileHandler.get(path);
       log(response); return(response);
    }
@@ -139,10 +149,23 @@ public class JsonDB
     */
    public Response execute(JSONObject request) throws Exception
    {
+      dbreqs.incrementAndGet();
       Response response = ObjectHandler.handle(request);
       response.put("version",version);
       log(request,response);
       return(response);
+   }
+
+
+   public static int getFileRequests()
+   {
+      return(fireqs.get());
+   }
+
+
+   public static int getJsonRequests()
+   {
+      return(dbreqs.get());
    }
 
 

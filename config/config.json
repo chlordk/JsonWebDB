@@ -5,12 +5,18 @@
 		"virtual": [{"path": "/forms", "page": "index.html"}],
       "location": "/Users/alhof/Repository/forms42/demo/dist"
 		,
-		"protected":
+		"admin":
 		{
 			"admin": "/admin",
 			"username": "admin",
 			"password": "Manager1"
 		}
+		,
+		"instances":
+		[
+			{"inst": "local01", "addr": "https://localhost:6002"},
+			{"inst": "docker01", "addr": "https://localhost:8002"}
+		]
    }
    ,
    "session":

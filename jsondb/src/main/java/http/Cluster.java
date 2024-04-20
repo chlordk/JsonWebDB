@@ -22,32 +22,51 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils;
+package http;
 
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.text.SimpleDateFormat;
+import jsondb.Config;
+import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
-public class GMTDate
+public class Cluster
 {
-   public static String format()
+   private static final String INST = "inst";
+   private static final String ADDR = "addr";
+   private static final String SECT = "instances";
+   private static final String APPL = "application";
+
+
+   private static HashMap<String,String> addresses =
+      new HashMap<String,String>();
+
+
+   public static void initialize()
    {
-      return(format(new Date()));
+      JSONObject ap = Config.get(APPL);
+      JSONArray arr = Config.get(ap,SECT);
+
+      for (int i = 0; i < arr.length(); i++)
+      {
+         JSONObject def = arr.getJSONObject(i);
+
+         String inst = def.getString(INST);
+         String addr = def.getString(ADDR);
+
+         addresses.put(inst.toLowerCase(),addr);
+      }
    }
 
 
-   public static String format(long time)
+   public static String getServer()
    {
-      return(format(new Date(time)));
+      return(addresses.get(Config.inst()));
    }
 
 
-   public static String format(Date date)
+   public static String getServer(String inst)
    {
-      SimpleDateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z",Locale.ENGLISH);
-      fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-      return(fmt.format(date));
+      return(addresses.get(inst.toLowerCase()));
    }
 }

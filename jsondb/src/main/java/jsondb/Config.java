@@ -25,6 +25,8 @@ SOFTWARE.
 package jsondb;
 
 import java.io.File;
+import http.Cluster;
+import http.Options;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import jsondb.files.FileConfig;
@@ -32,7 +34,6 @@ import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import database.definitions.AdvancedPool;
-import http.Options;
 
 
 public class Config
@@ -102,6 +103,7 @@ public class Config
       Config.sttl = get(get(SESS),STTL);
       Config.logger = Applogger.setup();
 
+      Cluster.initialize();
       Options.initialize();
       Trusted.initialize();
       FileConfig.initialize();

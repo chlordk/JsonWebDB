@@ -3,7 +3,7 @@
 ARGS=$#
 PORT=8001
 SSLPORT=8002
-INST="inst01"
+INST="docker01"
 
 CWD=$(pwd)
 LOCATION=$(dirname "$0")

@@ -24,10 +24,12 @@ SOFTWARE.
 
 package http;
 
-import java.util.Base64;
-import java.util.logging.Level;
-
 import jsondb.Config;
+import jsondb.JsonDB;
+import utils.GMTDate;
+import java.util.Base64;
+import utils.JSONOObject;
+import java.util.logging.Level;
 import jsondb.messages.Messages;
 
 
@@ -84,8 +86,37 @@ public class Admin
          return(response);
       }
 
-      response = new AdminResponse(200,"status");
-      return(response);
+      return(status());
+   }
+
+
+   private static AdminResponse status()
+   {
+      int M = 1024 * 1024;
+
+      String inst = Config.inst();
+      String server = Cluster.getServer();
+
+      JSONOObject stats = new JSONOObject();
+
+      long pid = ProcessHandle.current().pid();
+      long totmem = Runtime.getRuntime().maxMemory();
+      long freemem = Runtime.getRuntime().freeMemory();
+      long usedmem = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+
+      stats.put("pid",pid);
+      stats.put("instance",inst);
+      stats.put("server",server);
+      System.out.println(stats.toString(2));
+
+      stats.put("file requests",JsonDB.getFileRequests());
+      stats.put("jsondb requests",JsonDB.getJsonRequests());
+
+      stats.put("totmem", ((int) (totmem /M))+"M");
+      stats.put("freemem",((int) (freemem/M))+"M");
+      stats.put("usedmem",((int) (usedmem/M))+"M");
+
+      return(new AdminResponse(stats.toString(2)).setHeader("Last-Modified",GMTDate.format()));
    }
 
 
