@@ -127,6 +127,7 @@ public class Handler implements HttpHandler
       }
       catch (Throwable t)
       {
+         Config.logger().log(Level.SEVERE,t.getMessage(),t);
          throw new IOException(t);
       }
    }
@@ -134,22 +135,37 @@ public class Handler implements HttpHandler
 
    private void admin(String path, HttpExchange exchange) throws IOException
    {
-      OutputStream out = exchange.getResponseBody();
-
-      if (!(exchange instanceof HttpsExchange))
+      try
       {
-         AdminResponse response = Admin.noSSLMessage();
-         exchange.sendResponseHeaders(response.code,response.size);
-         out.write(response.page);
-         out.close();
-         return;
-      }
+         OutputStream out = exchange.getResponseBody();
 
-      boolean auth = Admin.isAdminUser(getRequestHeader(exchange,"Authorization"));
+         if (!(exchange instanceof HttpsExchange))
+         {
+            AdminResponse response = Admin.noSSLMessage();
+            exchange.sendResponseHeaders(response.code,response.size);
+            out.write(response.page);
+            out.close();
+            return;
+         }
 
-      if (!auth)
-      {
-         AdminResponse response = Admin.getBasicAuthMessage();
+         boolean auth = Admin.isAdminUser(getRequestHeader(exchange,"Authorization"));
+
+         if (!auth)
+         {
+            AdminResponse response = Admin.getBasicAuthMessage();
+            exchange.sendResponseHeaders(response.code,response.size);
+
+            for (int i = 0; i < response.headers.size(); i++)
+            {
+               Header header = response.headers.get(i);
+               exchange.getResponseHeaders().set(header.name,header.value);
+            }
+
+            out.close();
+            return;
+         }
+
+         AdminResponse response = Admin.process(path);
          exchange.sendResponseHeaders(response.code,response.size);
 
          for (int i = 0; i < response.headers.size(); i++)
@@ -158,21 +174,15 @@ public class Handler implements HttpHandler
             exchange.getResponseHeaders().set(header.name,header.value);
          }
 
+         out.write(response.page);
          out.close();
-         return;
+
       }
-
-      AdminResponse response = Admin.process(path);
-      exchange.sendResponseHeaders(response.code,response.size);
-
-      for (int i = 0; i < response.headers.size(); i++)
+      catch (Throwable t)
       {
-         Header header = response.headers.get(i);
-         exchange.getResponseHeaders().set(header.name,header.value);
+         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         throw new IOException(t);
       }
-
-      out.write(response.page);
-      out.close();
    }
 
 

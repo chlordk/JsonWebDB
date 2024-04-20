@@ -26,12 +26,14 @@ package jsonwebdb;
 
 import http.Admin;
 import http.Options;
+import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
 import http.AdminResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import http.AdminResponse.Header;
 import jsondb.files.FileResponse;
 import javax.servlet.ServletException;
@@ -55,7 +57,7 @@ public class JsonWebDB extends HttpServlet
    }
 
 
-   private void start() throws Exception
+   public static void start() throws Exception
    {
       String home = System.getenv("JsonWebDB_Home");
       String inst = System.getenv("JsonWebDB_Inst");
@@ -64,78 +66,108 @@ public class JsonWebDB extends HttpServlet
    }
 
 
-   private void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws Exception
+   public void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
       JsonDB jsondb = new JsonDB();
       String meth = request.getMethod();
 
       if (meth.equals("GET"))
       {
-         FileResponse file = null;
-         String path = getPath(request);
-
-         if (path.startsWith(Options.admin()))
+         try
          {
-            admin(path,request,response);
+            FileResponse file = null;
+            String path = getPath(request);
+
+            if (path.startsWith(Options.admin()))
+            {
+               admin(path,request,response);
+               return;
+            }
+
+            if (!jsondb.modified(path,request.getHeader("If-modified-since")))
+            {
+               response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+               return;
+            }
+
+            file = jsondb.get(path);
+
+            if (!file.exists())
+            {
+               response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+               return;
+            }
+
+            response.setContentType(file.mimetype);
+            response.setHeader("Last-Modified",file.gmt());
+            if (file.gzip) response.setHeader("Content-Encoding","gzip");
+
+            OutputStream out = response.getOutputStream();
+            out.write(file.content);
+            out.close();
             return;
          }
-
-         if (!jsondb.modified(path,request.getHeader("If-modified-since")))
+         catch (Throwable t)
          {
-            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-            return;
+            Config.logger().log(Level.SEVERE,t.getMessage(),t);
+            throw new IOException(t);
          }
-
-         file = jsondb.get(path);
-
-         if (!file.exists())
-         {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
-         }
-
-         response.setContentType(file.mimetype);
-         response.setHeader("Last-Modified",file.gmt());
-         if (file.gzip) response.setHeader("Content-Encoding","gzip");
-
-         OutputStream out = response.getOutputStream();
-         out.write(file.content);
-         out.close();
-         return;
       }
 
       if (meth.equals("POST"))
       {
-         String body = getBody(request);
-         Response json = jsondb.execute(body);
+         try
+         {
+            String body = getBody(request);
+            Response json = jsondb.execute(body);
 
-         response.setContentType(jsondb.mimetype("json"));
-         OutputStream out = response.getOutputStream();
-         out.write(json.toString().getBytes());
-         out.close();
-         return;
+            response.setContentType(jsondb.mimetype("json"));
+            OutputStream out = response.getOutputStream();
+            out.write(json.toString().getBytes());
+            out.close();
+            return;
+         }
+         catch (Throwable t)
+         {
+            Config.logger().log(Level.SEVERE,t.getMessage(),t);
+            throw new IOException(t);
+         }
       }
 
       throw new ServletException("Method '"+meth+"' not supported");
    }
 
 
-   private void admin(String path ,HttpServletRequest request, HttpServletResponse response) throws Exception
+   public void admin(String path ,HttpServletRequest request, HttpServletResponse response) throws IOException
    {
-      if (!request.isSecure())
+      try
       {
-         AdminResponse rsp = Admin.noSSLMessage();
+         if (!request.isSecure())
+         {
+            AdminResponse rsp = Admin.noSSLMessage();
+            OutputStream out = response.getOutputStream();
+            out.write(rsp.page);
+            out.close();
+         }
+
+         boolean auth = Admin.isAdminUser(request.getHeader("Authorization"));
+
+         if (!auth)
+         {
+            AdminResponse rsp = Admin.getBasicAuthMessage();
+            response.setStatus(rsp.code);
+
+            for (int i = 0; i < rsp.headers.size(); i++)
+            {
+               Header header = rsp.headers.get(i);
+               response.setHeader(header.name,header.value);
+            }
+
+            return;
+         }
+
+         AdminResponse rsp = Admin.process(path);
          OutputStream out = response.getOutputStream();
-         out.write(rsp.page);
-         out.close();
-      }
-
-      boolean auth = Admin.isAdminUser(request.getHeader("Authorization"));
-
-      if (!auth)
-      {
-         AdminResponse rsp = Admin.getBasicAuthMessage();
-         response.setStatus(rsp.code);
 
          for (int i = 0; i < rsp.headers.size(); i++)
          {
@@ -143,21 +175,15 @@ public class JsonWebDB extends HttpServlet
             response.setHeader(header.name,header.value);
          }
 
-         return;
+         response.setStatus(rsp.code);
+         out.write(rsp.page);
+         out.close();
       }
-
-      AdminResponse rsp = Admin.process(path);
-      OutputStream out = response.getOutputStream();
-
-      for (int i = 0; i < rsp.headers.size(); i++)
+      catch (Throwable t)
       {
-         Header header = rsp.headers.get(i);
-         response.setHeader(header.name,header.value);
+         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         throw new IOException(t);
       }
-
-      response.setStatus(rsp.code);
-      out.write(rsp.page);
-      out.close();
    }
 
 
