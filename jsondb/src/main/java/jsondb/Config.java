@@ -84,6 +84,9 @@ public class Config
       if (file == null)
          file = FILE;
 
+      if (Config.root != null)
+         return;
+
       if (file.indexOf('.') < 0)
          file += ".json";
 

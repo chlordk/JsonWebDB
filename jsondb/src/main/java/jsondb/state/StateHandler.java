@@ -40,7 +40,6 @@ import java.io.FileOutputStream;
 public class StateHandler extends Thread
 {
    private static long pid;
-   private static String ign;
 
    private static String inst = null;
    private static String path = null;
@@ -53,12 +52,6 @@ public class StateHandler extends Thread
    private static final String STATE = "state";
 
 
-   public static void ignore(String inst)
-   {
-      StateHandler.ign = inst;
-   }
-
-
    public static void initialize() throws Exception
    {
       FileOutputStream pf = null;
@@ -69,24 +62,20 @@ public class StateHandler extends Thread
       (new File(path)).mkdirs();
       (new StateHandler()).start();
 
-      if (ign == null || !inst.equals(ign))
-      {
-         StateHandler.pid = ProcessHandle.current().pid();
+      StateHandler.pid = ProcessHandle.current().pid();
 
-         pf = new FileOutputStream(pidFile(inst));
-         pf.write((pid+"").getBytes()); pf.close();
+      pf = new FileOutputStream(pidFile(inst));
+      pf.write((pid+"").getBytes()); pf.close();
 
-         Thread shutdown = new Thread(() -> StateHandler.pidFile(inst).delete());
-         Runtime.getRuntime().addShutdownHook(shutdown);
-      }
+      Thread shutdown = new Thread(() -> StateHandler.pidFile(inst).delete());
+      Runtime.getRuntime().addShutdownHook(shutdown);
    }
 
 
-   public static JSONObject list() throws Exception
+   public static JSONObject list(String path) throws Exception
    {
+      File root = new File(path);
       JSONOObject response = new JSONOObject();
-
-      File root = new File(StateHandler.path);
 
       if (root.exists())
       {

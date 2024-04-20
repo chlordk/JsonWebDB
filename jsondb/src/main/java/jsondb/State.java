@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import http.Server;
+import utils.Misc;
 import org.json.JSONObject;
 import jsondb.state.StateHandler;
 
@@ -33,10 +34,8 @@ public class State
 {
    public static void main(String[] args) throws Exception
    {
-      StateHandler.ignore("admin");
-      String root = Server.findAppHome();
-      JsonDB.initialize(root,"admin");
-      JSONObject list = StateHandler.list();
+      String root = Misc.url(Server.findAppHome(),"state");
+      JSONObject list = StateHandler.list(root);
       System.out.println(list.toString(2));
    }
 }
