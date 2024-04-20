@@ -28,6 +28,8 @@ import java.net.URL;
 import java.io.File;
 import jsondb.Config;
 import jsondb.JsonDB;
+import utils.Misc;
+
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;
@@ -166,10 +168,9 @@ public class Server
    private static void stop() throws Exception
    {
       String server = Cluster.getServer();
-      if (!server.endsWith("/")) server += "/";
+      String url = Misc.url(server,Options.admin(),"stop");
 
-      System.out.println(server+Options.admin()+"/stop");
-      Client client = new Client(server+Options.admin()+"/stop");
+      Client client = new Client(url);
       client.setAuthorizationHeader();
 
       String resp = new String(client.get());
@@ -179,7 +180,14 @@ public class Server
 
    private static void status() throws Exception
    {
-      System.out.println("status for instance "+Config.inst());
+      String server = Cluster.getServer();
+      String url = Misc.url(server,Options.admin(),"status");
+
+      Client client = new Client(url);
+      client.setAuthorizationHeader();
+
+      String resp = new String(client.get());
+      System.out.println(resp);
    }
 
 
