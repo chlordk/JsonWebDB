@@ -107,14 +107,11 @@ public class Admin
       stats.put("pid",pid);
       stats.put("instance",inst);
       stats.put("server",server);
-      System.out.println(stats.toString(2));
-
-      stats.put("file requests",JsonDB.getFileRequests());
-      stats.put("jsondb requests",JsonDB.getJsonRequests());
-
       stats.put("totmem", ((int) (totmem /M))+"M");
       stats.put("freemem",((int) (freemem/M))+"M");
       stats.put("usedmem",((int) (usedmem/M))+"M");
+      stats.put("file requests",JsonDB.getFileRequests());
+      stats.put("jsondb requests",JsonDB.getJsonRequests());
 
       return(new AdminResponse(stats.toString(2)).setHeader("Last-Modified",GMTDate.format()));
    }
