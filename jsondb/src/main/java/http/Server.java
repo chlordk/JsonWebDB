@@ -165,29 +165,43 @@ public class Server
    }
 
 
-   private static void stop() throws Exception
+   private static void stop()
    {
       String server = Cluster.getServer();
       String url = Misc.url(server,Options.admin(),"stop");
 
-      Client client = new Client(url);
-      client.setAuthorizationHeader();
+      try
+      {
+         Client client = new Client(url);
+         client.setAuthorizationHeader();
 
-      String resp = new String(client.get());
-      System.out.println(resp);
+         String resp = new String(client.get());
+         System.out.println(resp);
+      }
+      catch (Exception e)
+      {
+         System.err.println("Failed to stop server: "+e.getMessage());
+      }
    }
 
 
-   private static void status() throws Exception
+   private static void status()
    {
       String server = Cluster.getServer();
       String url = Misc.url(server,Options.admin(),"status");
 
-      Client client = new Client(url);
-      client.setAuthorizationHeader();
+      try
+      {
+         Client client = new Client(url);
+         client.setAuthorizationHeader();
 
-      String resp = new String(client.get());
-      System.out.println(resp);
+         String resp = new String(client.get());
+         System.out.println(resp);
+      }
+      catch (Exception e)
+      {
+         System.err.println("Failed to get status for server: "+e.getMessage());
+      }
    }
 
 
