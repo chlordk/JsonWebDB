@@ -112,7 +112,7 @@ public class StateHandler extends Thread
             JSONOObject entry = new JSONOObject();
             sessions.put(entry);
 
-            File session = sesFile(file.getName());
+            File session = sesFile(root,file.getName());
             SessionInfo info = new SessionInfo(session);
 
             entry.put("session",info.guid);
@@ -244,6 +244,13 @@ public class StateHandler extends Thread
    private static File sesFile(String session)
    {
       return(new File(Config.path(STATE,session,session+"."+SES)));
+   }
+
+
+   private static File sesFile(File parent, String session)
+   {
+      String path = parent.getPath()+File.separator+session;
+      return(new File(path+File.separator+session+"."+SES));
    }
 
 
