@@ -78,6 +78,7 @@ public class Session implements DatabaseRequest
       boolean authenticated = false;
       jsondb.Session session = jsondb.Session.create(username,dedicated);
 
+      response.put("success",true);
       response.put("method","connect");
       response.put("session",session.getGuid());
 
@@ -98,17 +99,12 @@ public class Session implements DatabaseRequest
          session.connect(false);
       }
 
-      if (authenticated)
+      if (!authenticated)
       {
-         response.put("success",true);
-      }
-      else
-      {
+         jsondb.Session.remove(session);
+
          response.put("success",false);
          response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
-
-         jsondb.Session.remove(session);
-         return(new Response(response));
       }
 
       return(new Response(response));

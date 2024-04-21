@@ -110,13 +110,13 @@ public class Session
 
       if (write || !pool.secondary())
       {
-         if (wconn == null) wconn = JdbcInterface.getInstance(write);
-         if (dedicated) wconn.connect(write);
+         if (wconn == null)
+            wconn = JdbcInterface.getInstance(write);
       }
       else
       {
-         if (rconn == null) rconn = JdbcInterface.getInstance(write);
-         if (dedicated) rconn.connect(write);
+         if (rconn == null)
+            rconn = JdbcInterface.getInstance(write);
       }
 
       return(this);
