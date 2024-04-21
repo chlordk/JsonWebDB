@@ -92,6 +92,11 @@ public class Session
       return(user);
    }
 
+   public Date getTouched()
+   {
+      return(touched);
+   }
+
    public boolean isDedicated()
    {
       return(dedicated);
