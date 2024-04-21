@@ -56,7 +56,6 @@ public class Session implements DatabaseRequest
       boolean dedicated = false;
 
       JSONObject response = new JSONObject();
-      response.put("method","connect");
 
       String username = Config.pool().defaultuser();
       JSONObject data = definition.getJSONObject(DATASECTION);
@@ -79,6 +78,9 @@ public class Session implements DatabaseRequest
       boolean authenticated = false;
       jsondb.Session session = jsondb.Session.create(username,dedicated);
 
+      response.put("method","connect");
+      response.put("session",session.getGuid());
+
       if (signature != null)
       {
          if (Trusted.getEntity(signature) != null)
@@ -99,7 +101,6 @@ public class Session implements DatabaseRequest
       if (authenticated)
       {
          response.put("success",true);
-         response.put("session",session.getGuid());
       }
       else
       {
@@ -126,7 +127,7 @@ public class Session implements DatabaseRequest
       if (session == null)
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+         response.put("message",Messages.get("NO_SUCH_SESSION"));
          return(new Response(response));
       }
 
@@ -152,20 +153,21 @@ public class Session implements DatabaseRequest
    public Response keepalive() throws Exception
    {
       JSONObject response = new JSONObject();
-      response.put("method","keepalive");
 
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
+      response.put("session",sessid);
+      response.put("method","keepalive");
+
       if (session != null && session.touch())
       {
          response.put("success",true);
-         response.put("session",session.getGuid());
       }
       else
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+         response.put("message",Messages.get("NO_SUCH_SESSION"));
       }
 
       return(new Response(response));
@@ -180,11 +182,12 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
+      response.put("session",sessid);
+
       if (session != null && session.touch())
       {
          response.put("success",false);
-         response.put("session",session);
-         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+         response.put("message",Messages.get("NO_SUCH_SESSION"));
          return(new Response(response));
       }
 
@@ -203,8 +206,8 @@ public class Session implements DatabaseRequest
       if (session == null || !session.touch())
       {
          response.put("success",false);
-         response.put("session",session);
-         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+         response.put("session",sessid);
+         response.put("message",Messages.get("NO_SUCH_SESSION"));
          return(new Response(response));
       }
 

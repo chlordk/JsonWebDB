@@ -173,7 +173,12 @@ public class StateHandler extends Thread
       File file = sesFile(session);
       if (!file.exists()) return(false);
 
-      file.getParentFile().delete();
+      file = file.getParentFile();
+
+      File[] content = file.listFiles();
+      for(File child : content) child.delete();
+
+      file.delete();
       return(true);
    }
 
