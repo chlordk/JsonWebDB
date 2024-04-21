@@ -29,7 +29,6 @@ import jsondb.Trusted;
 import jsondb.Response;
 import org.json.JSONObject;
 import jsondb.messages.Messages;
-import database.definitions.JdbcInterface;
 
 
 public class Session implements DatabaseRequest
@@ -78,50 +77,74 @@ public class Session implements DatabaseRequest
       if (signature != null) data.put(SIGNATURE,"********");
 
       boolean authenticated = false;
-      JdbcInterface db = JdbcInterface.getInstance(false);
+      jsondb.Session session = jsondb.Session.create(username,dedicated);
 
-      if (Trusted.getEntity(signature) != null) authenticated = true;
-      else if (db.authenticate(username,password)) authenticated = true;
+      if (signature != null)
+      {
+         if (Trusted.getEntity(signature) != null)
+         {
+            authenticated = true;
+            session.connect(false);
+         }
+      }
+
+      else
+
+      if (session.authenticate(username,password))
+      {
+         authenticated = true;
+         session.connect(false);
+      }
 
       if (authenticated)
       {
-         String session = jsondb.Session.create(username,dedicated).getGuid();
-
          response.put("success",true);
-         response.put("session",session);
-
-         return(new Response(response));
+         response.put("session",session.getGuid());
       }
       else
       {
          response.put("success",false);
          response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
+
+         jsondb.Session.remove(session);
          return(new Response(response));
       }
+
+      return(new Response(response));
    }
 
 
    public Response disconnect() throws Exception
    {
-      JdbcInterface db = JdbcInterface.getInstance(false);
-
       JSONObject response = new JSONObject();
-      response.put("method","disconnect");
-
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session != null && session.remove())
+      response.put("session",sessid);
+      response.put("method","disconnect");
+
+      if (session == null)
       {
-         response.put("success",true);
-         response.put("session",session);
+         response.put("success",false);
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+         return(new Response(response));
       }
-      else
+
+      if (!session.isDedicated())
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("SESSION_NOT_DEDICATED","disconnect",sessid));
+         return(new Response(response));
+      }
+
+      if (!session.disconnect())
       {
          response.put("success",false);
          response.put("message",Messages.get("DISCONNECT_FAILED",sessid));
+         return(new Response(response));
       }
 
+      response.put("success",true);
       return(new Response(response));
    }
 

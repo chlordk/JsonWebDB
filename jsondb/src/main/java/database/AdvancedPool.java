@@ -127,6 +127,13 @@ public class AdvancedPool implements database.definitions.AdvancedPool
 
 
    @Override
+   public boolean secondary()
+   {
+      return(secondary != null);
+   }
+
+
+   @Override
    public DatabaseType type(boolean write)
    {
       return(type);

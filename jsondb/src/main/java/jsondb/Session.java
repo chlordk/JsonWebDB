@@ -25,6 +25,8 @@ SOFTWARE.
 package jsondb;
 
 import jsondb.state.StateHandler;
+import database.definitions.AdvancedPool;
+import database.definitions.JdbcInterface;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -33,6 +35,11 @@ public class Session
    private final String guid;
    private final String user;
    private final boolean dedicated;
+   private final AdvancedPool pool;
+
+   private JdbcInterface rconn = null;
+   private JdbcInterface wconn = null;
+
 
    private final static ConcurrentHashMap<String,Session> sessions =
       new ConcurrentHashMap<String,Session>();
@@ -54,10 +61,21 @@ public class Session
       return(session);
    }
 
-   private Session(String guid, String user, boolean dedicated)
+   public static boolean remove(Session session)
+   {
+      return(remove(session.guid));
+   }
+
+   public static boolean remove(String guid)
+   {
+      return(sessions.remove(guid) != null);
+   }
+
+   private Session(String guid, String user, boolean dedicated) throws Exception
    {
       this.guid = guid;
       this.user = user;
+      this.pool = Config.pool();
       this.dedicated = dedicated;
    }
 
@@ -82,11 +100,47 @@ public class Session
       return(success);
    }
 
-
-   public boolean remove() throws Exception
+   public Session connect(boolean write) throws Exception
    {
+      if (write || !pool.secondary())
+      {
+         if (wconn == null) wconn = JdbcInterface.getInstance(write);
+         if (dedicated) wconn.connect(write);
+      }
+      else
+      {
+         if (rconn == null) rconn = JdbcInterface.getInstance(write);
+         if (dedicated) rconn.connect(write);
+      }
+
+      return(this);
+   }
+
+
+   public boolean disconnect() throws Exception
+   {
+      if (wconn != null)
+      {
+         wconn.disconnect();
+         wconn = null;
+      }
+
+      if (rconn != null)
+      {
+         rconn.disconnect();
+         rconn = null;
+      }
+
       boolean success = StateHandler.removeSession(guid);
       sessions.remove(guid);
+
       return(success);
+   }
+
+   public boolean authenticate(String username, String password) throws Exception
+   {
+      if (username == null) return(false);
+      if (password == null) return(false);
+      return(pool.authenticate(username,password));
    }
 }

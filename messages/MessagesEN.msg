@@ -6,3 +6,4 @@ DISCONNECT_FAILED          = Unable to disconnect session {%1}
 NO_SUCH_SESSION            = Session {%1} does not exist
 SSL_REQUIRED               = Access to this page requires a safe protocol (https)
 EXCEPTION_WITHOUT_MESSAGE  = An error occured, but without any description
+SESSION_NOT_DEDICATED       = Cannot perform operation {%1} since {%2} is not dedcicated

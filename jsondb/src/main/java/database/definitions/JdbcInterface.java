@@ -21,14 +21,14 @@
 
 package database.definitions;
 
-import java.sql.Connection;
-
 import jsondb.Config;
+import java.sql.Connection;
 
 
 public abstract class JdbcInterface
 {
-   protected final AdvancedPool pool;
+   private Connection conn = null;
+   private final AdvancedPool pool;
 
    public static JdbcInterface getInstance(boolean write) throws Exception
    {
@@ -45,24 +45,21 @@ public abstract class JdbcInterface
       return(pool.latency());
    }
 
-   public String defaultuser()
+   public boolean disconnect() throws Exception
    {
-      return(pool.defaultuser());
-   }
-
-   public boolean proxy()
-   {
-      return(pool.proxy());
-   }
-
-   public void release(Connection conn) throws Exception
-   {
+      if (conn == null) return(false);
       pool.release(conn);
+      return(true);
    }
 
-   public Connection reserve(boolean write) throws Exception
+   public boolean isConnected() throws Exception
    {
-      return(pool.reserve(write));
+      return(conn != null);
+   }
+
+   public void connect(boolean write) throws Exception
+   {
+      this.conn = pool.reserve(write);
    }
 
    public boolean authenticate(String username, String password) throws Exception
