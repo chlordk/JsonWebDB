@@ -85,7 +85,7 @@ public class Admin
 
       if (path.equals(Options.admin()+"/stop"))
       {
-         response = new AdminResponse(200,"stopping...");
+         response = new AdminResponse(200,"Instance "+Config.inst()+" stopping...");
          (new DelayedStop()).start();
          return(response);
       }

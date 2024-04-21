@@ -39,21 +39,31 @@ public class ObjectHandler
    private static final String location = ObjectHandler.class.getPackage().getName();
 
 
-   public static Response handle(JSONObject request) throws Exception
+   public static Response handle(JSONObject request)
    {
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
 
       if (names != null && names.length == 1)
       {
-         String invk = payload.getString("invoke");
-         invk = invk.substring(0,invk.indexOf("("));
-         DatabaseRequest dbrq = getInstance(names[0],payload);
-         Method method = dbrq.getClass().getMethod(invk);
-         return((Response) method.invoke(dbrq));
+         try
+         {
+            String invk = payload.getString("invoke");
+            invk = invk.substring(0,invk.indexOf("("));
+            DatabaseRequest dbrq = getInstance(names[0],payload);
+            Method method = dbrq.getClass().getMethod(invk);
+            return((Response) method.invoke(dbrq));
+         }
+         catch (Throwable t)
+         {
+            return(new Response().exception(t));
+         }
       }
       else
-         throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
+      {
+         Exception t = new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
+         return(new Response().exception(t));
+      }
    }
 
 

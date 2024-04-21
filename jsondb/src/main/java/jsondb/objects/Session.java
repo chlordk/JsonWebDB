@@ -60,7 +60,6 @@ public class Session implements DatabaseRequest
       response.put("method","connect");
 
       String username = Config.pool().defaultuser();
-
       JSONObject data = definition.getJSONObject(DATASECTION);
 
       if (data.has(USERNAME))
@@ -78,40 +77,34 @@ public class Session implements DatabaseRequest
       if (password != null) data.put(PASSWORD,"********");
       if (signature != null) data.put(SIGNATURE,"********");
 
-      try
+      boolean authenticated = false;
+      JdbcInterface db = JdbcInterface.getInstance(false);
+
+      if (Trusted.getEntity(signature) != null) authenticated = true;
+      else if (db.authenticate(username,password)) authenticated = true;
+
+      if (authenticated)
       {
-         boolean authenticated = false;
-         JdbcInterface db = JdbcInterface.getInstance(false);
+         String session = jsondb.Session.create(username,dedicated).getGuid();
 
-         if (Trusted.getEntity(signature) != null) authenticated = true;
-         else if (db.authenticate(username,password)) authenticated = true;
+         response.put("success",true);
+         response.put("session",session);
 
-         if (authenticated)
-         {
-            String session = jsondb.Session.create(username,dedicated).getGuid();
-
-            response.put("success",true);
-            response.put("session",session);
-
-            return(new Response(response));
-         }
-         else
-         {
-            response.put("success",false);
-            response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
-            return(new Response(response));
-         }
+         return(new Response(response));
       }
-      catch (Exception e)
+      else
       {
          response.put("success",false);
-         return(new Response(response).exception(e));
+         response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
+         return(new Response(response));
       }
    }
 
 
    public Response disconnect() throws Exception
    {
+      JdbcInterface db = JdbcInterface.getInstance(false);
+
       JSONObject response = new JSONObject();
       response.put("method","disconnect");
 
@@ -126,7 +119,7 @@ public class Session implements DatabaseRequest
       else
       {
          response.put("success",false);
-         response.put("message",Messages.get("DISCONNECT_FAILED",session));
+         response.put("message",Messages.get("DISCONNECT_FAILED",sessid));
       }
 
       return(new Response(response));
@@ -141,7 +134,7 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session == null || !session.touch())
+      if (session != null && session.touch())
       {
          response.put("success",true);
          response.put("session",session);
@@ -149,7 +142,7 @@ public class Session implements DatabaseRequest
       else
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
       }
 
       return(new Response(response));
@@ -164,14 +157,13 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session == null || !session.touch())
+      if (session != null && session.touch())
       {
          response.put("success",false);
          response.put("session",session);
          response.put("message",Messages.get("NO_SUCH_SESSION",session));
          return(new Response(response));
       }
-
 
       return(new Response(response));
    }

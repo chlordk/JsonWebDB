@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import org.json.JSONObject;
+import java.util.logging.Level;
 import jsondb.files.FileHandler;
 import jsondb.state.StateHandler;
 import jsondb.files.FileResponse;
@@ -182,6 +183,8 @@ public class JsonDB
 
    private void log(JSONObject request, Response response)
    {
+      if (response.exception() != null)
+      Config.logger().log(Level.WARNING,response.get("message")+"",response.exception());
       Config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }
 }

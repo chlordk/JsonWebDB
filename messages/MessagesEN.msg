@@ -5,3 +5,4 @@ AUTHENTICATION_FAILED      = Failed to authenticate {%1}
 DISCONNECT_FAILED          = Unable to disconnect session {%1}
 NO_SUCH_SESSION            = Session {%1} does not exist
 SSL_REQUIRED               = Access to this page requires a safe protocol (https)
+EXCEPTION_WITHOUT_MESSAGE  = An error occured, but without any description

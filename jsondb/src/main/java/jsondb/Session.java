@@ -25,8 +25,6 @@ SOFTWARE.
 package jsondb;
 
 import jsondb.state.StateHandler;
-import jsondb.state.StateHandler.SessionInfo;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -43,18 +41,6 @@ public class Session
    public static Session get(String guid) throws Exception
    {
       Session session = sessions.get(guid);
-
-      if (session == null)
-      {
-         SessionInfo info = StateHandler.getSession(guid);
-
-         if (info != null)
-         {
-            session = new Session(guid,info.user,info.dedicated);
-            sessions.put(guid,session);
-         }
-      }
-
       return(session);
    }
 
