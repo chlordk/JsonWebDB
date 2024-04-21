@@ -1,5 +1,5 @@
 {
-   "$id": "https://example.com/product.schema.json",
+   "$id": "Session.json",
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
    "type": "object",
@@ -11,7 +11,10 @@
       {
          "type": "object",
          "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
+
          "required": ["invoke"],
+         "additionalProperties": false,
+
 
          "properties":
          {
@@ -33,6 +36,9 @@
                "type": "object",
                "description": "Information required for connecting",
 
+               "required": ["username"],
+               "additionalProperties": false,
+
                "properties":
                {
                   "username": {"type": "string"},
@@ -46,6 +52,9 @@
                      "description": "Name value pairs to apply when connecting",
                      "data":
                      {
+                        "required": ["name","value"],
+                        "additionalProperties": false,
+
                         "properties":
                         {
                            "name": {"type": "string"},

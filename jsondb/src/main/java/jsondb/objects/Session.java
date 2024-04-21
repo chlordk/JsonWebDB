@@ -153,14 +153,11 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
+      response.put("success",true);
       response.put("session",sessid);
       response.put("method","keepalive");
 
-      if (session != null && session.touch())
-      {
-         response.put("success",true);
-      }
-      else
+      if (session == null || !session.touch())
       {
          response.put("success",false);
          response.put("message",Messages.get("NO_SUCH_SESSION"));
@@ -173,20 +170,21 @@ public class Session implements DatabaseRequest
    public Response commit() throws Exception
    {
       JSONObject response = new JSONObject();
-      response.put("method","commit");
-
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
+      response.put("success",true);
       response.put("session",sessid);
+      response.put("method","commit");
 
-      if (session != null && session.touch())
+      if (session == null)
       {
          response.put("success",false);
          response.put("message",Messages.get("NO_SUCH_SESSION"));
          return(new Response(response));
       }
 
+      session.commit();
       return(new Response(response));
    }
 
@@ -194,19 +192,21 @@ public class Session implements DatabaseRequest
    public Response rollback() throws Exception
    {
       JSONObject response = new JSONObject();
-      response.put("method","rollback");
-
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session == null || !session.touch())
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","rollback");
+
+      if (session == null)
       {
          response.put("success",false);
-         response.put("session",sessid);
          response.put("message",Messages.get("NO_SUCH_SESSION"));
          return(new Response(response));
       }
 
+      session.rollback();
       return(new Response(response));
    }
 }

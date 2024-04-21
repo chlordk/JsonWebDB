@@ -152,4 +152,30 @@ public class Session
       if (password == null) return(false);
       return(pool.authenticate(username,password));
    }
+
+   public boolean commit() throws Exception
+   {
+      boolean success = StateHandler.touchSession(guid);
+
+      if (wconn != null)
+      {
+         wconn.commit();
+         return(success);
+      }
+
+      return(false);
+   }
+
+   public boolean rollback() throws Exception
+   {
+      boolean success = StateHandler.touchSession(guid);
+
+      if (wconn != null)
+      {
+         wconn.rollback();
+         return(success);
+      }
+
+      return(false);
+   }
 }

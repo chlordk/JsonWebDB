@@ -66,6 +66,20 @@ public abstract class JdbcInterface
       return(pool.authenticate(username,password));
    }
 
+   public boolean commit() throws Exception
+   {
+      if (conn == null) return(false);
+      conn.commit();
+      return(true);
+   }
+
+   public boolean rollback() throws Exception
+   {
+      if (conn == null) return(false);
+      conn.rollback();
+      return(true);
+   }
+
   public boolean execute(String sql) throws Exception
   {
     Statement stmt = conn.createStatement();
