@@ -118,7 +118,7 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session.remove())
+      if (session != null && session.remove())
       {
          response.put("success",true);
          response.put("session",session);
@@ -141,7 +141,7 @@ public class Session implements DatabaseRequest
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      if (session.touch())
+      if (session == null || !session.touch())
       {
          response.put("success",true);
          response.put("session",session);
@@ -149,7 +149,48 @@ public class Session implements DatabaseRequest
       else
       {
          response.put("success",false);
-         response.put("message",Messages.get("TOUCH_FAILED",session));
+         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+      }
+
+      return(new Response(response));
+   }
+
+
+   public Response commit() throws Exception
+   {
+      JSONObject response = new JSONObject();
+      response.put("method","commit");
+
+      String sessid = definition.optString(SESSION);
+      jsondb.Session session = jsondb.Session.get(sessid);
+
+      if (session == null || !session.touch())
+      {
+         response.put("success",false);
+         response.put("session",session);
+         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+         return(new Response(response));
+      }
+
+
+      return(new Response(response));
+   }
+
+
+   public Response rollback() throws Exception
+   {
+      JSONObject response = new JSONObject();
+      response.put("method","rollback");
+
+      String sessid = definition.optString(SESSION);
+      jsondb.Session session = jsondb.Session.get(sessid);
+
+      if (session == null || !session.touch())
+      {
+         response.put("success",false);
+         response.put("session",session);
+         response.put("message",Messages.get("NO_SUCH_SESSION",session));
+         return(new Response(response));
       }
 
       return(new Response(response));

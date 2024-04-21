@@ -143,7 +143,7 @@ public class StateHandler extends Thread
    }
 
 
-   public static String createSession(String username) throws Exception
+   public static String createSession(String username, boolean dedicated) throws Exception
    {
       boolean done = false;
       String session = null;
@@ -160,7 +160,7 @@ public class StateHandler extends Thread
             done = true;
             sesPath(session).mkdirs();
             out = new FileOutputStream(file);
-            out.write((username+" "+inst).getBytes()); out.close();
+            out.write((username+" "+inst+" "+dedicated).getBytes()); out.close();
          }
       }
 
@@ -188,36 +188,27 @@ public class StateHandler extends Thread
    }
 
 
-   public static String createTransaction(String session, String inst) throws Exception
+   public static boolean createTransaction(String session, String inst) throws Exception
    {
-      String running = null;
       File file = trxFile(session);
-
-      if (file.exists())
-      {
-         FileInputStream in = new FileInputStream(file);
-         running = new String(in.readAllBytes()); in.close();
-      }
+      if (file.exists()) return(false);
 
       FileOutputStream out = new FileOutputStream(file);
-      out.write(inst.getBytes()); out.close();
+      out.write((inst+" "+StateHandler.pid).getBytes()); out.close();
 
-      return(running);
+      return(true);
    }
 
 
-   public static String getTransaction(String session) throws Exception
+   public static TransactionInfo getTransaction(String session) throws Exception
    {
-      String running = null;
+      TransactionInfo info = null;
       File file = trxFile(session);
 
       if (file.exists())
-      {
-         FileInputStream in = new FileInputStream(file);
-         running = new String(in.readAllBytes()); in.close();
-      }
+         info = new TransactionInfo(file);
 
-      return(running);
+      return(info);
    }
 
 
@@ -322,6 +313,7 @@ public class StateHandler extends Thread
       public final String guid;
       public final String user;
       public final String inst;
+      public final boolean dedicated;
 
       private SessionInfo(File file) throws Exception
       {
@@ -339,6 +331,38 @@ public class StateHandler extends Thread
 
          this.user = args[0];
          this.inst = args[1];
+
+         this.dedicated = Boolean.parseBoolean(args[2]);
+      }
+   }
+
+
+   public static class TransactionInfo
+   {
+      public final long age;
+      public final long pid;
+      public final String guid;
+      public final String user;
+      public final String inst;
+
+      private TransactionInfo(File file) throws Exception
+      {
+         String guid = file.getName();
+         long now = (new Date()).getTime();
+
+         this.age = (int) (now - file.lastModified())/1000;
+         this.guid = guid.substring(0,guid.length()-SES.length()-1);
+
+         FileInputStream in = new FileInputStream(file);
+         String content = new String(in.readAllBytes());
+         in.close();
+
+         String[] args = content.split(" ");
+
+         this.user = args[0];
+         this.inst = args[1];
+
+         this.pid = Long.parseLong(args[2]);
       }
    }
 }

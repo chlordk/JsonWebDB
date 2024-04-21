@@ -39,6 +39,7 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
+   public static final long started = System.currentTimeMillis();
    private static final AtomicInteger dbreqs = new AtomicInteger(0);
    private static final AtomicInteger fireqs = new AtomicInteger(0);
 

@@ -34,7 +34,7 @@ public class Cluster
 {
    private static final String INST = "inst";
    private static final String ADDR = "addr";
-   private static final String SECT = "instances";
+   private static final String CLUS = "cluster";
    private static final String APPL = "application";
 
 
@@ -45,7 +45,7 @@ public class Cluster
    public static void initialize()
    {
       JSONObject ap = Config.get(APPL);
-      JSONArray arr = Config.get(ap,SECT);
+      JSONArray arr = Config.get(ap,CLUS);
 
       for (int i = 0; i < arr.length(); i++)
       {

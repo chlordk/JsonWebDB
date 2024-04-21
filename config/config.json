@@ -12,7 +12,7 @@
 			"password": "Manager1"
 		}
 		,
-		"instances":
+		"cluster":
 		[
 			{"inst": "local01", "addr": "https://localhost:6002"},
 			{"inst": "docker01", "addr": "https://localhost:8002"}

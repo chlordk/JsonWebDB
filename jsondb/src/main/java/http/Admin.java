@@ -27,9 +27,13 @@ package http;
 import jsondb.Config;
 import jsondb.JsonDB;
 import utils.GMTDate;
+import java.util.Date;
 import java.util.Base64;
+import java.time.Instant;
 import utils.JSONOObject;
+import java.time.Duration;
 import java.util.logging.Level;
+import java.time.LocalDateTime;
 import jsondb.messages.Messages;
 
 
@@ -94,6 +98,12 @@ public class Admin
    {
       int M = 1024 * 1024;
 
+      LocalDateTime now = LocalDateTime.now();
+      Instant started = new Date(JsonDB.started).toInstant();
+
+      long days = Duration.between(started,now).toDays();
+      long hours = Duration.between(started,now).toHours();
+
       String inst = Config.inst();
       String server = Cluster.getServer();
 
@@ -110,6 +120,7 @@ public class Admin
       stats.put("totmem", ((int) (totmem /M))+"M");
       stats.put("freemem",((int) (freemem/M))+"M");
       stats.put("usedmem",((int) (usedmem/M))+"M");
+      stats.put("uptime",days+" days, "+hours+" hours");
       stats.put("file requests",JsonDB.getFileRequests());
       stats.put("jsondb requests",JsonDB.getJsonRequests());
 

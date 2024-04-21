@@ -123,7 +123,7 @@ public class Client
       return(ctx);
    }
 
-   
+
    private static class FakeTrustManager implements X509TrustManager
    {
      public FakeTrustManager()
