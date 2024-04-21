@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
+import java.util.Date;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
@@ -37,6 +38,7 @@ public class Session
    private final boolean dedicated;
    private final AdvancedPool pool;
 
+   private Date touched = null;
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
@@ -76,17 +78,18 @@ public class Session
       this.guid = guid;
       this.user = user;
       this.pool = Config.pool();
+      this.touched = new Date();
       this.dedicated = dedicated;
    }
 
    public String getGuid()
    {
-      return guid;
+      return(guid);
    }
 
    public String getUser()
    {
-      return user;
+      return(user);
    }
 
    public boolean isDedicated()
@@ -96,12 +99,15 @@ public class Session
 
    public boolean touch() throws Exception
    {
+      this.touched = new Date();
       boolean success = StateHandler.touchSession(guid);
       return(success);
    }
 
    public Session connect(boolean write) throws Exception
    {
+      touch();
+
       if (write || !pool.secondary())
       {
          if (wconn == null) wconn = JdbcInterface.getInstance(write);

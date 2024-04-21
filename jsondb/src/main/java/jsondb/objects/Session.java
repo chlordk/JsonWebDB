@@ -160,7 +160,7 @@ public class Session implements DatabaseRequest
       if (session != null && session.touch())
       {
          response.put("success",true);
-         response.put("session",session);
+         response.put("session",session.getGuid());
       }
       else
       {
