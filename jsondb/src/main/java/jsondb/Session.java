@@ -109,19 +109,17 @@ public class Session
       return(success);
    }
 
-   public Session connect(boolean write) throws Exception
+   public Session connect() throws Exception
    {
       touch();
 
-      if (write || !pool.secondary())
-      {
-         if (wconn == null)
-            wconn = JdbcInterface.getInstance(write);
-      }
-      else
+      if (wconn == null)
+         wconn = JdbcInterface.getInstance(true);
+
+      if (pool.secondary())
       {
          if (rconn == null)
-            rconn = JdbcInterface.getInstance(write);
+            rconn = JdbcInterface.getInstance(false);
       }
 
       return(this);

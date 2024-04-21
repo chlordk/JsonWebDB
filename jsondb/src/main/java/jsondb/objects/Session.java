@@ -87,7 +87,7 @@ public class Session implements DatabaseRequest
          if (Trusted.getEntity(signature) != null)
          {
             authenticated = true;
-            session.connect(false);
+            session.connect();
          }
       }
 
@@ -96,7 +96,7 @@ public class Session implements DatabaseRequest
       if (session.authenticate(username,password))
       {
          authenticated = true;
-         session.connect(false);
+         session.connect();
       }
 
       if (!authenticated)
