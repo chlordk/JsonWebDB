@@ -21,6 +21,7 @@
 
 package database;
 
+import java.sql.Connection;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
 
@@ -31,4 +32,16 @@ public class Generic extends JdbcInterface
    {
       super(pool);
    }
-}
+
+   @Override
+   public void setProxyUser(Connection conn, String username) throws Exception
+   {
+      throw new Exception("Not implemented");
+   }
+
+   @Override
+   public void releaseProxyUser(Connection conn) throws Exception
+   {
+      throw new Exception("Not implemented");
+   }
+ }

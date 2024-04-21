@@ -21,8 +21,12 @@
 
 package database;
 
+import java.sql.Connection;
+import java.util.Properties;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
+import oracle.jdbc.OraclePreparedStatement;
+import oracle.jdbc.driver.OracleConnection;
 
 
 public class Oracle extends JdbcInterface
@@ -30,5 +34,21 @@ public class Oracle extends JdbcInterface
   public Oracle(AdvancedPool pool)
   {
     super(pool);
+  }
+  @Override
+  public void setProxyUser(Connection conn, String username) throws Exception
+  {
+    Properties props = new Properties();
+    OracleConnection oconn = (OracleConnection) conn;
+    props.put(OracleConnection.PROXY_USER_NAME,username);
+    oconn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME,props);
+  }
+
+
+  @Override
+  public void releaseProxyUser(Connection conn) throws Exception
+  {
+    OracleConnection oconn = (OracleConnection) conn;
+    oconn.close(OracleConnection.PROXY_SESSION);
   }
 }

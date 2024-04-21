@@ -22,6 +22,7 @@
 package database.definitions;
 
 import jsondb.Config;
+import java.sql.Statement;
 import java.sql.Connection;
 
 
@@ -40,9 +41,15 @@ public abstract class JdbcInterface
       this.pool = pool;
    }
 
-   public int latency()
+   public boolean isConnected() throws Exception
    {
-      return(pool.latency());
+      return(conn != null);
+   }
+
+   public void connect(String username, boolean write) throws Exception
+   {
+      this.conn = pool.reserve(write);
+      if (pool.proxy()) setProxyUser(conn,username);
    }
 
    public boolean disconnect() throws Exception
@@ -52,20 +59,19 @@ public abstract class JdbcInterface
       return(true);
    }
 
-   public boolean isConnected() throws Exception
-   {
-      return(conn != null);
-   }
-
-   public void connect(boolean write) throws Exception
-   {
-      this.conn = pool.reserve(write);
-   }
-
    public boolean authenticate(String username, String password) throws Exception
    {
       if (username == null) return(false);
       if (password == null) return(false);
       return(pool.authenticate(username,password));
    }
+
+  public boolean execute(String sql) throws Exception
+  {
+    Statement stmt = conn.createStatement();
+    return(stmt.execute(sql));
+  }
+
+  public abstract void releaseProxyUser(Connection conn) throws Exception;
+  public abstract void setProxyUser(Connection conn, String username) throws Exception;
 }
