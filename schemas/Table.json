@@ -110,7 +110,7 @@
          ,
          "Filters":
          {
-            "description": "List of filters, with or without clause",
+            "description": "List of filters, with or without limit",
 
             "anyOf":
             [
@@ -123,7 +123,7 @@
          {
             "type": "array",
             "additionalProperties": false,
-            "description": "List of filters, without clause",
+            "description": "List of filters, without limit",
 
             "items":
             {
@@ -140,11 +140,11 @@
          {
             "type": "object",
             "additionalProperties": false,
-            "description": "List of filters, with clause",
+            "description": "List of filters, with limit",
 
             "properties":
             {
-               "clause": {"$ref": "#/types/Clause"}
+               "limit": {"$ref": "#/types/Clause"}
                ,
                "filters":
                {
@@ -166,7 +166,7 @@
 
             "properties":
             {
-               "clause": {"$ref": "#/types/Clause"},
+               "limit": {"$ref": "#/types/Clause"},
                "column": {"type": "string"},
                "filter": {"type": "string"},
                "value": {"type": ["string","number","integer","boolean"]}
