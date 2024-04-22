@@ -107,6 +107,12 @@
          }
       }
       ,
+      "Clause":
+      {
+         "type": "string",
+         "enum": ["where", "and", "or"]
+      }
+      ,
       "Filter":
       {
          "type": "array",
