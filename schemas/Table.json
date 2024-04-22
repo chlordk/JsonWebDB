@@ -61,9 +61,14 @@
                      "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
-                  "filters":
+                  "filter":
                   {
-                     "type": "object"
+                     "type": "array",
+                     "anyOf":
+                     [
+                        {"$ref": "#/types/Filter"},
+                        {"$ref": "#/types/NameValuePair"}
+                     ]
                   }
                }
             }
@@ -100,6 +105,35 @@
             "name": {"type": "string"},
             "value": {"type": ["string","number","integer","boolean"]}
          }
+      }
+      ,
+      "Filter":
+      {
+         "type": "array",
+         "items":
+         {
+            "anyOf":
+            [
+               {"$ref": "#/types/Filter"},
+               {"$ref": "#/types/Constraint"}
+            ]
+         }
+      }
+      ,
+      "Constraint":
+      {
+         "type": "object",
+         "required": ["column","filter","value"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "or": {"type": "boolean"},
+            "column": {"type": "string"},
+            "filter": {"type": "string"},
+            "value": {"type": ["string","number","integer","boolean"]}
+         }
+
       }
    }
  }
