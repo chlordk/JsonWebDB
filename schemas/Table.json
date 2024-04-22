@@ -1,159 +1,169 @@
-{
-   "type": "object",
-   "$id": "Table.json",
-   "$schema": "https://json-schema.org/draft/2020-12/schema",
-
-   "description": "Table object that handles select, insert, update and delete",
-   "additionalProperties": false,
-
-   "properties":
    {
-      "Table":
+      "type": "object",
+      "$id": "Table.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+      "description": "Table object that handles select, insert, update and delete",
+      "additionalProperties": false,
+
+      "properties":
       {
-         "type": "object",
-         "description": "The source object (table,view or query)",
-         "additionalProperties": false,
-         "required": ["source","invoke"],
-
-         "properties":
+         "Table":
          {
-            "source":
-            {
-               "type": "string",
-               "description": "The source object (table,view or query)"
-            }
-            ,
-            "session":
-            {
-               "type": "string",
-               "description": "Valid session id"
-            }
-            ,
-            "invoke":
-            {
-               "type": "string",
-               "description": "Method to invoke",
-               "enum": ["select()", "insert()", "update()", "delete()"]
-            }
-            ,
-            "bindvalues":
-            {
-               "type": "array",
-               "items": {"$ref": "#/types/BindValue"}
-            }
-            ,
-            "test":
-            {
-               "type": "type",
-               "additionalProperties": false,
+            "type": "object",
+            "description": "The source object (table,view or query)",
+            "additionalProperties": false,
+            "required": ["source","invoke"],
 
-               "properties":
+            "properties":
+            {
+               "source":
                {
-	              "type": {"type": "string", "enum": ["where", "and", "or"]},
-                  "filters":
-                  {
-                     "type": "array",
-                     "items": {"type": "string"}
-                  }
+                  "type": "string",
+                  "description": "The source object (table,view or query)"
                }
-            }
-            ,
-            "update()":
-            {
-               "additionalProperties": false,
-               "required": ["columns"],
-
-               "properties":
+               ,
+               "session":
                {
-                  "columns":
+                  "type": "string",
+                  "description": "Valid session id"
+               }
+               ,
+               "invoke":
+               {
+                  "type": "string",
+                  "description": "Method to invoke",
+                  "enum": ["select()", "insert()", "update()", "delete()"]
+               }
+               ,
+               "bindvalues":
+               {
+                  "type": "array",
+                  "items": {"$ref": "#/types/BindValue"}
+               }
+               ,
+               "update()":
+               {
+                  "additionalProperties": false,
+                  "required": ["columns"],
+
+                  "properties":
                   {
-                     "type": "array",
-                     "items": {"$ref": "#/types/NameValuePair"}
-                  }
-                  ,
-                  "assertions":
-                  {
-                     "type": "array",
-                     "items": {"$ref": "#/types/NameValuePair"}
-                  }
-                  ,
-                  "filter":
-                  {
-                     "type": "array",
-                     "anyOf":
-                     [
-                        {"$ref": "#/types/Filter"},
-                        {"$ref": "#/types/Constraint"}
-                     ]
+                     "columns":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "assertions":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "filter":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/Filter"}
+                     }
                   }
                }
             }
          }
       }
-   }
-   ,
 
+      ,
 
-   "types":
-   {
-      "BindValue":
+      "types":
       {
-         "type": "object",
-         "required": ["name","type"],
-         "additionalProperties": false,
-
-         "properties":
+         "BindValue":
          {
-            "name": {"type": "string"},
-            "type": {"type": "string"},
-            "value": {"type": ["string","number","integer","boolean"]}
+            "type": "object",
+            "required": ["name","type"],
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "name": {"type": "string"},
+               "type": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
          }
-      }
-      ,
-      "NameValuePair":
-      {
-         "type": "object",
-         "required": ["name","value"],
-         "additionalProperties": false,
+         ,
+         "NameValuePair":
+         {
+            "type": "object",
+            "required": ["name","value"],
+            "additionalProperties": false,
 
-         "properties":
-         {
-            "name": {"type": "string"},
-            "value": {"type": ["string","number","integer","boolean"]}
+            "properties":
+            {
+               "name": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
          }
-      }
-      ,
-      "Clause":
-      {
-         "type": "string",
-         "enum": ["where", "and", "or"]
-      }
-      ,
-      "Filter":
-      {
-         "type": "array",
-         "items":
+         ,
+         "Filter":
          {
-            "anyOf":
+            "type": "object",
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "or":
+               {
+                  "anyOf":
+                  [
+                     {"$ref": "#/types/Filters"},
+                     {"$ref": "#/types/Constraint"}
+                  ]
+               }
+               ,
+               "and":
+               {
+                  "anyOf":
+                  [
+                     {"$ref": "#/types/Filters"},
+                     {"$ref": "#/types/Constraint"}
+                  ]
+               }
+               ,
+               "where":
+               {
+                  "anyOf":
+                  [
+                     {"$ref": "#/types/Filters"},
+                     {"$ref": "#/types/Constraint"}
+                  ]
+               }
+            }
+            ,
+            "oneOf":
             [
-               {"$ref": "#/types/Filter"},
-               {"$ref": "#/types/Constraint"}
+               {"required": ["or"]},
+               {"required": ["and"]},
+               {"required": ["where"]}
             ]
          }
-      }
-      ,
-      "Constraint":
-      {
-         "type": "object",
-         "required": ["column","filter","value"],
-         "additionalProperties": false,
-
-         "properties":
+         ,
+         "Filters":
          {
-            "column": {"type": "string"},
-            "filter": {"type": "string"},
-            "value": {"type": ["string","number","integer","boolean"]}
+            "type": "array",
+            "items": {"$ref": "#/types/Filter"}
+         }
+         ,
+         "Constraint":
+         {
+            "type": "object",
+            "required": ["column","filter","value"],
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "column": {"type": "string"},
+               "filter": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
          }
       }
    }
- }
