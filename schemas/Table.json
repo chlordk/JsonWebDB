@@ -77,6 +77,11 @@
                         "items": {"$ref": "#/types/NameValuePair"}
                      }
                      ,
+                     "lock":
+                     {
+                        "type": "boolean"
+                     }
+                     ,
                      "assertions":
                      {
                         "type": "array",
@@ -103,6 +108,11 @@
 
                   "properties":
                   {
+                     "lock":
+                     {
+                        "type": "boolean"
+                     }
+                     ,
                      "assertions":
                      {
                         "type": "array",
@@ -133,6 +143,11 @@
                      {
                         "type": "array",
                         "items": {"type": "string"}
+                     }
+                     ,
+                     "lock":
+                     {
+                        "type": "boolean"
                      }
                      ,
                      "assertions":

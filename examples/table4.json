@@ -1,7 +1,7 @@
 {
   "Table":
   {
-    "invoke": "delete()",
+    "invoke": "insert()",
     "source": "countries",
     "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
       
@@ -14,8 +14,13 @@
       }
     ],
     
-    "update()":
+    "select()":
     {
+      "columns": 
+      [
+        "country_id","country_name"
+      ]
+      ,
       "assertions": 
       [
         {"name": "country_id", "value": "UK"},

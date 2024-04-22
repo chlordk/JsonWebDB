@@ -1,7 +1,7 @@
 {
   "Table":
   {
-    "invoke": "insert()",
+    "invoke": "update()",
     "source": "countries",
     "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
       
@@ -30,15 +30,7 @@
       ,
       "filters":
       [
-        {"column": "id", "filter": "like", "value": 10},
-        {"or": {"column": "id", "filter": "like", "value": 20}},
-        {
-          "and": 
-          [
-            {"column": "id", "filter": "like", "value": 10},
-            {"or": {"column": "id", "filter": "like", "value": 20}}
-          ]
-        }
+        {"column": "country_id", "filter": "Equals", "value": "Uk"}
       ]
     }
   }
