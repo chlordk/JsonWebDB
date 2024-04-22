@@ -31,7 +31,7 @@
                "enum": ["connect()", "disconnect()", "commit()", "rollback()", "keepalive()"]
             }
             ,
-            "connection-data":
+            "connect()":
             {
                "type": "object",
                "description": "Information required for connecting",
