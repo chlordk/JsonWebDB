@@ -134,7 +134,6 @@
 
          "properties":
          {
-            "or": {"type": "boolean"},
             "column": {"type": "string"},
             "filter": {"type": "string"},
             "value": {"type": ["string","number","integer","boolean"]}
