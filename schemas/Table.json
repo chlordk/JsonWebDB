@@ -67,7 +67,7 @@
                      "anyOf":
                      [
                         {"$ref": "#/types/Filter"},
-                        {"$ref": "#/types/NameValuePair"}
+                        {"$ref": "#/types/Constraint"}
                      ]
                   }
                }
