@@ -39,15 +39,26 @@
             "bindvalues":
             {
                "type": "array",
-               "items": {"$ref": "#/types/bindvalue"}
+               "items": {"$ref": "#/types/BindValue"}
+            }
+            ,
+            "update()":
+            {
+               "columns":
+               {
+                  "type": "array",
+                  "items": {"$ref": "#/types/NameValuePair"}
+               }
             }
          }
       }
-   },
+   }
+   ,
 
+   
    "types":
    {
-      "bindvalue":
+      "BindValue":
       {
          "type": "object",
          "required": ["name","type"],
@@ -57,6 +68,19 @@
          {
             "name": {"type": "string"},
             "type": {"type": "string"},
+            "value": {"type": ["string","number","integer","boolean"]}
+         }
+      },
+
+      "NameValuePair":
+      {
+         "type": "object",
+         "required": ["name","value"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
             "value": {"type": ["string","number","integer","boolean"]}
          }
       }
