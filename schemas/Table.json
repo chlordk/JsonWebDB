@@ -44,10 +44,27 @@
             ,
             "update()":
             {
-               "columns":
+               "additionalProperties": false,
+               "required": ["columns"],
+
+               "properties":
                {
-                  "type": "array",
-                  "items": {"$ref": "#/types/NameValuePair"}
+                  "columns":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/NameValuePair"}
+                  }
+                  ,
+                  "assertions":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/NameValuePair"}
+                  }
+                  ,
+                  "filters":
+                  {
+                     "type": "object"
+                  }
                }
             }
          }
@@ -55,7 +72,7 @@
    }
    ,
 
-   
+
    "types":
    {
       "BindValue":
@@ -70,8 +87,8 @@
             "type": {"type": "string"},
             "value": {"type": ["string","number","integer","boolean"]}
          }
-      },
-
+      }
+      ,
       "NameValuePair":
       {
          "type": "object",
