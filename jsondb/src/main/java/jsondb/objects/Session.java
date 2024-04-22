@@ -127,13 +127,6 @@ public class Session implements DatabaseRequest
          return(new Response(response));
       }
 
-      if (!session.isDedicated())
-      {
-         response.put("success",false);
-         response.put("message",Messages.get("SESSION_NOT_DEDICATED","disconnect",sessid));
-         return(new Response(response));
-      }
-
       if (!session.disconnect())
       {
          response.put("success",false);
@@ -184,6 +177,13 @@ public class Session implements DatabaseRequest
          return(new Response(response));
       }
 
+      if (!session.isDedicated())
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("SESSION_NOT_DEDICATED","commit",sessid));
+         return(new Response(response));
+      }
+
       session.commit();
       return(new Response(response));
    }
@@ -203,6 +203,13 @@ public class Session implements DatabaseRequest
       {
          response.put("success",false);
          response.put("message",Messages.get("NO_SUCH_SESSION"));
+         return(new Response(response));
+      }
+
+      if (!session.isDedicated())
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("SESSION_NOT_DEDICATED","rollback",sessid));
          return(new Response(response));
       }
 
