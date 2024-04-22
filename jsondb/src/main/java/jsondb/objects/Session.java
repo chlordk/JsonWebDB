@@ -40,7 +40,7 @@ public class Session implements DatabaseRequest
    private static final String PASSWORD = "password";
    private static final String SIGNATURE = "signature";
    private static final String DEDICATED = "dedicated";
-   private static final String DATASECTION = "connection-data";
+   private static final String PARAMETERS = "connect()";
 
 
    public Session(JSONObject definition) throws Exception
@@ -58,7 +58,7 @@ public class Session implements DatabaseRequest
       JSONObject response = new JSONObject();
 
       String username = Config.pool().defaultuser();
-      JSONObject data = definition.getJSONObject(DATASECTION);
+      JSONObject data = definition.getJSONObject(PARAMETERS);
 
       if (data.has(USERNAME))
          username = data.getString(USERNAME);
