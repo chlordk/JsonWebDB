@@ -11,9 +11,10 @@
          "Table":
          {
             "type": "object",
-            "description": "The source object (table,view or query)",
             "additionalProperties": false,
             "required": ["source","invoke"],
+
+            "description": "The source object (table,view or query)",
 
             "properties":
             {
@@ -61,25 +62,16 @@
                         "items": {"$ref": "#/types/NameValuePair"}
                      }
                      ,
-                     "filter":
+                     "filters":
                      {
-                        "type": "array",
-                        "items": {"$ref": "#/types/Filter"}
-                     }
-                     ,
-                     "filter2":
-                     {
-                        "type": "array",
-                        "items": {"$ref": "#/types/Filter2"}
+                        "$ref": "#/types/Filters1"
                      }
                   }
                }
             }
          }
       }
-
       ,
-
       "types":
       {
          "BindValue":
@@ -109,82 +101,59 @@
             }
          }
          ,
-         "Filter1":
+         "Clause":
          {
-            "type": "object",
-            "additionalProperties": false,
-
-            "properties":
-            {
-               "or":
-               {
-                  "anyOf":
-                  [
-                     {"$ref": "#/types/Filters"},
-                     {"$ref": "#/types/Constraint"}
-                  ]
-               }
-               ,
-               "and":
-               {
-                  "anyOf":
-                  [
-                     {"$ref": "#/types/Filters"},
-                     {"$ref": "#/types/Constraint"}
-                  ]
-               }
-               ,
-               "where":
-               {
-                  "anyOf":
-                  [
-                     {"$ref": "#/types/Filters"},
-                     {"$ref": "#/types/Constraint"}
-                  ]
-               }
-            }
-            ,
-            "oneOf":
-            [
-               {"required": ["or"]},
-               {"required": ["and"]},
-               {"required": ["where"]}
-            ]
+            "type": "string",
+            "enum": ["and","or"],
+            "description": "Restriction, default: and"
          }
          ,
-         "Filter2":
+         "Filters":
          {
-            "type": "array",
-            "additionalProperties": false,
+            "description": "List of filters, with or without clause",
 
-            "items":
-            {
-               "anyOf":
-               [
-                  {"$ref": "#/types/Filters2"},
-                  {"$ref": "#/types/Constraint"},
-                  {"$ref": "#/types/Constraint2"}
-               ]
-            }
+            "anyOf":
+            [
+               {"$ref": "#/types/Filters1"},
+               {"$ref": "#/types/Filters2"}
+            ]
          }
          ,
          "Filters1":
          {
             "type": "array",
-            "items": {"$ref": "#/types/Filter"}
+            "additionalProperties": false,
+            "description": "List of filters, without clause",
+
+            "items":
+            {
+               "anyOf":
+               [
+                  {"$ref": "#/types/Filters1"},
+                  {"$ref": "#/types/Filters2"},
+                  {"$ref": "#/types/Constraint"}
+               ]
+            }
          }
          ,
          "Filters2":
          {
             "type": "object",
+            "additionalProperties": false,
+            "description": "List of filters, with clause",
 
             "properties":
             {
-               "type": {"type": "string"},
-               "filter":
+               "clause": {"$ref": "#/types/Clause"}
+               ,
+               "filters":
                {
-                  "type": "array",
-                  "items": {"$ref": "#/types/Filter2"}
+                  "anyOf":
+                  [
+                     {"$ref": "#/types/Filters1"},
+                     {"$ref": "#/types/Filters2"},
+                     {"$ref": "#/types/Constraint"}
+                  ]
                }
             }
          }
@@ -197,21 +166,7 @@
 
             "properties":
             {
-               "column": {"type": "string"},
-               "filter": {"type": "string"},
-               "value": {"type": ["string","number","integer","boolean"]}
-            }
-         }
-         ,
-         "Constraint2":
-         {
-            "type": "object",
-            "required": ["type","column","filter","value"],
-            "additionalProperties": false,
-
-            "properties":
-            {
-               "type": {"type": "string"},
+               "clause": {"$ref": "#/types/Clause"},
                "column": {"type": "string"},
                "filter": {"type": "string"},
                "value": {"type": ["string","number","integer","boolean"]}
