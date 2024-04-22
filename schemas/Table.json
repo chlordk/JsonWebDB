@@ -23,6 +23,12 @@
                "description": "The source object (table,view or query)"
             }
             ,
+            "session":
+            {
+               "type": "string",
+               "description": "Valid session id"
+            }
+            ,
             "invoke":
             {
                "type": "string",
