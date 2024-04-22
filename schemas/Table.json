@@ -66,6 +66,12 @@
                         "type": "array",
                         "items": {"$ref": "#/types/Filter"}
                      }
+                     ,
+                     "filter2":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/Filter2"}
+                     }
                   }
                }
             }
@@ -103,7 +109,7 @@
             }
          }
          ,
-         "Filter":
+         "Filter1":
          {
             "type": "object",
             "additionalProperties": false,
@@ -146,10 +152,41 @@
             ]
          }
          ,
-         "Filters":
+         "Filter2":
+         {
+            "type": "array",
+            "additionalProperties": false,
+
+            "items":
+            {
+               "anyOf":
+               [
+                  {"$ref": "#/types/Filters2"},
+                  {"$ref": "#/types/Constraint"},
+                  {"$ref": "#/types/Constraint2"}
+               ]
+            }
+         }
+         ,
+         "Filters1":
          {
             "type": "array",
             "items": {"$ref": "#/types/Filter"}
+         }
+         ,
+         "Filters2":
+         {
+            "type": "object",
+
+            "properties":
+            {
+               "type": {"type": "string"},
+               "filter":
+               {
+                  "type": "array",
+                  "items": {"$ref": "#/types/Filter2"}
+               }
+            }
          }
          ,
          "Constraint":
@@ -160,6 +197,21 @@
 
             "properties":
             {
+               "column": {"type": "string"},
+               "filter": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
+         }
+         ,
+         "Constraint2":
+         {
+            "type": "object",
+            "required": ["type","column","filter","value"],
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "type": {"type": "string"},
                "column": {"type": "string"},
                "filter": {"type": "string"},
                "value": {"type": ["string","number","integer","boolean"]}
