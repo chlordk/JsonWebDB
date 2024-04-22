@@ -4,29 +4,38 @@
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
    "description": "Table object that handles select, insert, update and delete",
-
    "additionalProperties": false,
-   "required": ["source","invoke"],
 
    "properties":
    {
-      "source":
+      "Table":
       {
-         "type": "string",
-         "description": "The source object (table,view or query)"
-      }
-      ,
-      "invoke":
-      {
-         "type": "string",
-         "description": "Method to invoke",
-         "enum": ["select()", "insert()", "update()", "delete()"]
-      }
-      ,
-      "bindvalues":
-      {
-         "type": "array",
-         "items": {"$ref": "#/types/bindvalue"}
+         "type": "object",
+         "description": "The source object (table,view or query)",
+         "additionalProperties": false,
+         "required": ["source","invoke"],
+
+         "properties":
+         {
+            "source":
+            {
+               "type": "string",
+               "description": "The source object (table,view or query)"
+            }
+            ,
+            "invoke":
+            {
+               "type": "string",
+               "description": "Method to invoke",
+               "enum": ["select()", "insert()", "update()", "delete()"]
+            }
+            ,
+            "bindvalues":
+            {
+               "type": "array",
+               "items": {"$ref": "#/types/bindvalue"}
+            }
+         }
       }
    },
 
@@ -37,7 +46,7 @@
          "type": "object",
          "required": ["name","type"],
          "additionalProperties": false,
-         
+
          "properties":
          {
             "name": {"type": "string"},
