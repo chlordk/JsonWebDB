@@ -21,6 +21,7 @@
    ,
    "session":
    {
+		"idle": 120,
       "timeout": 600
    }
 	,

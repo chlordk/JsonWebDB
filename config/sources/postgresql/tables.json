@@ -1,0 +1,30 @@
+{
+   "datasources":
+   [
+      {
+         "id": "Countries",
+         "name": "countries",
+         "sorting": "country_id",
+
+         "unique-keys":
+         [
+            ["country_id"]
+         ]
+         ,
+
+			"custom-filters":
+			[
+				{
+               "name": "contains",
+					"restricts": false,
+					"where-clause": "upper(country_id||' '||country_name) like upper('%'||:country||'%')"
+				}
+         ]
+         ,
+         "insert": {"accept": true},
+         "update": {"accept": true},
+         "delete": {"accept": true},
+         "select": {"accept": true,"check": "none"}
+      }
+   ]
+}
