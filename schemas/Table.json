@@ -42,6 +42,22 @@
                "items": {"$ref": "#/types/BindValue"}
             }
             ,
+            "test":
+            {
+               "type": "type",
+               "additionalProperties": false,
+
+               "properties":
+               {
+	              "type": {"type": "string", "enum": ["where", "and", "or"]},
+                  "filters":
+                  {
+                     "type": "array",
+                     "items": {"type": "string"}
+                  }
+               }
+            }
+            ,
             "update()":
             {
                "additionalProperties": false,
@@ -138,7 +154,6 @@
             "filter": {"type": "string"},
             "value": {"type": ["string","number","integer","boolean"]}
          }
-
       }
    }
  }
