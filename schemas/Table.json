@@ -12,7 +12,7 @@
          {
             "type": "object",
             "additionalProperties": false,
-            "required": ["source","invoke"],
+            "required": ["session","source","invoke"],
 
             "description": "The source object (table,view or query)",
 
@@ -43,6 +43,27 @@
                   "items": {"$ref": "#/types/BindValue"}
                }
                ,
+               "insert()":
+               {
+                  "additionalProperties": false,
+                  "required": ["columns"],
+
+                  "properties":
+                  {
+                     "columns":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "returning":
+                     {
+                        "type": "array",
+                        "items": {"type": "string"}
+                     }
+                  }
+               }
+               ,
                "update()":
                {
                   "additionalProperties": false,
@@ -54,6 +75,64 @@
                      {
                         "type": "array",
                         "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "assertions":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "returning":
+                     {
+                        "type": "array",
+                        "items": {"type": "string"}
+                     }
+                     ,
+                     "filters":
+                     {
+                        "$ref": "#/types/FilterGroup"
+                     }
+                  }
+               }
+               ,
+               "delete()":
+               {
+                  "additionalProperties": false,
+                  "required": ["columns"],
+
+                  "properties":
+                  {
+                     "assertions":
+                     {
+                        "type": "array",
+                        "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "returning":
+                     {
+                        "type": "array",
+                        "items": {"type": "string"}
+                     }
+                     ,
+                     "filters":
+                     {
+                        "$ref": "#/types/FilterGroup"
+                     }
+                  }
+               }
+               ,
+               "select()":
+               {
+                  "additionalProperties": false,
+                  "required": ["columns"],
+
+                  "properties":
+                  {
+                     "columns":
+                     {
+                        "type": "array",
+                        "items": {"type": "string"}
                      }
                      ,
                      "assertions":
@@ -148,15 +227,21 @@
          "Filter":
          {
             "type": "object",
-            "required": ["column","filter","value"],
-            "additionalProperties": false,
+            "additionalProperties": true,
 
             "properties":
             {
-               "column" : {"type": "string"},
-               "filter" : {"type": "string"},
-               "value"  : {"type": ["string","number","integer","boolean"]}
+               "filter"  : {"type": "string"},
+               "column"  : {"type": "string"},
+               "columns" : {"type": "array", "items": {"type": "string"}},
+               "value"   : {"type": ["string","number","integer","boolean"]}
             }
+            ,
+            "oneOf":
+            [
+               {"required": ["filter","column","value"]},
+               {"required": ["filter","columns","value"]}
+            ]
          }
       }
    }

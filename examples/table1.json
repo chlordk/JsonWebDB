@@ -1,0 +1,37 @@
+{
+  "Table":
+  {
+    "invoke": "insert()",
+    "source": "countries",
+    "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
+      
+    "bindvalues":
+    [
+      {
+        "name": "Secret",
+        "type": "varchar",
+        "value": "37b1e99aff31"
+      }
+    ],
+    
+    "update()":
+    {
+      "columns": 
+      [
+        {"name": "country_id", "value": "UK"},
+        {"name": "country_name", "value": "United Kingdom"}
+      ]
+      ,
+      "assertions": 
+      [
+        {"name": "country_id", "value": "Uk"},
+        {"name": "country_name", "value": "united kingdom"}
+      ]
+      ,
+      "filters":
+      [
+        {"column": "country_id", "filter": "Equals", "value": "Uk"}
+      ]
+    }
+  }
+}
