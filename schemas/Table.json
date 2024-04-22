@@ -64,7 +64,7 @@
                      ,
                      "filters":
                      {
-                        "$ref": "#/types/Filters1"
+                        "$ref": "#/types/FilterGroup"
                      }
                   }
                }
@@ -101,25 +101,7 @@
             }
          }
          ,
-         "Clause":
-         {
-            "type": "string",
-            "enum": ["and","or"],
-            "description": "Restriction, default: and"
-         }
-         ,
-         "Filters":
-         {
-            "description": "List of filters, with or without limit",
-
-            "anyOf":
-            [
-               {"$ref": "#/types/Filters1"},
-               {"$ref": "#/types/Filters2"}
-            ]
-         }
-         ,
-         "Filters1":
+         "FilterGroup":
          {
             "type": "array",
             "additionalProperties": false,
@@ -129,14 +111,13 @@
             {
                "anyOf":
                [
-                  {"$ref": "#/types/Filters1"},
-                  {"$ref": "#/types/Filters2"},
-                  {"$ref": "#/types/Constraint"}
+                  {"$ref": "#/types/Filter"},
+                  {"$ref": "#/types/FilterList"}
                ]
             }
          }
          ,
-         "Filters2":
+         "FilterList":
          {
             "type": "object",
             "additionalProperties": false,
@@ -144,21 +125,27 @@
 
             "properties":
             {
-               "limit": {"$ref": "#/types/Clause"}
-               ,
-               "filters":
+               "or":
                {
                   "anyOf":
                   [
-                     {"$ref": "#/types/Filters1"},
-                     {"$ref": "#/types/Filters2"},
-                     {"$ref": "#/types/Constraint"}
+                     {"$ref": "#/types/Filter"},
+                     {"$ref": "#/types/FilterGroup"}
+                  ]
+               }
+               ,
+               "and":
+               {
+                  "anyOf":
+                  [
+                     {"$ref": "#/types/Filter"},
+                     {"$ref": "#/types/FilterGroup"}
                   ]
                }
             }
          }
          ,
-         "Constraint":
+         "Filter":
          {
             "type": "object",
             "required": ["column","filter","value"],
@@ -166,10 +153,9 @@
 
             "properties":
             {
-               "limit": {"$ref": "#/types/Clause"},
-               "column": {"type": "string"},
-               "filter": {"type": "string"},
-               "value": {"type": ["string","number","integer","boolean"]}
+               "column" : {"type": "string"},
+               "filter" : {"type": "string"},
+               "value"  : {"type": ["string","number","integer","boolean"]}
             }
          }
       }
