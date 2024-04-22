@@ -3,7 +3,7 @@
    {
       "invoke": "connect()",
 
-      "connection-data":
+      "connect()":
       {
          "username": "hr",
          "password": "hr",
