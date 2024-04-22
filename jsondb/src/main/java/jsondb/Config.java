@@ -38,6 +38,7 @@ import database.definitions.AdvancedPool;
 
 public class Config
 {
+   private static final String IDLE = "idle";
    private static final String CONF = "config";
    private static final String POOL = "enabled";
    private static final String SESS = "session";
@@ -48,6 +49,8 @@ public class Config
    private static final String APPL = "application";
 
    private static int sttl = 0;
+   private static int idle = 0;
+
    private static String inst = null;
    private static String appl = null;
 
@@ -104,6 +107,8 @@ public class Config
 
       Config.appl = get(get(APPL),PATH);
       Config.sttl = get(get(SESS),STTL);
+      Config.idle = get(get(SESS),IDLE);
+
       Config.logger = Applogger.setup();
 
       Cluster.initialize();
