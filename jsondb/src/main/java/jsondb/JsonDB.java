@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
+import java.time.Instant;
 import org.json.JSONObject;
 import java.util.logging.Level;
 import jsondb.files.FileHandler;
@@ -31,6 +32,8 @@ import jsondb.state.StateHandler;
 import jsondb.files.FileResponse;
 import jsondb.objects.ObjectHandler;
 import database.definitions.AdvancedPool;
+
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -40,7 +43,7 @@ public class JsonDB
 {
    public static String version = "4.0.1";
 
-   public static final long started = System.currentTimeMillis();
+   public static final long started = (new Date()).getTime();
    private static final AtomicInteger dbreqs = new AtomicInteger(0);
    private static final AtomicInteger fireqs = new AtomicInteger(0);
 
