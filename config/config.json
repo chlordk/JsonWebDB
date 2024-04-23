@@ -21,9 +21,9 @@
    ,
    "session":
    {
-		"session-timeout": 600,
-		"connection-timeout": 120,
-		"transaction-timeout": 600
+		"session-timeout": 120,
+		"connection-timeout": 60,
+		"transaction-timeout": 30
    }
 	,
 	"embedded":
