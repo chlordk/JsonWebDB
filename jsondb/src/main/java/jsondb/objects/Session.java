@@ -79,7 +79,7 @@ public class Session implements DatabaseRequest
       jsondb.Session session = jsondb.Session.create(username,dedicated);
 
       response.put("success",true);
-      response.put("method","connect");
+      response.put("method","connect()");
       response.put("session",session.getGuid());
 
       if (signature != null)
@@ -118,7 +118,7 @@ public class Session implements DatabaseRequest
       jsondb.Session session = jsondb.Session.get(sessid);
 
       response.put("session",sessid);
-      response.put("method","disconnect");
+      response.put("method","disconnect()");
 
       if (session == null)
       {
@@ -148,7 +148,7 @@ public class Session implements DatabaseRequest
 
       response.put("success",true);
       response.put("session",sessid);
-      response.put("method","keepalive");
+      response.put("method","keepalive()");
 
       if (session == null || !session.touch())
       {
@@ -168,7 +168,7 @@ public class Session implements DatabaseRequest
 
       response.put("success",true);
       response.put("session",sessid);
-      response.put("method","commit");
+      response.put("method","commit()");
 
       if (session == null)
       {
@@ -197,7 +197,7 @@ public class Session implements DatabaseRequest
 
       response.put("success",true);
       response.put("session",sessid);
-      response.put("method","rollback");
+      response.put("method","rollback()");
 
       if (session == null)
       {
