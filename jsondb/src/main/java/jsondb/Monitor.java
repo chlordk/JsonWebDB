@@ -31,10 +31,9 @@ public class Monitor extends Thread
    private static final int MAXINT = 60000;
 
 
-   public static void initialize() throws Exception
+   public static void monitor() throws Exception
    {
       (new Monitor()).start();
-      StateHandler.initialize();
    }
 
    private Monitor()
@@ -45,11 +44,12 @@ public class Monitor extends Thread
 
    public void run()
    {
-      int idle = Config.idle() * 1000;
-      int timeout = Config.timeout() * 1000;
+      int contmout = Config.conTimeout() * 1000;
+      int trxtmout = Config.trxTimeout() * 1000;
+      int sestmout = Config.sesTimeout() * 1000;
 
-      int interval = Math.min(idle,timeout);
-      interval = timeout > MAXINT*2 ? MAXINT : (int) (3.0/4*timeout);
+      int interval = Math.min(contmout,sestmout);
+      interval = sestmout > MAXINT*2 ? MAXINT : (int) (3.0/4*sestmout);
 
       Config.logger().info(this.getClass().getSimpleName()+" running every "+interval/1000+" secs");
 
@@ -57,8 +57,11 @@ public class Monitor extends Thread
       {
          try
          {
+            long now = (new Date()).getTime();
+            StateHandler.cleanout(now,sestmout);
+
             Thread.sleep(interval);
-            reap(idle);
+            cleanout(now,sestmout,contmout,trxtmout);
          }
          catch (Throwable t)
          {
@@ -67,19 +70,28 @@ public class Monitor extends Thread
       }
    }
 
-   private void reap(int maxidle) throws Exception
+   private void cleanout(long now, int sestmout, int contmout, int trxtmout) throws Exception
    {
-      long now = (new Date()).getTime();
       for(Session session : Session.getAll())
       {
-         boolean trx = session.transaction() != null;
-         boolean idle = (now-session.touched().getTime()) > maxidle;
+         Date lastUsed = session.lastUsed();
+         Date lastTrxUsed = session.lastUsedTrx();
+         Date lastConnUsed = session.lastUsedConn();
 
-         if (!trx && idle)
-         {
+         boolean ses = sestmout > 0;
+         boolean trx = lastTrxUsed != null && trxtmout > 0;
+         boolean con = session.isConnected() && contmout > 0;
+
+         if (trx && (now - lastTrxUsed.getTime() > trxtmout))
+            session.rollback();
+
+         if (con && (now - lastConnUsed.getTime() > contmout))
             session.release();
-            Config.logger().info("release "+session.getGuid());
-         }
+
+         if (ses && (now - lastUsed.getTime() > sestmout))
+            session.disconnect();
+
+         Config.logger().info("released connections "+session.getGuid());
       }
    }
 }

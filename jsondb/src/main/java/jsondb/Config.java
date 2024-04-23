@@ -39,18 +39,21 @@ import database.definitions.AdvancedPool;
 
 public class Config
 {
-   private static final String IDLE = "idle";
    private static final String CONF = "config";
    private static final String POOL = "enabled";
    private static final String SESS = "session";
-   private static final String STTL = "timeout";
    private static final String PATH = "location";
    private static final String DBSC = "database";
    private static final String FILE = "config.json";
    private static final String APPL = "application";
 
-   private static int sttl = 0;
-   private static int idle = 0;
+   private static final String SESTMOUT = "session-timeout";
+   private static final String CONTMOUT = "connection-timeout";
+   private static final String TRXTMOUT = "transaction-timeout";
+
+   private static int sestmout = 0;
+   private static int trxtmout = 0;
+   private static int contmout = 0;
 
    private static String inst = null;
    private static String appl = null;
@@ -107,8 +110,9 @@ public class Config
       Config.config = config;
 
       Config.appl = get(get(APPL),PATH);
-      Config.sttl = get(get(SESS),STTL);
-      Config.idle = get(get(SESS),IDLE);
+      Config.sestmout = get(get(SESS),SESTMOUT);
+      Config.trxtmout = get(get(SESS),TRXTMOUT);
+      Config.contmout = get(get(SESS),CONTMOUT);
 
       Config.logger = Applogger.setup();
 
@@ -123,8 +127,10 @@ public class Config
       Admins.initialize();
       Cluster.initialize();
       Options.initialize();
-      Monitor.initialize();
       FileConfig.initialize();
+      StateHandler.initialize();
+
+      Monitor.monitor();
    }
 
    /** The instance name */
@@ -139,16 +145,22 @@ public class Config
       return(appl);
    }
 
-   /** Connection timeout (or TimeToLive) */
-   public static int idle()
+   /** Connection idle timeout */
+   public static int conTimeout()
    {
-      return(idle);
+      return(contmout);
    }
 
-   /** Session timeout (or TimeToLive) */
-   public static int timeout()
+   /** Session timeout */
+   public static int sesTimeout()
    {
-      return(sttl);
+      return(sestmout);
+   }
+
+   /** Transaction timeout */
+   public static int trxTimeout()
+   {
+      return(trxtmout);
    }
 
    /** The logger */

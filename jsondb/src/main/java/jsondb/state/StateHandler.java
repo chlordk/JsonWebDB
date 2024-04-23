@@ -31,20 +31,16 @@ import java.util.UUID;
 import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.logging.Level;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 
-public class StateHandler extends Thread
+public class StateHandler
 {
    private static long pid;
 
    private static String inst = null;
    private static String path = null;
-
-   private static final int MAXINT = 60000;
 
    private static final String PID = "pid";
    private static final String SES = "ses";
@@ -60,7 +56,6 @@ public class StateHandler extends Thread
       StateHandler.path = Config.path(STATE);
 
       (new File(path)).mkdirs();
-      (new StateHandler()).start();
 
       StateHandler.pid = ProcessHandle.current().pid();
 
@@ -271,38 +266,8 @@ public class StateHandler extends Thread
    }
 
 
-   private StateHandler()
+   public static void cleanout(long now, int timeout)
    {
-      this.setDaemon(true);
-      this.setName(this.getClass().getName());
-   }
-
-
-   @Override
-   public void run()
-   {
-      int timeout = Config.timeout() * 1000;
-      int interval = timeout > MAXINT*2 ? MAXINT : (int) (3.0/4*timeout);
-      Config.logger().info(this.getClass().getSimpleName()+" running every "+interval/1000+" secs");
-
-      while (true)
-      {
-         try
-         {
-            cleanout(timeout);
-            Thread.sleep(interval);
-         }
-         catch (Throwable t)
-         {
-            Config.logger().log(Level.SEVERE,t.getMessage(),t);
-         }
-      }
-   }
-
-
-   private void cleanout(int timeout)
-   {
-      long curr = System.currentTimeMillis();
       File root = new File(StateHandler.path);
 
       if (root.exists())
@@ -314,7 +279,7 @@ public class StateHandler extends Thread
 
             File session = sesFile(file.getName());
 
-            if (curr - session.lastModified() > timeout)
+            if (now - session.lastModified() > timeout)
             {
                File folder = session.getParentFile();
 

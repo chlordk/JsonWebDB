@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
+import jsondb.state.StateHandler.SessionInfo;
 import java.util.concurrent.ConcurrentHashMap;
 import jsondb.state.StateHandler.TransactionInfo;
 
@@ -41,8 +42,9 @@ public class Session
    private final boolean dedicated;
    private final AdvancedPool pool;
 
-   private Date touched = null;
-   private Date trxstart = null;
+   private Date used = null;
+   private Date trxused = null;
+   private Date connused = null;
 
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
@@ -59,9 +61,17 @@ public class Session
       return(sessions);
    }
 
-   public static Session get(String guid)
+   public static Session get(String guid) throws Exception
    {
       Session session = sessions.get(guid);
+      SessionInfo info = StateHandler.getSession(guid);
+
+      if (info != null && session == null)
+      {
+         session = new Session(info.guid,info.user,info.dedicated);
+         Config.logger().info("Move "+guid+" from "+info.inst+" to "+Config.inst());
+      }
+
       return(session);
    }
 
@@ -89,9 +99,9 @@ public class Session
    {
       this.guid = guid;
       this.user = user;
+      this.used = new Date();
       this.pool = Config.pool();
-      this.idle = Config.idle();
-      this.touched = new Date();
+      this.idle = Config.conTimeout();
       this.dedicated = dedicated;
    }
 
@@ -105,45 +115,60 @@ public class Session
       return(user);
    }
 
-   public Date getTouched()
-   {
-      return(touched);
-   }
-
    public boolean isDedicated()
    {
       return(dedicated);
    }
 
-   public synchronized Date touched()
+   public synchronized Date lastUsed()
    {
-      return(touched);
+      return(used);
    }
 
-   public synchronized Date transaction()
+   public synchronized Date lastUsedTrx()
    {
-      return(trxstart);
+      return(trxused);
+   }
+
+   public synchronized Date lastUsedConn()
+   {
+      return(connused);
    }
 
    public synchronized boolean touch() throws Exception
    {
-      this.touched = new Date();
+      this.used = new Date();
       boolean success = StateHandler.touchSession(guid);
       return(success);
    }
 
-   public synchronized TransactionInfo trxstart() throws Exception
+   public synchronized boolean touchConn() throws Exception
    {
-      this.trxstart = new Date();
-      TransactionInfo info = StateHandler.touchTransaction(guid,trxstart);
+      this.connused = new Date();
+      return(true);
+   }
+
+   public synchronized TransactionInfo touchTrx() throws Exception
+   {
+      this.trxused = new Date();
+      TransactionInfo info = StateHandler.touchTransaction(guid,trxused);
       return(info);
+   }
+
+   public synchronized boolean isConnected()
+   {
+      if (wconn != null && wconn.isConnected()) return(true);
+      if (rconn != null && rconn.isConnected()) return(true);
+      return(false);
    }
 
    public synchronized boolean release() throws Exception
    {
-      Date now = new Date();
-      if (this.trxstart != null) return(false);
-      if (now.getTime() - touched().getTime() < idle*1000) return(false);
+      long used = lastUsed().getTime();
+      long curr = (new Date()).getTime();
+
+      if (this.trxused != null) return(false);
+      if (curr - used < idle*1000) return(false);
 
       if (wconn != null && wconn.isConnected())
          wconn.disconnect();
@@ -151,13 +176,16 @@ public class Session
       if (rconn != null && rconn.isConnected())
          rconn.disconnect();
 
-      Config.logger().info(this.guid+" released");
+      trxused = null;
+      connused = null;
+
       return(true);
    }
 
    public Session connect() throws Exception
    {
       touch();
+      touchConn();
 
       if (wconn == null)
          wconn = JdbcInterface.getInstance(true);
@@ -189,6 +217,9 @@ public class Session
       boolean success = StateHandler.removeSession(guid);
       sessions.remove(guid);
 
+      trxused = null;
+      connused = null;
+
       return(success);
    }
 
@@ -210,7 +241,8 @@ public class Session
          return(success);
       }
 
-      return(false);
+      trxused = null;
+      return(true);
    }
 
    public boolean rollback() throws Exception
@@ -224,7 +256,8 @@ public class Session
          return(success);
       }
 
-      return(false);
+      trxused = null;
+      return(true);
    }
 
    public String toString()
@@ -234,7 +267,7 @@ public class Session
       if (wconn != null && wconn.isConnected()) connected = true;
       if (rconn != null && rconn.isConnected()) connected = true;
 
-      int age = (int) ((new Date()).getTime() - touched.getTime())/1000;
+      int age = (int) ((new Date()).getTime() - used.getTime())/1000;
 
       return(this.guid+", age: "+age+"secs, conn: "+connected);
    }

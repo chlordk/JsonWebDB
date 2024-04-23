@@ -21,8 +21,9 @@
    ,
    "session":
    {
-		"idle": 120,
-      "timeout": 600
+		"session-timeout": 600,
+		"connection-timeout": 120,
+		"transaction-timeout": 600
    }
 	,
 	"embedded":
