@@ -79,6 +79,12 @@ public class Applogger
       logger.addHandler(handler);
       logger.setUseParentHandlers(false);
 
+      Logger root = Logger.getLogger("");
+
+      root.setLevel(level);
+      root.addHandler(handler);
+      root.setUseParentHandlers(false);
+
       if (REDIRECT)
       {
          PrintStream out = new PrintStream(new FileOutputStream(file,true));

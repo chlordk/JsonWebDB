@@ -196,8 +196,11 @@ public class Session
       }
 
       Config.logger().info("setting conn & trx");
+
       long now = (new Date()).getTime();
       this.trxused = new Date(now+20000);
+
+      this.ensure(true);
       this.connused = new Date(now+10000);
 
       return(this);
@@ -261,6 +264,30 @@ public class Session
       }
 
       trxused = null;
+      return(true);
+   }
+
+   private synchronized boolean ensure(boolean write) throws Exception
+   {
+      if (!write && !pool.secondary())
+         write = true;
+
+      if (write && wconn == null)
+         wconn = JdbcInterface.getInstance(true);
+
+      if (!write && rconn == null)
+         rconn = JdbcInterface.getInstance(true);
+
+      if (write && wconn.isConnected())
+         return(false);
+
+      if (!write && rconn.isConnected())
+         return(false);
+
+      if (write)  wconn.connect(this.user,write);
+      else        rconn.connect(this.user,write);
+
+      connused = new Date();
       return(true);
    }
 

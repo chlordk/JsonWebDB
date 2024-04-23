@@ -48,8 +48,11 @@ public class Monitor extends Thread
       int trxtmout = Config.trxTimeout() * 1000;
       int sestmout = Config.sesTimeout() * 1000;
 
-      int interval = Math.min(contmout,sestmout);
-      interval = sestmout > MAXINT*2 ? MAXINT : (int) (3.0/4*sestmout);
+      int interval = sestmout;
+      if (contmout > 0 && contmout < interval) interval = contmout;
+      if (trxtmout > 0 && trxtmout < interval) interval = trxtmout;
+
+      interval = interval > MAXINT*2 ? MAXINT : (int) (3.0/4*interval);
 
       Config.logger().info(this.getClass().getSimpleName()+" running every "+interval/1000+" secs");
 
@@ -84,19 +87,19 @@ public class Monitor extends Thread
 
          if (trx && (now - lastTrxUsed.getTime() > trxtmout))
          {
-            Config.logger().info(session.getGuid()+" rollback");
+            Config.logger().info("rollback "+session.getGuid());
             session.rollback();
          }
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
-            Config.logger().info(session.getGuid()+" release connection");
+            Config.logger().info("release connection "+session.getGuid());
             session.release();
          }
 
          if (ses && (now - lastUsed.getTime() > sestmout))
          {
-            Config.logger().info(session.getGuid()+" disconnect");
+            Config.logger().info("disconnect "+session.getGuid());
             session.disconnect();
          }
       }

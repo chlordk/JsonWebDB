@@ -50,6 +50,7 @@ public abstract class JdbcInterface
    {
       this.conn = pool.getConnection(write);
       if (pool.proxy()) setProxyUser(conn,username);
+      if (conn.getAutoCommit()) conn.setAutoCommit(false);
    }
 
    public boolean disconnect() throws Exception
