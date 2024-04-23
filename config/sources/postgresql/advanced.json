@@ -1,1 +1,46 @@
-{}
+{
+   "datasources":
+   [
+      {
+         "id": "LocationWithCountry",
+         "object": "locations",
+
+         "sorting": "loc_id",
+         "primary-key": "loc_id",
+
+         "query":
+			[
+            "select l.*, c.country_name",
+            "from locations l, countries c",
+            "where l.country_id = c.country_id"
+         ],
+
+         "vpd":
+         {
+            "where-clause": "country_id = :COUNTRY",
+            "apply": ["update","delete"]
+         },
+
+         "derived": "country_name",
+
+         "custom-filters":
+			[
+            {
+               "name": "country_name",
+               "where-clause": [
+                  "country_id in",
+                  "(",
+                  "  select country_id from countries",
+                  "  where country_name like :{country_name}",
+                  ")"
+               ]
+            }
+         ]
+         ,
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
+      }
+   ]
+}

@@ -3,28 +3,44 @@
    [
       {
          "id": "Countries",
-         "name": "countries",
+         "object": "countries",
+
          "sorting": "country_id",
+         "primary-key": ["country_id"],
 
-         "unique-keys":
+         "custom-filters":
          [
-            ["country_id"]
-         ]
-         ,
-
-			"custom-filters":
-			[
-				{
+            {
                "name": "contains",
-					"restricts": false,
-					"where-clause": "upper(country_id||' '||country_name) like upper('%'||:country||'%')"
-				}
+               "where-clause": "upper(country_id||' '||country_name) like upper('%'||:country||'%')"
+            }
          ]
          ,
-         "insert": {"accept": true},
-         "update": {"accept": true},
-         "delete": {"accept": true},
-         "select": {"accept": true,"check": "none"}
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
+      }
+      ,
+      {
+         "id": "Locations",
+         "object": "locations",
+
+         "sorting": "loc_id",
+         "primary-key": "loc_id",
+
+         "custom-filters":
+			[
+            {
+               "name": "contains",
+               "where-clause": "upper(city||' '||street_address) like upper('%'||:location||'%'"
+            }
+         ]
+         ,
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
       }
    ]
 }

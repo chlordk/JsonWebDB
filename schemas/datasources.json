@@ -1,0 +1,160 @@
+{
+   "type": "object",
+   "$id": "Datasources.json",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+   "description": "This schema defines the different types datasources, defined by JsonWebDB",
+   "additionalProperties": false,
+
+   "properties":
+   {
+      "datasources":
+      {
+         "type": "array",
+         "items":
+         {
+            "anyOf":
+            [
+               {"$ref": "#/sources/Table"}
+            ]
+         }
+      }
+   }
+   ,
+   "sources":
+   {
+      "Table":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["id","insert","update","delete","select"],
+
+         "description": "The source object (table,view or query)",
+
+         "properties":
+         {
+            "id":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the object"
+            }
+            ,
+            "object":
+            {
+               "type": "string",
+               "description": "The name of the database object ie. table or view"
+            }
+            ,
+            "query":
+            {
+               "$ref": "#/types/Text",
+               "description": "Use this query as base for select statements (not for DML)"
+            }
+            ,
+            "derived":
+            {
+               "$ref": "#/types/List",
+               "description": "DML will ignore derived columns"
+            }
+            ,
+            "sorting":
+            {
+               "type": "string",
+               "description": "The default 'order by' clause"
+            }
+            ,
+            "primary-key":
+            {
+               "oneOf":
+               [
+                  {"type": "string"},
+                  {"type": "array", "items": {"type": "string"}}
+               ]
+               ,
+               "description": "If not present, it will be looked up from the database"
+            }
+            ,
+            "custom-filters":
+            {
+               "$ref": "#/types/CustomFilter",
+               "description": "Defines custom filters, to be used on this datasource"
+            }
+            ,
+            "vpd":
+            {
+               "$ref": "#/types/VPD",
+               "description": "Defines a custom filter that emulates a virtual private database "
+            }
+            ,
+            "insert":
+            {
+               "$ref": "#/types/Access",
+               "description": "Access definition for this operation"
+            }
+            ,
+            "update":
+            {
+               "$ref": "#/types/Access",
+               "description": "Access definition for this operation"
+            }
+            ,
+            "delete":
+            {
+               "$ref": "#/types/Access",
+               "description": "Access definition for this operation"
+            }
+            ,
+            "select":
+            {
+               "$ref": "#/types/Access",
+               "description": "Access definition for this operation"
+            }
+         }
+      }
+   }
+   ,
+   "types":
+   {
+      "Access":
+      {
+         "type": "string",
+         "enum": ["denied","allowed","if-where-clause","by-primary-key"]
+      }
+      ,
+      "CustomFilter":
+      {
+         "name": {"type": "string"},
+         "where-clause": {"$ref": "#types/Text"}
+      }
+      ,
+      "VPD":
+      {
+         "where-clause": {"$ref": "#types/Text"},
+         "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
+      }
+      ,
+      "Operation":
+      {
+         "type": "string",
+         "enum": ["insert","update","delete","select"]
+      }
+      ,
+      "Text":
+      {
+         "oneOf":
+         [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}}
+         ]
+      }
+      ,
+      "List":
+      {
+         "oneOf":
+         [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}}
+         ]
+      }
+   }
+}
