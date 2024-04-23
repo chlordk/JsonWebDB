@@ -24,12 +24,11 @@ SOFTWARE.
 
 package http;
 
+import utils.Misc;
 import java.net.URL;
 import java.io.File;
 import jsondb.Config;
 import jsondb.JsonDB;
-import utils.Misc;
-
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;

@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.util.logging.Handler;
 import java.util.logging.FileHandler;
 
+
 public class Applogger
 {
    private static final boolean REDIRECT = false;

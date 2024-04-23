@@ -27,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -42,9 +41,10 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String WAIT = "max-wait";
    private static final String USER = "defaultuser";
    private static final String QUERY = "test";
+   private static final String DRIVER = "driver";
    private static final String PROXY = "proxyuser";
-   private static final String USESEC = "use-secondary";
    private static final String CLASSES = "classes";
+   private static final String USESEC = "use-secondary";
    private static final String LATENCY = "replication-latency";
    private static final String PRIMARY = "primary";
    private static final String VALIDATE = "validate";
@@ -90,13 +90,14 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       getCommonProps(prmdef,prm);
       getCommonProps(secdef,sec);
 
-      sec.setDriverClassName(pwd);
+      if (def.has(DRIVER))
+         sec.setDriverClassName(def.getString(DRIVER));
 
-      
-      JSONArray classes = def.getJSONArray(CLASSES);
-
-      for (int i = 0; i < classes.length(); i++)
-         Class.forName(classes.getString(i));
+      if (def.has(CLASSES))
+      {
+         JSONArray arr = def.getJSONArray(CLASSES);
+         for (int i = 0; i < arr.length(); i++) Class.forName(arr.getString(i));
+      }
 
       this.proxy = proxy;
       this.defusr = defusr;

@@ -24,16 +24,13 @@ SOFTWARE.
 
 package jsondb;
 
-import java.time.Instant;
+import java.util.Date;
 import org.json.JSONObject;
 import java.util.logging.Level;
 import jsondb.files.FileHandler;
-import jsondb.state.StateHandler;
 import jsondb.files.FileResponse;
 import jsondb.objects.ObjectHandler;
 import database.definitions.AdvancedPool;
-
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

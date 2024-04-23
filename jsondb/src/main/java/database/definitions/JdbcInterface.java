@@ -56,7 +56,11 @@ public abstract class JdbcInterface
    public boolean disconnect() throws Exception
    {
       if (conn == null) return(false);
+
+      conn.rollback();
       pool.freeConnection(conn);
+
+      conn = null;
       return(true);
    }
 

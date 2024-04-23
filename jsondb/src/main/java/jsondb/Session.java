@@ -195,14 +195,6 @@ public class Session
             rconn = JdbcInterface.getInstance(false);
       }
 
-      Config.logger().info("setting conn & trx");
-
-      long now = (new Date()).getTime();
-      this.trxused = new Date(now+20000);
-
-      this.ensure(true);
-      this.connused = new Date(now+10000);
-
       return(this);
    }
 
@@ -242,13 +234,14 @@ public class Session
       StateHandler.removeTransaction(this.guid);
       boolean success = StateHandler.touchSession(guid);
 
+      trxused = null;
+
       if (wconn != null)
       {
          wconn.commit();
          return(success);
       }
 
-      trxused = null;
       return(true);
    }
 
@@ -257,13 +250,14 @@ public class Session
       StateHandler.removeTransaction(this.guid);
       boolean success = StateHandler.touchSession(guid);
 
+      trxused = null;
+
       if (wconn != null)
       {
          wconn.rollback();
          return(success);
       }
 
-      trxused = null;
       return(true);
    }
 

@@ -93,7 +93,7 @@ public class Monitor extends Thread
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
-            Config.logger().info("release connection "+session.getGuid());
+            Config.logger().info("freeconn "+session.getGuid());
             session.release();
          }
 

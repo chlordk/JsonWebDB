@@ -61,7 +61,8 @@
 		"username": "hr",
 		"password": "hr",
 
-		"classes": ["org.postgresql.Driver"],
+		"driver": "org.postgresql.Driver",
+		"classes": [],
 
 		"primary":
 		{
