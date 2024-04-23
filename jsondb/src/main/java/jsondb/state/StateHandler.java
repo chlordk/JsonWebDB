@@ -266,15 +266,16 @@ public class StateHandler extends Thread
    @Override
    public void run()
    {
-      int sttl = Config.sesttl() * 1000;
-      int wait = sttl > MAXINT*2 ? MAXINT : (int) (3.0/4*sttl);
+      int timeout = Config.timeout() * 1000;
+      int interval = timeout > MAXINT*2 ? MAXINT : (int) (3.0/4*timeout);
+      Config.logger().info(this.getClass().getSimpleName()+" running every "+interval/1000+" secs");
 
       while (true)
       {
          try
          {
-            cleanout(sttl);
-            Thread.sleep(wait);
+            cleanout(timeout);
+            Thread.sleep(interval);
          }
          catch (Throwable t)
          {
@@ -284,7 +285,7 @@ public class StateHandler extends Thread
    }
 
 
-   private void cleanout(int sttl)
+   private void cleanout(int timeout)
    {
       long curr = System.currentTimeMillis();
       File root = new File(StateHandler.path);
@@ -298,7 +299,7 @@ public class StateHandler extends Thread
 
             File session = sesFile(file.getName());
 
-            if (curr - session.lastModified() > sttl)
+            if (curr - session.lastModified() > timeout)
             {
                File folder = session.getParentFile();
 

@@ -40,7 +40,7 @@
 		}
 	}
    ,
-	"endorsed":
+	"super-users":
 	[
 		{"entity": "root", "signature": "e3887d1f-bda1-425a-b30d-4065403a5be1"}
 	]

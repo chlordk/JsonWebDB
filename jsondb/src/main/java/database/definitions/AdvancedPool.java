@@ -35,7 +35,7 @@ public interface AdvancedPool
    boolean secondary();
    String defaultuser();
    DatabaseType type(boolean write);
-   void release(Connection conn) throws Exception;
-   Connection reserve(boolean write) throws Exception;
+   void freeConnection(Connection conn) throws Exception;
+   Connection getConnection(boolean write) throws Exception;
    boolean authenticate(String username, String password) throws Exception;
 }

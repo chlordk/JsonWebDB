@@ -71,11 +71,12 @@ public class JsonDB
    public static void initialize(String root, String inst, String file) throws Exception
    {
       Config.load(root,inst,file);
-      StateHandler.initialize();
 
-      Config.logger().info(".......................................");
+      Config.logger().info("......................................................");
       Config.logger().info("Starting JsonDB version "+version);
-      Config.logger().info(".......................................");
+      Config.logger().info("......................................................");
+
+      Config.initialize();
    }
 
 

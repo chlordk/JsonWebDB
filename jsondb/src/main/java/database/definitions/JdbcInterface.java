@@ -41,21 +41,21 @@ public abstract class JdbcInterface
       this.pool = pool;
    }
 
-   public boolean isConnected() throws Exception
+   public boolean isConnected()
    {
       return(conn != null);
    }
 
    public void connect(String username, boolean write) throws Exception
    {
-      this.conn = pool.reserve(write);
+      this.conn = pool.getConnection(write);
       if (pool.proxy()) setProxyUser(conn,username);
    }
 
    public boolean disconnect() throws Exception
    {
       if (conn == null) return(false);
-      pool.release(conn);
+      pool.freeConnection(conn);
       return(true);
    }
 

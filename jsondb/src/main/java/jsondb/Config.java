@@ -24,15 +24,16 @@ SOFTWARE.
 
 package jsondb;
 
-import java.io.File;
-import http.Cluster;
 import http.Options;
+import http.Cluster;
+import java.io.File;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
+import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 
 
@@ -111,15 +112,19 @@ public class Config
 
       Config.logger = Applogger.setup();
 
-      Cluster.initialize();
-      Options.initialize();
-      Trusted.initialize();
-      FileConfig.initialize();
-
       JSONObject dbsc = config.getJSONObject(DBSC);
 
       if (dbsc.getBoolean(POOL))
          Config.pool = new database.AdvancedPool(dbsc);
+   }
+
+   public static void initialize() throws Exception
+   {
+      Admins.initialize();
+      Cluster.initialize();
+      Options.initialize();
+      Monitor.initialize();
+      FileConfig.initialize();
    }
 
    /** The instance name */
@@ -134,8 +139,14 @@ public class Config
       return(appl);
    }
 
+   /** Connection timeout (or TimeToLive) */
+   public static int idle()
+   {
+      return(idle);
+   }
+
    /** Session timeout (or TimeToLive) */
-   public static int sesttl()
+   public static int timeout()
    {
       return(sttl);
    }

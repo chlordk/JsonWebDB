@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import java.util.Date;
+import java.util.ArrayList;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
@@ -47,7 +48,14 @@ public class Session
       new ConcurrentHashMap<String,Session>();
 
 
-   public static Session get(String guid) throws Exception
+   public static ArrayList<Session> getAll()
+   {
+      ArrayList<Session> sessions = new ArrayList<Session>();
+      sessions.addAll(Session.sessions.values());
+      return(sessions);
+   }
+
+   public static Session get(String guid)
    {
       Session session = sessions.get(guid);
       return(session);
@@ -177,5 +185,17 @@ public class Session
       }
 
       return(false);
+   }
+
+   public String toString()
+   {
+      boolean connected = false;
+
+      if (wconn != null && wconn.isConnected()) connected = true;
+      if (rconn != null && rconn.isConnected()) connected = true;
+
+      int age = (int) ((new Date()).getTime() - touched.getTime())/1000;
+
+      return(this.guid+", age: "+age+"secs, conn: "+connected);
    }
 }

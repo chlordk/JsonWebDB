@@ -141,14 +141,14 @@ public class AdvancedPool implements database.definitions.AdvancedPool
 
 
    @Override
-   public void release(Connection conn) throws Exception
+   public void freeConnection(Connection conn) throws Exception
    {
       conn.close();
    }
 
 
    @Override
-   public Connection reserve(boolean write) throws Exception
+   public Connection getConnection(boolean write) throws Exception
    {
       if (write || secondary == null) return(primary.getConnection());
       return(secondary.getConnection());

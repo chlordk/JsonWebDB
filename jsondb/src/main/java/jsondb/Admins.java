@@ -28,20 +28,20 @@ import org.json.JSONObject;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class Trusted
+public class Admins
 {
    private static final String USER = "entity";
-   private static final String PRIV = "endorsed";
    private static final String SIGN = "signature";
+   private static final String PRIV = "super-users";
 
-   private static final ConcurrentHashMap<String,String> entities =
+   private static final ConcurrentHashMap<String,String> admins =
       new  ConcurrentHashMap<String,String>();
 
    private static final ConcurrentHashMap<String,String> signatures =
       new  ConcurrentHashMap<String,String>();
 
 
-   public static String getEntity(String signature)
+   public static String getAdmin(String signature)
    {
       if (signature == null) return(null);
       return(signatures.get(signature));
@@ -51,7 +51,7 @@ public class Trusted
    public static String getSignature(String entity)
    {
       if (entity == null) return(null);
-      return(entities.get(entity.toLowerCase()));
+      return(admins.get(entity.toLowerCase()));
    }
 
 
@@ -70,7 +70,7 @@ public class Trusted
          signature = def.getString(SIGN);
 
          entity = entity.toLowerCase();
-         entities.put(entity,signature);
+         admins.put(entity,signature);
          signatures.put(signature,entity);
       }
    }

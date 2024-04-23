@@ -25,7 +25,7 @@ SOFTWARE.
 package jsondb.objects;
 
 import jsondb.Config;
-import jsondb.Trusted;
+import jsondb.Admins;
 import jsondb.Response;
 import org.json.JSONObject;
 import jsondb.messages.Messages;
@@ -84,7 +84,7 @@ public class Session implements DatabaseRequest
 
       if (signature != null)
       {
-         if (Trusted.getEntity(signature) != null)
+         if (Admins.getAdmin(signature) != null)
          {
             authenticated = true;
             session.connect();
