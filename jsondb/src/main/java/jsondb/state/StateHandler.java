@@ -205,6 +205,21 @@ public class StateHandler extends Thread
    }
 
 
+   public static TransactionInfo touchTransaction(String session, Date start) throws Exception
+   {
+      TransactionInfo info = null;
+      File file = trxFile(session);
+
+      if (file.exists())
+      {
+         info = new TransactionInfo(file);
+         file.setLastModified(start.getTime());
+      }
+
+      return(info);
+   }
+
+
    public static TransactionInfo getTransaction(String session) throws Exception
    {
       TransactionInfo info = null;

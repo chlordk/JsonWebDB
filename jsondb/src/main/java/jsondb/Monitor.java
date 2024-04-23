@@ -21,6 +21,7 @@
 
 package jsondb;
 
+import java.util.Date;
 import java.util.logging.Level;
 import jsondb.state.StateHandler;
 
@@ -57,7 +58,7 @@ public class Monitor extends Thread
          try
          {
             Thread.sleep(interval);
-            reap();
+            reap(idle);
          }
          catch (Throwable t)
          {
@@ -66,11 +67,19 @@ public class Monitor extends Thread
       }
    }
 
-   private void reap() throws Exception
+   private void reap(int maxidle) throws Exception
    {
+      long now = (new Date()).getTime();
       for(Session session : Session.getAll())
       {
-         Config.logger().info(session.toString());
+         boolean trx = session.transaction() != null;
+         boolean idle = (now-session.touched().getTime()) > maxidle;
+
+         if (!trx && idle)
+         {
+            session.release();
+            Config.logger().info("release "+session.getGuid());
+         }
       }
    }
 }

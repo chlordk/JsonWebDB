@@ -30,16 +30,20 @@ import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
 import java.util.concurrent.ConcurrentHashMap;
+import jsondb.state.StateHandler.TransactionInfo;
 
 
 public class Session
 {
+   private final int idle;
    private final String guid;
    private final String user;
    private final boolean dedicated;
    private final AdvancedPool pool;
 
    private Date touched = null;
+   private Date trxstart = null;
+
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
@@ -86,6 +90,7 @@ public class Session
       this.guid = guid;
       this.user = user;
       this.pool = Config.pool();
+      this.idle = Config.idle();
       this.touched = new Date();
       this.dedicated = dedicated;
    }
@@ -110,11 +115,44 @@ public class Session
       return(dedicated);
    }
 
-   public boolean touch() throws Exception
+   public synchronized Date touched()
+   {
+      return(touched);
+   }
+
+   public synchronized Date transaction()
+   {
+      return(trxstart);
+   }
+
+   public synchronized boolean touch() throws Exception
    {
       this.touched = new Date();
       boolean success = StateHandler.touchSession(guid);
       return(success);
+   }
+
+   public synchronized TransactionInfo trxstart() throws Exception
+   {
+      this.trxstart = new Date();
+      TransactionInfo info = StateHandler.touchTransaction(guid,trxstart);
+      return(info);
+   }
+
+   public synchronized boolean release() throws Exception
+   {
+      Date now = new Date();
+      if (this.trxstart != null) return(false);
+      if (now.getTime() - touched().getTime() < idle*1000) return(false);
+
+      if (wconn != null && wconn.isConnected())
+         wconn.disconnect();
+
+      if (rconn != null && rconn.isConnected())
+         rconn.disconnect();
+
+      Config.logger().info(this.guid+" released");
+      return(true);
    }
 
    public Session connect() throws Exception
@@ -163,6 +201,7 @@ public class Session
 
    public boolean commit() throws Exception
    {
+      StateHandler.removeTransaction(this.guid);
       boolean success = StateHandler.touchSession(guid);
 
       if (wconn != null)
@@ -176,6 +215,7 @@ public class Session
 
    public boolean rollback() throws Exception
    {
+      StateHandler.removeTransaction(this.guid);
       boolean success = StateHandler.touchSession(guid);
 
       if (wconn != null)
