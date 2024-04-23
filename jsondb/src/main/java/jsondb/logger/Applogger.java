@@ -28,8 +28,8 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.FileOutputStream;
+import java.util.logging.Handler;
 import java.util.logging.FileHandler;
-
 
 public class Applogger
 {
@@ -80,6 +80,9 @@ public class Applogger
       logger.setUseParentHandlers(false);
 
       Logger root = Logger.getLogger("");
+
+      for (Handler hdl : root.getHandlers())
+         root.removeHandler(hdl);
 
       root.setLevel(level);
       root.addHandler(handler);
