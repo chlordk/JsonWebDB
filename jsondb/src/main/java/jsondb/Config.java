@@ -116,7 +116,7 @@ public class Config
       Config.contmout = get(get(SESS),CONTMOUT);
 
       Config.logger = Applogger.setup(logall);
-      
+
       JSONObject dbsc = config.getJSONObject(DBSC);
 
       if (dbsc.getBoolean(POOL))
@@ -128,6 +128,7 @@ public class Config
       Admins.initialize();
       Cluster.initialize();
       Options.initialize();
+      Sources.initialize();
       FileConfig.initialize();
       StateHandler.initialize();
 
