@@ -24,11 +24,11 @@ SOFTWARE.
 
 package jsondb;
 
+import java.util.HashMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.json.JSONObject;
 import java.nio.file.WatchKey;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.nio.file.WatchEvent;
 import java.nio.file.FileSystems;
@@ -45,6 +45,7 @@ public class Sources extends Thread
    private static final String CONF = "config";
    private static final String DBSC = "database";
    private static final String SOURCES = "sources";
+   private static final String TRIGGER = "reload.trg";
 
    private static Path path = null;
    private static WatchKey watcher = null;
@@ -77,8 +78,6 @@ public class Sources extends Thread
 
 
    @Override
-   @SuppressWarnings("unused")
-
    public void run()
    {
       WatchKey key;
@@ -89,13 +88,22 @@ public class Sources extends Thread
          {
             while ((key = service.take()) != null)
             {
+               boolean reload = false;
+
                for (WatchEvent<?> event : key.pollEvents())
                {
-                  sources = load(path.toFile());
-                  Config.logger().info("reload source definitions "+event.kind());
+                  if (event.context().toString().equals(TRIGGER))
+                     reload = true;
                }
 
                key.reset();
+
+               if (reload)
+               {
+                  Config.logger().info("Reload source definitions");
+                  sources = load(path.toFile());
+                  Config.logger().info("Source definitions reloaded");
+               }
             }
          }
          catch (Throwable t)
