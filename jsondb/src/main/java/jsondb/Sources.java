@@ -92,7 +92,7 @@ public class Sources extends Thread
                for (WatchEvent<?> event : key.pollEvents())
                {
                   sources = load(path.toFile());
-                  Config.logger().info("reload source definitions");
+                  Config.logger().info("reload source definitions "+event.kind());
                }
 
                key.reset();
@@ -132,7 +132,8 @@ public class Sources extends Thread
 
    private HashMap<String,Source> load(JSONObject defs) throws Exception
    {
-      
+      HashMap<String,Source> sources = new HashMap<String,Source>();
+      return(sources);
    }
 
    private static String path()

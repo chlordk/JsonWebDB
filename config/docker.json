@@ -1,22 +1,29 @@
 {
    "application":
    {
-      "location": "/dist"
-      ,
 		"index": "index.html",
-		"virtual": [{"path": "/forms", "page": "index.html"}]
+		"virtual": [{"path": "/forms", "page": "index.html"}],
+      "location": "/dist"
 		,
-		"protected":
+		"admin":
 		{
 			"admin": "/admin",
 			"username": "admin",
 			"password": "Manager1"
 		}
+		,
+		"cluster":
+		[
+			{"inst": "local01", "addr": "https://localhost:6002"},
+			{"inst": "docker01", "addr": "https://localhost:8002"}
+		]
    }
    ,
    "session":
    {
-      "timeout": 20
+		"session-timeout": 120,
+		"connection-timeout": 60,
+		"transaction-timeout": 30
    }
 	,
 	"embedded":
@@ -34,7 +41,7 @@
 		}
 	}
    ,
-	"endorsed":
+	"super-users":
 	[
 		{"entity": "root", "signature": "e3887d1f-bda1-425a-b30d-4065403a5be1"}
 	]
@@ -54,7 +61,8 @@
 		"username": "hr",
 		"password": "hr",
 
-		"classes": ["org.postgresql.Driver"],
+		"driver": "org.postgresql.Driver",
+		"classes": [],
 
 		"primary":
 		{
