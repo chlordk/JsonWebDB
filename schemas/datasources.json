@@ -1,10 +1,11 @@
 {
-   "type": "object",
    "$id": "Datasources.json",
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-   "description": "This schema defines the different types datasources, defined by JsonWebDB",
+   "type": "object",
    "additionalProperties": false,
+
+   "description": "This schema defines the different types datasources, defined by JsonWebDB",
 
    "properties":
    {
@@ -124,11 +125,13 @@
       "CustomFilter":
       {
          "name": {"type": "string"},
+         "description": {"$ref": "#types/Text"},
          "where-clause": {"$ref": "#types/Text"}
       }
       ,
       "VPD":
       {
+         "description": {"$ref": "#types/Text"},
          "where-clause": {"$ref": "#types/Text"},
          "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
       }

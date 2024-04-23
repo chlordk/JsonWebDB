@@ -42,5 +42,67 @@
          "delete": "by-primary-key",
          "select": "allowed"
       }
+      ,
+      {
+         "id": "departments",
+         "object": "departments",
+
+         "sorting": "department_id",
+         "primary-key": "department_id",
+
+         "custom-filters":
+			[
+            {
+               "name": "contains",
+               "where-clause": "upper({column}) like upper('%'||:{value}||'%')"
+            }
+         ]
+         ,
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
+      }
+      ,
+      {
+         "id": "jobs",
+         "object": "jobs",
+
+         "sorting": "job_id",
+         "primary-key": "job_id",
+
+         "custom-filters":
+			[
+            {
+               "name": "contains",
+               "where-clause": "upper(job_id||' '||job_title) like upper('%'||:job||'%')"
+            }
+         ]
+         ,
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
+      }
+		,
+		{
+         "id": "employees",
+         "object": "employees",
+
+         "sorting": "employee_id",
+         "primary-key": "employee_id",
+
+         "custom-filters": [
+            {
+               "name": "contains",
+               "where-clause": "upper(first_name||' '||last_name) like upper('%'||:name||'%')"
+            }
+         ]
+         ,
+         "insert": "allowed",
+         "update": "by-primary-key",
+         "delete": "by-primary-key",
+         "select": "allowed"
+      }
    ]
 }
