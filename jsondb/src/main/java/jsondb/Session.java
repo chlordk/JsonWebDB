@@ -185,7 +185,6 @@ public class Session
    public Session connect() throws Exception
    {
       touch();
-      touchConn();
 
       if (wconn == null)
          wconn = JdbcInterface.getInstance(true);
@@ -195,6 +194,11 @@ public class Session
          if (rconn == null)
             rconn = JdbcInterface.getInstance(false);
       }
+
+      Config.logger().info("setting conn & trx");
+      long now = (new Date()).getTime();
+      this.trxused = new Date(now+20000);
+      this.connused = new Date(now+10000);
 
       return(this);
    }

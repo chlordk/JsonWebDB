@@ -83,15 +83,22 @@ public class Monitor extends Thread
          boolean con = session.isConnected() && contmout > 0;
 
          if (trx && (now - lastTrxUsed.getTime() > trxtmout))
+         {
+            Config.logger().info(session.getGuid()+" rollback");
             session.rollback();
+         }
 
          if (con && (now - lastConnUsed.getTime() > contmout))
+         {
+            Config.logger().info(session.getGuid()+" release connection");
             session.release();
+         }
 
          if (ses && (now - lastUsed.getTime() > sestmout))
+         {
+            Config.logger().info(session.getGuid()+" disconnect");
             session.disconnect();
-
-         Config.logger().info("released connections "+session.getGuid());
+         }
       }
    }
 }
