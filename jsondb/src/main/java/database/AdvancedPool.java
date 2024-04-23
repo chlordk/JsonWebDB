@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
@@ -89,6 +90,9 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       getCommonProps(prmdef,prm);
       getCommonProps(secdef,sec);
 
+      sec.setDriverClassName(pwd);
+
+      
       JSONArray classes = def.getJSONArray(CLASSES);
 
       for (int i = 0; i < classes.length(); i++)

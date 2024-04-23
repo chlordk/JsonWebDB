@@ -56,7 +56,7 @@ public class JsonDB
     */
     public static void initialize(String root, String inst) throws Exception
     {
-      initialize(root,inst,null);
+      initialize(root,inst,null,true);
     }
 
 
@@ -66,11 +66,12 @@ public class JsonDB
     * @param root the root directory of JsonWebDB
     * @param inst the instance name
     * @param file the configuration file name
+    * @param logall Also handle messages written to the root logger
     * @throws Exception
     */
-   public static void initialize(String root, String inst, String file) throws Exception
+   public static void initialize(String root, String inst, String file, boolean logall) throws Exception
    {
-      Config.load(root,inst,file);
+      Config.load(root,inst,file,logall);
 
       Config.logger().info("......................................................");
       Config.logger().info("Starting JsonDB version "+version);

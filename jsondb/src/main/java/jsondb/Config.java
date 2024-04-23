@@ -74,7 +74,7 @@ public class Config
     */
     protected static synchronized void load(String root, String inst) throws Exception
     {
-      load(root,inst,FILE);
+      load(root,inst,FILE,true);
     }
 
 
@@ -83,10 +83,11 @@ public class Config
     * @param root the root directory of JsonWebDB
     * @param inst the instance name
     * @param file the configuration file name
+    * @param logall Also handle messages written to the root logger
     * @return The parsed config with some helper methods to navigate the config
     * @throws Exception
     */
-   protected static synchronized void load(String root, String inst, String file) throws Exception
+   protected static synchronized void load(String root, String inst, String file, boolean logall) throws Exception
    {
       if (file == null)
          file = FILE;
@@ -114,8 +115,8 @@ public class Config
       Config.trxtmout = get(get(SESS),TRXTMOUT);
       Config.contmout = get(get(SESS),CONTMOUT);
 
-      Config.logger = Applogger.setup();
-
+      Config.logger = Applogger.setup(logall);
+      
       JSONObject dbsc = config.getJSONObject(DBSC);
 
       if (dbsc.getBoolean(POOL))

@@ -44,7 +44,7 @@ public class Applogger
    private static final String LOGFILE = "server.log";
 
 
-   public static Logger setup() throws Exception
+   public static Logger setup(boolean root) throws Exception
    {
       String inst = Config.inst();
       JSONObject logd = Config.get(LOGDEF);
@@ -79,14 +79,17 @@ public class Applogger
       logger.addHandler(handler);
       logger.setUseParentHandlers(false);
 
-      Logger root = Logger.getLogger("");
+      if (root)
+      {
+         Logger rootlgr = Logger.getLogger("");
 
-      for (Handler hdl : root.getHandlers())
-         root.removeHandler(hdl);
+         for (Handler hdl : rootlgr.getHandlers())
+            rootlgr.removeHandler(hdl);
 
-      root.setLevel(level);
-      root.addHandler(handler);
-      root.setUseParentHandlers(false);
+         rootlgr.setLevel(level);
+         rootlgr.addHandler(handler);
+         rootlgr.setUseParentHandlers(false);
+      }
 
       if (REDIRECT)
       {

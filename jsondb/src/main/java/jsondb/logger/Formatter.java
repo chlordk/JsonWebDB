@@ -40,9 +40,12 @@ public class Formatter extends java.util.logging.Formatter
     String date = df.format(new Date());
     String location = record.getSourceClassName()+"."+record.getSourceMethodName();
 
+    if (location.length() > 40)
+      location = "..."+location.substring(location.length()-40);
+
     String message = ": "+record.getMessage();
     String level = String.format("%-7s",record.getLevel().toString());
-    String source = String.format("%-48s",location);
+    String source = String.format("%-45s",location);
 
     StringBuffer entry = new StringBuffer();
     boolean exception = (record.getThrown() != null);

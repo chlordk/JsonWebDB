@@ -106,7 +106,7 @@ public class Server
       String cmd = args[0];
       String inst = args[1];
       String root = findAppHome();
-      JsonDB.initialize(root,inst,config);
+      JsonDB.initialize(root,inst,config,true);
 
       switch (cmd)
       {
