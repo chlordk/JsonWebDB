@@ -28,11 +28,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.json.JSONObject;
 import java.nio.file.WatchKey;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.nio.file.WatchEvent;
 import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
 import static java.nio.file.StandardWatchEventKinds.*;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 
 public class Sources extends Thread
@@ -46,6 +50,9 @@ public class Sources extends Thread
    private static WatchKey watcher = null;
    private static WatchService service = null;
 
+   private static HashMap<String,Source> sources =
+      new HashMap<String,Source>();
+
 
    public static void initialize() throws Exception
    {
@@ -57,11 +64,20 @@ public class Sources extends Thread
       sources.start();
    }
 
+   public static Source get(String id)
+   {
+      return(sources.get(id.toLowerCase()));
+   }
+
    private Sources()
    {
       this.setDaemon(true);
       this.setName(this.getClass().getSimpleName());
    }
+
+
+   @Override
+   @SuppressWarnings("unused")
 
    public void run()
    {
@@ -75,7 +91,8 @@ public class Sources extends Thread
             {
                for (WatchEvent<?> event : key.pollEvents())
                {
-                  System.out.println(event);
+                  sources = load(path.toFile());
+                  Config.logger().info("reload source definitions");
                }
 
                key.reset();
@@ -89,19 +106,39 @@ public class Sources extends Thread
       }
    }
 
-   private void load() throws Exception
+   private HashMap<String,Source> load(File root) throws Exception
    {
+      HashMap<String,Source> sources = new HashMap<String,Source>();
 
+      for(File file : root.listFiles())
+      {
+         if (file.isDirectory())
+         {
+            sources.putAll(load(file));
+            continue;
+         }
+
+         if (file.getName().endsWith(".json"))
+         {
+            FileInputStream in = new FileInputStream(file);
+            String content = new String(in.readAllBytes()); in.close();
+            JSONObject defs = new JSONObject(content);
+            sources.putAll(load(defs));
+         }
+      }
+
+      return(sources);
+   }
+
+   private HashMap<String,Source> load(JSONObject defs) throws Exception
+   {
+      
    }
 
    private static String path()
    {
       JSONObject db = Config.get(DBSC);
       String dbtype = Config.get(db,TYPE);
-
-      String path = Config.path(CONF,SOURCES,dbtype.toLowerCase());
-      Config.logger().info("Checking sources at "+path);
-
-      return(path);
+      return(Config.path(CONF,SOURCES,dbtype.toLowerCase()));
    }
 }
