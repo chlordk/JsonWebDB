@@ -26,6 +26,7 @@ package database;
 
 public class BindValue
 {
+   private int pos = 0;
    private String name = null;
    private String type = null;
    private Object value = null;
@@ -39,6 +40,21 @@ public class BindValue
    public BindValue(String name)
    {
       this.name = name;
+   }
+
+   public int start()
+   {
+      return(pos);
+   }
+
+   public int end()
+   {
+      return(pos+len()+1);
+   }
+
+   public int len()
+   {
+      return(name.length());
    }
 
    public String name()
@@ -59,6 +75,12 @@ public class BindValue
    public boolean ampersand()
    {
       return(ampersand);
+   }
+
+   public BindValue pos(int pos)
+   {
+      this.pos = pos;
+      return(this);
    }
 
    public BindValue name(String name)

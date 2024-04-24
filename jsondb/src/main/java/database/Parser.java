@@ -46,10 +46,24 @@ public class Parser
 
             if (bind != null)
             {
-               jdbc.append('?');
+               boolean amp = true;
+               int pos = jdbc.length();
+
+               if (c == '&')
+               {
+                  jdbc.append('&');
+                  jdbc.append(bind);
+               }
+               else
+               {
+                  amp = false;
+                  jdbc.append('?');
+               }
+
                i += bind.length();
                BindValue bv = new BindValue(bind);
-               bindvalues.add(bv.ampersand((c == '&')));
+               bindvalues.add(bv.pos(pos).ampersand(amp));
+
                continue;
             }
          }
@@ -96,7 +110,7 @@ public class Parser
    public static class SQL
    {
       public final String sql;
-      public final ArrayList<BindValue> bindValues;
+      public final ArrayList<BindValue> bindvalues;
 
       public SQL(StringBuffer sql, ArrayList<BindValue> bindValues)
       {
@@ -106,7 +120,49 @@ public class Parser
       public SQL(String sql, ArrayList<BindValue> bindValues)
       {
          this.sql = sql;
-         this.bindValues = bindValues;
+         this.bindvalues = bindValues;
+      }
+
+      public SQL bind(String name, Object value)
+      {
+         for(BindValue bv : this.bindvalues)
+         {
+            if (bv.name().equalsIgnoreCase(name))
+               bv.value(value);
+         }
+
+         return(this);
+      }
+
+      public SQL bindByValue()
+      {
+         int delta = 0;
+         String sql = this.sql;
+
+         ArrayList<BindValue> bindvalues =
+            new ArrayList<BindValue>();
+
+         for(BindValue bv : this.bindvalues)
+         {
+            if (!bv.ampersand())
+            {
+               bindvalues.add(bv);
+               continue;
+            }
+
+            int pe = bv.end() + delta;
+            int pb = bv.start() + delta;
+
+            String value = bv.value()+"";
+
+            String se = sql.substring(pe);
+            String sb = sql.substring(0,pb);
+
+            sql = sb + value + se;
+            delta += (value.length() - bv.len() - 1);
+         }
+
+         return(new SQL(sql,bindvalues));
       }
    }
 }

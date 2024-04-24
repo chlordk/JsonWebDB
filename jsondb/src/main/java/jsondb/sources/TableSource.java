@@ -93,7 +93,7 @@ public class TableSource extends Source
          SQL parsed = Parser.parse(query);
 
          this.query = parsed.sql;
-         this.bindValues = parsed.bindValues;
+         this.bindValues = parsed.bindvalues;
       }
    }
 
@@ -131,7 +131,7 @@ public class TableSource extends Source
 
          this.apply = apply;
          this.filter = parsed.sql;
-         this.bindValues = parsed.bindValues;
+         this.bindValues = parsed.bindvalues;
       }
    }
 }
