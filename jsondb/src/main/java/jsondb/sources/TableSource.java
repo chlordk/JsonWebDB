@@ -36,6 +36,7 @@ public class TableSource extends Source
    public final String query;
    public final String object;
    public final String sorting;
+   public final String[] derived;
    public final String[] primarykey;
 
    public TableSource(JSONObject definition) throws Exception
@@ -44,16 +45,17 @@ public class TableSource extends Source
       String query = getString(definition,"query",false);
       String object = getString(definition,"object",true);
       String sorting = getString(definition,"sorting",false);
+      String[] derived = getStringArray(definition,"derived",false);
       String[] primarykey = getStringArray(definition,"primary-key",false);
 
       VPD vpd = VPD.parse(definition);
-
 
       this.id = id;
       this.vpd = vpd;
       this.query = query;
       this.object = object;
       this.sorting = sorting;
+      this.derived = derived;
       this.primarykey = primarykey;
    }
 
@@ -65,12 +67,16 @@ public class TableSource extends Source
       public final ArrayList<BindValue> bindValues;
 
 
-      private static VPD parse(JSONObject def)
+      private static VPD parse(JSONObject def) throws Exception
       {
          if (!def.has("vpd")) return(null);
 
          def = def.getJSONObject("vpd");
-         String filter = 
+
+         String filter = Source.getString(def,"where-clause",true);
+         String[] applies = Source.getStringArray(def,"apply",true,true);
+
+         return(new VPD(filter,applies));
       }
 
       private VPD(String filter, String[] apply)

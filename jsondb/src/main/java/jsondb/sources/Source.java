@@ -32,23 +32,29 @@ import org.json.JSONObject;
 
 public class Source
 {
-   public String getString(JSONObject def, String attr) throws Exception
+   public static String getString(JSONObject def, String attr) throws Exception
    {
       return(getString(def,attr,false,false));
    }
 
-   public String getString(JSONObject def, String attr, boolean mandatory) throws Exception
+   public static String getString(JSONObject def, String attr, boolean mandatory) throws Exception
    {
       return(getString(def,attr,mandatory,false));
    }
 
 
-   public String[] getStringArray(JSONObject def, String attr) throws Exception
+   public static String[] getStringArray(JSONObject def, String attr) throws Exception
    {
-      return(getStringArray(def,attr,false));
+      return(getStringArray(def,attr,false,false));
    }
 
-   public String getString(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
+
+   public static String[] getStringArray(JSONObject def, String attr, boolean mandatory) throws Exception
+   {
+      return(getStringArray(def,attr,mandatory,false));
+   }
+
+   public static String getString(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
    {
       String value = null;
 
@@ -79,7 +85,7 @@ public class Source
       return(value);
    }
 
-   public String[] getStringArray(JSONObject def, String attr, boolean mandatory) throws Exception
+   public static String[] getStringArray(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
    {
       String[] value = null;
 
@@ -100,6 +106,12 @@ public class Source
             value[i] = arr.getString(i);
       }
       else value = new String[] {object+""};
+
+      if (lower)
+      {
+         for (int i = 0; i < value.length; i++)
+            value[i] = value[i].toLowerCase();
+      }
 
       return(value);
    }
