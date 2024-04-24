@@ -45,7 +45,9 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class Sources extends Thread
 {
+   private static final String TYPE = "type";
    private static final String CONF = "config";
+   private static final String DBSC = "database";
    private static final String SOURCES = "sources";
    private static final String TABLES = "datasources";
    private static final String TRIGGER = ".reload.trg";
@@ -104,9 +106,15 @@ public class Sources extends Thread
 
       Sources instance = new Sources();
 
+      JSONObject db = Config.get(DBSC);
+      String dbtype = Config.get(db,TYPE);
+
+      dbtype = dbtype.toLowerCase();
+      File root = new File(Misc.url(path.toString(),dbtype));
+
       Config.logger().info("Load source definitions");
-      preload = instance.loadStatic(path.toFile());
-      sources = instance.loadSources(path.toFile());
+      preload = instance.loadStatic(root);
+      sources = instance.loadSources(root);
       Config.logger().info("Source definitions loaded");
 
       instance.start();

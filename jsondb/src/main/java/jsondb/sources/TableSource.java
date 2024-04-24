@@ -60,7 +60,7 @@ public class TableSource extends Source
    public TableSource(JSONObject definition) throws Exception
    {
       String id = getString(definition,ID,true,true);
-      String object = getString(definition,OBJECT,true);
+      String object = getString(definition,OBJECT,false);
       String sorting = getString(definition,SORTING,false);
       String[] derived = getStringArray(definition,DERIVED,false);
       String[] primarykey = getStringArray(definition,PRIMARY,false);
@@ -109,6 +109,9 @@ public class TableSource extends Source
 
       private static HashMap<String,CustomFilter> parse(JSONObject def) throws Exception
       {
+         if (!def.has(CUSTOMFLTS))
+            return(null);
+
          HashMap<String,CustomFilter> filters =
             new HashMap<String,CustomFilter>();
 
