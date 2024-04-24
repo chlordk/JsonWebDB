@@ -44,6 +44,9 @@ public class Monitor extends Thread
 
    public void run()
    {
+      long now = 0;
+      long last = 0;
+
       int contmout = Config.conTimeout() * 1000;
       int trxtmout = Config.trxTimeout() * 1000;
       int sestmout = Config.sesTimeout() * 1000;
@@ -60,8 +63,13 @@ public class Monitor extends Thread
       {
          try
          {
-            long now = (new Date()).getTime();
-            StateHandler.cleanout(now,sestmout);
+            now = (new Date()).getTime();
+
+            if ((now - last) > sestmout)
+            {
+               last = (new Date()).getTime();
+               StateHandler.cleanout(now,sestmout);
+            }
 
             Thread.sleep(interval);
             cleanout(now,sestmout,contmout,trxtmout);
