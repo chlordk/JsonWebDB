@@ -19,29 +19,28 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package database;
+package database.implementations;
 
 import java.sql.Connection;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
 
 
-public class Generic extends JdbcInterface
+public class PostgreSQL extends JdbcInterface
 {
-   public Generic(AdvancedPool pool)
-   {
-      super(pool);
-   }
+  public PostgreSQL(AdvancedPool pool)
+  {
+    super(pool);
+  }
 
-   @Override
-   public void setProxyUser(Connection conn, String username) throws Exception
-   {
-      throw new Exception("Not implemented");
-   }
+  @Override
+  public void setProxyUser(Connection conn, String username) throws Exception
+  {
+    super.execute("set role "+username);
+  }
 
-   @Override
-   public void releaseProxyUser(Connection conn) throws Exception
-   {
-      throw new Exception("Not implemented");
-   }
- }
+  @Override
+  public void releaseProxyUser(Connection conn) throws Exception
+  {
+  }
+}

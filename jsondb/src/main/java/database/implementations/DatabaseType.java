@@ -19,28 +19,40 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package database;
+package database.implementations;
 
-import java.sql.Connection;
+import jsondb.Config;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
 
 
-public class PostgreSQL extends JdbcInterface
+public enum DatabaseType
 {
-  public PostgreSQL(AdvancedPool pool)
-  {
-    super(pool);
-  }
+   Oracle(Oracle.class),
+   GenericJDBC(Generic.class),
+   PostgreSQL(PostgreSQL.class);
 
-  @Override
-  public void setProxyUser(Connection conn, String username) throws Exception
-  {
-    super.execute("set role "+username);
-  }
+   private final Class<JdbcInterface> impl;
 
-  @Override
-  public void releaseProxyUser(Connection conn) throws Exception
-  {
-  }
+   @SuppressWarnings("unchecked")
+   private DatabaseType(Class<?> impl)
+   {
+      this.impl = (Class<JdbcInterface>) impl;
+   }
+
+   public JdbcInterface getInstance() throws Exception
+   {
+      AdvancedPool pool = Config.pool();
+      return(impl.getConstructor(AdvancedPool.class).newInstance(pool));
+   }
+
+   public static DatabaseType getType(String name)
+   {
+      switch(name.toLowerCase())
+      {
+         case "oracle" : return(Oracle);
+         case "postgresql" : return(PostgreSQL);
+         default: return(GenericJDBC);
+      }
+   }
 }

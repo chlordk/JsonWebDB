@@ -19,40 +19,29 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package database;
+package database.implementations;
 
-import jsondb.Config;
+import java.sql.Connection;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
 
 
-public enum DatabaseType
+public class Generic extends JdbcInterface
 {
-   Oracle(Oracle.class),
-   GenericJDBC(Generic.class),
-   PostgreSQL(PostgreSQL.class);
-
-   private final Class<JdbcInterface> impl;
-
-   @SuppressWarnings("unchecked")
-   private DatabaseType(Class<?> impl)
+   public Generic(AdvancedPool pool)
    {
-      this.impl = (Class<JdbcInterface>) impl;
+      super(pool);
    }
 
-   public JdbcInterface getInstance() throws Exception
+   @Override
+   public void setProxyUser(Connection conn, String username) throws Exception
    {
-      AdvancedPool pool = Config.pool();
-      return(impl.getConstructor(AdvancedPool.class).newInstance(pool));
+      throw new Exception("Not implemented");
    }
 
-   public static DatabaseType getType(String name)
+   @Override
+   public void releaseProxyUser(Connection conn) throws Exception
    {
-      switch(name.toLowerCase())
-      {
-         case "oracle" : return(Oracle);
-         case "postgresql" : return(PostgreSQL);
-         default: return(GenericJDBC);
-      }
+      throw new Exception("Not implemented");
    }
-}
+ }
