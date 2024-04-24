@@ -31,6 +31,7 @@ import database.BindValue;
 
 public class TableSource extends Source
 {
+   public final VPD vpd;
    public final String id;
    public final String query;
    public final String object;
@@ -45,8 +46,11 @@ public class TableSource extends Source
       String sorting = getString(definition,"sorting",false);
       String[] primarykey = getStringArray(definition,"primary-key",false);
 
+      VPD vpd = VPD.parse(definition);
+
 
       this.id = id;
+      this.vpd = vpd;
       this.query = query;
       this.object = object;
       this.sorting = sorting;
@@ -61,9 +65,17 @@ public class TableSource extends Source
       public final ArrayList<BindValue> bindValues;
 
 
+      private static VPD parse(JSONObject def)
+      {
+         if (!def.has("vpd")) return(null);
+
+         def = def.getJSONObject("vpd");
+         String filter = 
+      }
+
       private VPD(String filter, String[] apply)
       {
-         SQL parsed = parse(filter);
+         SQL parsed = Source.parse(filter);
 
          this.apply = apply;
          this.filter = parsed.sql;
