@@ -34,15 +34,21 @@ public class Source
 {
    public String getString(JSONObject def, String attr) throws Exception
    {
-      return(getString(def,attr,false));
+      return(getString(def,attr,false,false));
    }
+
+   public String getString(JSONObject def, String attr, boolean mandatory) throws Exception
+   {
+      return(getString(def,attr,mandatory,false));
+   }
+
 
    public String[] getStringArray(JSONObject def, String attr) throws Exception
    {
       return(getStringArray(def,attr,false));
    }
 
-   public String getString(JSONObject def, String attr, boolean mandatory) throws Exception
+   public String getString(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
    {
       String value = null;
 
@@ -64,7 +70,11 @@ public class Source
             value += arr.getString(i);
          }
       }
-      else value += ""+object;
+      else
+         value += ""+object;
+
+      if (lower)
+         value = value.toLowerCase();
 
       return(value);
    }
@@ -94,14 +104,16 @@ public class Source
       return(value);
    }
 
-   public static ArrayList<BindValue> getBindValues(String sql)
+   public static SQL parse(String sql)
    {
+      StringBuffer jdbc = new StringBuffer();
       StringBuffer stmt = new StringBuffer(sql);
+
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
 
       for (int i = 0; i < stmt.length(); i++)
       {
-         char c = sql.charAt(i);
+         char c = stmt.charAt(i);
 
          if (c == ':' || c == '&')
          {
@@ -109,19 +121,23 @@ public class Source
 
             if (bind != null)
             {
+               jdbc.append('?');
                i += bind.length();
                BindValue bv = new BindValue(bind);
                bindvalues.add(bv.ampersand((c == '&')));
+               continue;
             }
          }
+
+         jdbc.append(c);
       }
 
-      return(bindvalues);
+      return(new SQL(jdbc,bindvalues));
    }
 
    private static String getBindValue(StringBuffer stmt, int pos)
    {
-      int start = pos;
+      int start = pos + 1;
 
       if (pos > 0)
       {
@@ -137,7 +153,7 @@ public class Source
       char[] name = new char[pos-start];
       stmt.getChars(start,pos,name,0);
 
-      return(new String(name));
+      return(new String(name).toLowerCase());
    }
 
 
@@ -155,5 +171,22 @@ public class Source
    private static void throwNotExist(String attr) throws Exception
    {
       throw new Exception("Mandatory atrribute '"+attr+"' does not exist");
+   }
+
+   public static class SQL
+   {
+      String sql;
+      ArrayList<BindValue> bindValues;
+
+      public SQL(StringBuffer sql, ArrayList<BindValue> bindValues)
+      {
+         this(new String(sql),bindValues);
+      }
+
+      public SQL(String sql, ArrayList<BindValue> bindValues)
+      {
+         this.sql = sql;
+         this.bindValues = bindValues;
+      }
    }
 }

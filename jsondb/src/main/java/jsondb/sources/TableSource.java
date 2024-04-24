@@ -39,15 +39,12 @@ public class TableSource extends Source
 
    public TableSource(JSONObject definition) throws Exception
    {
-      String id = getString(definition,"id",true);
+      String id = getString(definition,"id",true,true);
       String query = getString(definition,"query",false);
       String object = getString(definition,"object",true);
       String sorting = getString(definition,"sorting",false);
       String[] primarykey = getStringArray(definition,"primary-key",false);
 
-
-
-      id = id.toLowerCase();
 
       this.id = id;
       this.query = query;
@@ -66,9 +63,11 @@ public class TableSource extends Source
 
       private VPD(String filter, String[] apply)
       {
+         SQL parsed = parse(filter);
+
          this.apply = apply;
-         this.filter = filter;
-         this.bindValues = getBindValues(filter);
+         this.filter = parsed.sql;
+         this.bindValues = parsed.bindValues;
       }
    }
 }
