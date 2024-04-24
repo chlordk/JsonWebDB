@@ -62,8 +62,8 @@ public class TableSource extends Source
       String[] derived = getStringArray(definition,DERIVED,false);
       String[] primarykey = getStringArray(definition,PRIMARY,false);
 
-      QuerySource query = QuerySource.parse(definition);
       VPDFilter vpd = VPDFilter.parse(definition);
+      QuerySource query = QuerySource.parse(definition);
       HashMap<String,CustomFilter> filters = CustomFilter.parse(definition);
 
       this.id = id;

@@ -153,7 +153,7 @@ public class Sources extends Thread
 
       for (int i = 0; i < arr.length(); i++)
       {
-         Source source = new TableSource(arr.getJSONObject(i));
+         TableSource source = new TableSource(arr.getJSONObject(i));
          sources.put(source.id,source);
       }
 

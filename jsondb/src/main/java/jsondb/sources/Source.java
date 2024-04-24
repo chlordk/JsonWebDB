@@ -30,8 +30,6 @@ import org.json.JSONObject;
 
 public class Source
 {
-   public String id;
-
    public static String getString(JSONObject def, String attr) throws Exception
    {
       return(getString(def,attr,false,false));
@@ -77,7 +75,7 @@ public class Source
          }
       }
       else
-         value += ""+object;
+         value = ""+object;
 
       if (lower)
          value = value.toLowerCase();
