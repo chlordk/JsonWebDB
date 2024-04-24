@@ -22,21 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb;
+package jsondb.sources;
 
+import java.io.File;
+import jsondb.Config;
 import java.util.HashMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.json.JSONObject;
 import java.nio.file.WatchKey;
 import java.util.logging.Level;
+import java.io.FileInputStream;
 import java.nio.file.WatchEvent;
 import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
 import static java.nio.file.StandardWatchEventKinds.*;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 
 public class Sources extends Thread
@@ -61,7 +61,11 @@ public class Sources extends Thread
       service = FileSystems.getDefault().newWatchService();
       watcher = path.register(service,ENTRY_CREATE,ENTRY_MODIFY,ENTRY_DELETE);
 
+      Config.logger().info("Load source definitions");
       Sources sources = new Sources();
+      sources.load(path.toFile());
+      Config.logger().info("Source definitions loaded");
+
       sources.start();
    }
 

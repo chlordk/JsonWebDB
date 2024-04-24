@@ -22,9 +22,66 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb;
+package database;
 
-public class Source
+public class BindValue
 {
+   private String name = null;
+   private String type = null;
+   private Object value = null;
+   private boolean ampersand = false;
 
+
+   public BindValue()
+   {
+   }
+
+   public BindValue(String name)
+   {
+      this.name = name;
+   }
+
+   public String name()
+   {
+      return(name);
+   }
+
+   public String type()
+   {
+      return(type);
+   }
+
+   public Object value()
+   {
+      return(value);
+   }
+
+   public boolean ampersand()
+   {
+      return(ampersand);
+   }
+
+   public BindValue name(String name)
+   {
+      this.name = name;
+      return(this);
+   }
+
+   public BindValue type(String type)
+   {
+      this.type = type;
+      return(this);
+   }
+
+   public BindValue value(Object value)
+   {
+      this.value = value;
+      return(this);
+   }
+
+   public BindValue ampersand(boolean ampersand)
+   {
+      this.ampersand = ampersand;
+      return(this);
+   }
 }
