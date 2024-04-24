@@ -24,8 +24,11 @@ SOFTWARE.
 
 package jsondb.sources;
 
+import http.Server;
+import utils.Misc;
 import java.io.File;
 import jsondb.Config;
+import java.util.Date;
 import java.util.HashMap;
 import org.json.JSONArray;
 import java.nio.file.Path;
@@ -42,12 +45,10 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class Sources extends Thread
 {
-   private static final String TYPE = "type";
    private static final String CONF = "config";
-   private static final String DBSC = "database";
    private static final String SOURCES = "sources";
    private static final String TABLES = "datasources";
-   private static final String TRIGGER = "reload.trg";
+   private static final String TRIGGER = ".reload.trg";
 
    private static Path path = null;
    private static WatchKey watcher = null;
@@ -56,24 +57,67 @@ public class Sources extends Thread
    private static HashMap<String,Source> sources =
       new HashMap<String,Source>();
 
+   private static HashMap<String,Source> preload =
+      new HashMap<String,Source>();
+
+   public static void main(String[] args) throws Exception
+   {
+      if (args.length == 0)
+         syntax();
+
+      if (args[0].equals("reload"))
+      {
+         String path = Misc.url(Server.findAppHome(),CONF,SOURCES);
+         File trigger = new File(path,TRIGGER);
+
+         if (!trigger.exists()) trigger.createNewFile();
+         else trigger.setLastModified((new Date()).getTime());
+      }
+
+      else
+
+      if (args[0].equals("list"))
+      {
+         System.out.println("Not implemented yet");
+      }
+   }
+
+   private static void syntax()
+   {
+      System.out.println();
+      System.out.println();
+      System.out.println("usage: sources reload|list");
+      System.out.println();
+      System.exit(-1);
+   }
+
 
    public static void initialize() throws Exception
    {
-      path = Paths.get(path());
+      path = Paths.get(Config.path(CONF,SOURCES));
+
+      File trigger = new File(path.toFile(),TRIGGER);
+      if (!trigger.exists()) trigger.createNewFile();
+
       service = FileSystems.getDefault().newWatchService();
       watcher = path.register(service,ENTRY_CREATE,ENTRY_MODIFY,ENTRY_DELETE);
 
+      Sources instance = new Sources();
+
       Config.logger().info("Load source definitions");
-      Sources sources = new Sources();
-      sources.load(path.toFile());
+      preload = instance.loadStatic(path.toFile());
+      sources = instance.loadSources(path.toFile());
       Config.logger().info("Source definitions loaded");
 
-      sources.start();
+      instance.start();
    }
 
    public static Source get(String id)
    {
-      return(sources.get(id.toLowerCase()));
+      id = id.toLowerCase();
+      Source source = sources.get(id);
+      if (source == null) source = preload.get(id);
+      return(source);
    }
 
    private Sources()
@@ -107,7 +151,7 @@ public class Sources extends Thread
                if (reload)
                {
                   Config.logger().info("Reload source definitions");
-                  sources = load(path.toFile());
+                  sources = loadSources(path.toFile());
                   Config.logger().info("Source definitions reloaded");
                }
             }
@@ -120,7 +164,7 @@ public class Sources extends Thread
       }
    }
 
-   private HashMap<String,Source> load(File root) throws Exception
+   private HashMap<String,Source> loadSources(File root) throws Exception
    {
       HashMap<String,Source> sources = new HashMap<String,Source>();
 
@@ -128,9 +172,30 @@ public class Sources extends Thread
       {
          if (file.isDirectory())
          {
-            sources.putAll(load(file));
+            sources.putAll(loadSources(file));
             continue;
          }
+
+         if (file.getName().endsWith(".json"))
+         {
+            FileInputStream in = new FileInputStream(file);
+            String content = new String(in.readAllBytes()); in.close();
+            JSONObject defs = new JSONObject(content);
+            sources.putAll(load(defs));
+         }
+      }
+
+      return(sources);
+   }
+
+   private HashMap<String,Source> loadStatic(File root) throws Exception
+   {
+      HashMap<String,Source> sources = new HashMap<String,Source>();
+
+      for(File file : root.getParentFile().listFiles())
+      {
+         if (file.isDirectory())
+            continue;
 
          if (file.getName().endsWith(".json"))
          {
@@ -154,16 +219,9 @@ public class Sources extends Thread
       for (int i = 0; i < arr.length(); i++)
       {
          TableSource source = new TableSource(arr.getJSONObject(i));
-         sources.put(source.id,source);
+         sources.put(source.id.toLowerCase(),source);
       }
 
       return(sources);
-   }
-
-   private static String path()
-   {
-      JSONObject db = Config.get(DBSC);
-      String dbtype = Config.get(db,TYPE);
-      return(Config.path(CONF,SOURCES,dbtype.toLowerCase()));
    }
 }

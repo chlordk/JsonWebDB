@@ -131,7 +131,6 @@ public class Server
       System.out.println("usage:    jsonwebdb [options] start|stop|status <instance>");
       System.out.println("options:      -c | --config <configuration>");
       System.out.println();
-
       System.exit(-1);
    }
 

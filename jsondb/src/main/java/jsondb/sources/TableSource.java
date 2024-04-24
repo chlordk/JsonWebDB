@@ -27,6 +27,7 @@ package jsondb.sources;
 import database.Parser;
 import java.util.HashMap;
 import database.BindValue;
+import org.json.JSONArray;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import database.Parser.SQL;
@@ -36,6 +37,7 @@ public class TableSource extends Source
 {
    private static final String ID = "id";
    private static final String VPD = "vpd";
+   private static final String NAME = "name";
    private static final String APPLY = "apply";
    private static final String QUERY = "query";
    private static final String OBJECT = "object";
@@ -43,6 +45,7 @@ public class TableSource extends Source
    private static final String DERIVED = "derived";
    private static final String PRIMARY = "primary-key";
    private static final String WHCLAUSE = "where-clause";
+   private static final String CUSTOMFLTS = "custom-filters";
 
 
    public final String id;
@@ -100,9 +103,36 @@ public class TableSource extends Source
 
    public static class CustomFilter
    {
+      public final String name;
+      public final String query;
+      public final ArrayList<BindValue> bindValues;
+
       private static HashMap<String,CustomFilter> parse(JSONObject def) throws Exception
       {
-         return(null);
+         HashMap<String,CustomFilter> filters =
+            new HashMap<String,CustomFilter>();
+
+         JSONArray arr = def.getJSONArray(CUSTOMFLTS);
+
+         for (int i = 0; i < arr.length(); i++)
+         {
+            JSONObject flt = arr.getJSONObject(i);
+            String name = Source.getString(flt,NAME,true,true);
+            String whcl = Source.getString(flt,WHCLAUSE,true,false);
+            filters.put(name.toLowerCase(),new CustomFilter(name,whcl));
+         }
+
+         return(filters);
+      }
+
+
+      private CustomFilter(String name, String whcl)
+      {
+         SQL parsed = Parser.parse(whcl);
+
+         this.name = name;
+         this.query = parsed.sql;
+         this.bindValues = parsed.bindvalues;
       }
    }
 
