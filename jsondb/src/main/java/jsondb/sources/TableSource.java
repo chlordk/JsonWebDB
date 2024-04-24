@@ -24,31 +24,47 @@ SOFTWARE.
 
 package jsondb.sources;
 
+import database.Parser;
+import java.util.HashMap;
+import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
-import database.BindValue;
+import database.Parser.SQL;
 
 
 public class TableSource extends Source
 {
-   public final VPD vpd;
+   private static final String ID = "id";
+   private static final String VPD = "vpd";
+   private static final String APPLY = "apply";
+   private static final String QUERY = "query";
+   private static final String OBJECT = "object";
+   private static final String SORTING = "sorting";
+   private static final String DERIVED = "derived";
+   private static final String PRIMARY = "primary-key";
+   private static final String WHCLAUSE = "where-clause";
+
+
    public final String id;
-   public final String query;
    public final String object;
+   public final VPDFilter vpd;
    public final String sorting;
    public final String[] derived;
+   public final QuerySource query;
    public final String[] primarykey;
+   public final HashMap<String,CustomFilter> filters;
 
    public TableSource(JSONObject definition) throws Exception
    {
-      String id = getString(definition,"id",true,true);
-      String query = getString(definition,"query",false);
-      String object = getString(definition,"object",true);
-      String sorting = getString(definition,"sorting",false);
-      String[] derived = getStringArray(definition,"derived",false);
-      String[] primarykey = getStringArray(definition,"primary-key",false);
+      String id = getString(definition,ID,true,true);
+      String object = getString(definition,OBJECT,true);
+      String sorting = getString(definition,SORTING,false);
+      String[] derived = getStringArray(definition,DERIVED,false);
+      String[] primarykey = getStringArray(definition,PRIMARY,false);
 
-      VPD vpd = VPD.parse(definition);
+      QuerySource query = QuerySource.parse(definition);
+      VPDFilter vpd = VPDFilter.parse(definition);
+      HashMap<String,CustomFilter> filters = CustomFilter.parse(definition);
 
       this.id = id;
       this.vpd = vpd;
@@ -56,32 +72,62 @@ public class TableSource extends Source
       this.object = object;
       this.sorting = sorting;
       this.derived = derived;
+      this.filters = filters;
       this.primarykey = primarykey;
    }
 
 
-   public static class VPD
+   public static class QuerySource
+   {
+      public final String query;
+      public final ArrayList<BindValue> bindValues;
+
+      private static QuerySource parse(JSONObject def) throws Exception
+      {
+         if (!def.has(QUERY)) return(null);
+         return(new QuerySource(Source.getString(def,QUERY)));
+      }
+
+      private QuerySource(String query)
+      {
+         SQL parsed = Parser.parse(query);
+
+         this.query = parsed.sql;
+         this.bindValues = parsed.bindValues;
+      }
+   }
+
+
+   public static class CustomFilter
+   {
+      private static HashMap<String,CustomFilter> parse(JSONObject def) throws Exception
+      {
+         return(null);
+      }
+   }
+
+
+   public static class VPDFilter
    {
       public final String filter;
       public final String[] apply;
       public final ArrayList<BindValue> bindValues;
 
-
-      private static VPD parse(JSONObject def) throws Exception
+      private static VPDFilter parse(JSONObject def) throws Exception
       {
-         if (!def.has("vpd")) return(null);
+         if (!def.has(VPD)) return(null);
 
-         def = def.getJSONObject("vpd");
+         def = def.getJSONObject(VPD);
 
-         String filter = Source.getString(def,"where-clause",true);
-         String[] applies = Source.getStringArray(def,"apply",true,true);
+         String filter = Source.getString(def,WHCLAUSE,true);
+         String[] applies = Source.getStringArray(def,APPLY,true,true);
 
-         return(new VPD(filter,applies));
+         return(new VPDFilter(filter,applies));
       }
 
-      private VPD(String filter, String[] apply)
+      private VPDFilter(String filter, String[] apply)
       {
-         SQL parsed = Source.parse(filter);
+         SQL parsed = Parser.parse(filter);
 
          this.apply = apply;
          this.filter = parsed.sql;

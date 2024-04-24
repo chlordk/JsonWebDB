@@ -27,6 +27,7 @@ package jsondb.sources;
 import java.io.File;
 import jsondb.Config;
 import java.util.HashMap;
+import org.json.JSONArray;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.json.JSONObject;
@@ -45,6 +46,7 @@ public class Sources extends Thread
    private static final String CONF = "config";
    private static final String DBSC = "database";
    private static final String SOURCES = "sources";
+   private static final String TABLES = "datasources";
    private static final String TRIGGER = "reload.trg";
 
    private static Path path = null;
@@ -144,7 +146,17 @@ public class Sources extends Thread
 
    private HashMap<String,Source> load(JSONObject defs) throws Exception
    {
+      JSONArray arr = null;
       HashMap<String,Source> sources = new HashMap<String,Source>();
+
+      arr = defs.optJSONArray(TABLES);
+
+      for (int i = 0; i < arr.length(); i++)
+      {
+         Source source = new TableSource(arr.getJSONObject(i));
+         sources.put(source.id,source);
+      }
+
       return(sources);
    }
 

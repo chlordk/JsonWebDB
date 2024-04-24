@@ -25,13 +25,13 @@ SOFTWARE.
 package jsondb.sources;
 
 import org.json.JSONArray;
-import database.BindValue;
-import java.util.ArrayList;
 import org.json.JSONObject;
 
 
 public class Source
 {
+   public String id;
+
    public static String getString(JSONObject def, String attr) throws Exception
    {
       return(getString(def,attr,false,false));
@@ -116,89 +116,8 @@ public class Source
       return(value);
    }
 
-   public static SQL parse(String sql)
-   {
-      StringBuffer jdbc = new StringBuffer();
-      StringBuffer stmt = new StringBuffer(sql);
-
-      ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
-
-      for (int i = 0; i < stmt.length(); i++)
-      {
-         char c = stmt.charAt(i);
-
-         if (c == ':' || c == '&')
-         {
-            String bind = getBindValue(stmt,i);
-
-            if (bind != null)
-            {
-               jdbc.append('?');
-               i += bind.length();
-               BindValue bv = new BindValue(bind);
-               bindvalues.add(bv.ampersand((c == '&')));
-               continue;
-            }
-         }
-
-         jdbc.append(c);
-      }
-
-      return(new SQL(jdbc,bindvalues));
-   }
-
-   private static String getBindValue(StringBuffer stmt, int pos)
-   {
-      int start = pos + 1;
-
-      if (pos > 0)
-      {
-         // Check last before start
-         char pre = stmt.charAt(pos-1);
-         if (wordCharacter(pre)) return(null);
-         if (pre == ':' || pre == '&') return(null);
-      }
-
-      pos++;
-      while(pos < stmt.length() && wordCharacter(stmt.charAt(pos))) pos++;
-
-      char[] name = new char[pos-start];
-      stmt.getChars(start,pos,name,0);
-
-      return(new String(name).toLowerCase());
-   }
-
-
-   private static boolean wordCharacter(char c)
-   {
-      if (c == '_') return(true);
-
-      if (c >= '0' && c <= '9') return(true);
-      if (c >= 'a' && c <= 'z') return(true);
-      if (c >= 'A' && c <= 'Z') return(true);
-
-      return(false);
-   }
-
    private static void throwNotExist(String attr) throws Exception
    {
       throw new Exception("Mandatory atrribute '"+attr+"' does not exist");
-   }
-
-   public static class SQL
-   {
-      String sql;
-      ArrayList<BindValue> bindValues;
-
-      public SQL(StringBuffer sql, ArrayList<BindValue> bindValues)
-      {
-         this(new String(sql),bindValues);
-      }
-
-      public SQL(String sql, ArrayList<BindValue> bindValues)
-      {
-         this.sql = sql;
-         this.bindValues = bindValues;
-      }
    }
 }
