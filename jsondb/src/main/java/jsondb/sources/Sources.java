@@ -228,6 +228,7 @@ public class Sources extends Thread
       {
          TableSource source = new TableSource(arr.getJSONObject(i));
          sources.put(source.id.toLowerCase(),source);
+         Config.logger().info(source.toString());
       }
 
       return(sources);

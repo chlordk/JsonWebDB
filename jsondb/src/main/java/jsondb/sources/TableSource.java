@@ -79,6 +79,11 @@ public class TableSource extends Source
       this.primarykey = primarykey;
    }
 
+   public String toString()
+   {
+      return(this.getClass().getSimpleName()+": "+id);
+   }
+
 
    public static class QuerySource
    {
