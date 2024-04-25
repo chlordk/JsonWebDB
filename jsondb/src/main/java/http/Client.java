@@ -104,13 +104,11 @@ public class Client
       return(response.body());
    }
 
-
    private static HttpClient getClient() throws Exception
    {
       SSLContext ctx = createSSLContext();
       return(HttpClient.newBuilder().sslContext(ctx).build());
    }
-
 
    private static SSLContext createSSLContext() throws Exception
    {
@@ -130,22 +128,20 @@ public class Client
      {
      }
 
-
      @Override
      public void checkClientTrusted(X509Certificate[] x509Certificate, String name) throws CertificateException
      {
      }
-
 
      @Override
      public void checkServerTrusted(X509Certificate[] certificates, String name) throws CertificateException
      {
      }
 
-
      @Override
      public X509Certificate[] getAcceptedIssuers()
      {
        return(null);
      }
-   }}
+   }
+}
