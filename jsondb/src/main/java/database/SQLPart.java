@@ -52,12 +52,12 @@ public class SQLPart
       this.bindvalues = bindValues;
    }
 
-   public String sql()
+   public String snippet()
    {
       return(sql);
    }
 
-   public SQLPart sql(String sql)
+   public SQLPart snippet(String sql)
    {
       this.sql = sql;
       return(this);

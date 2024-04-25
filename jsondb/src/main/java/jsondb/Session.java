@@ -25,6 +25,8 @@ SOFTWARE.
 package jsondb;
 
 import java.util.Date;
+import database.Cursor;
+import database.BindValue;
 import java.util.ArrayList;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
@@ -261,7 +263,13 @@ public class Session
       return(true);
    }
 
-   private synchronized boolean ensure(boolean write) throws Exception
+   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
+   {
+      ensure(false);
+      return(new Cursor());
+   }
+
+   private synchronized void ensure(boolean write) throws Exception
    {
       if (!write && !pool.secondary())
          write = true;
@@ -272,17 +280,16 @@ public class Session
       if (!write && rconn == null)
          rconn = JdbcInterface.getInstance(true);
 
+      connused = new Date();
+
       if (write && wconn.isConnected())
-         return(false);
+         return;
 
       if (!write && rconn.isConnected())
-         return(false);
+         return;
 
       if (write)  wconn.connect(this.user,write);
       else        rconn.connect(this.user,write);
-
-      connused = new Date();
-      return(true);
    }
 
    public String toString()

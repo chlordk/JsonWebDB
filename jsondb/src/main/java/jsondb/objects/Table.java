@@ -26,6 +26,7 @@ package jsondb.objects;
 
 import jsondb.Session;
 import jsondb.Response;
+import database.Cursor;
 import database.SQLPart;
 import utils.JSONOObject;
 import database.BindValue;
@@ -85,7 +86,7 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
-      response.put("sql",select.sql());
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
 
       return(new Response(response));
    }
