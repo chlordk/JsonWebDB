@@ -32,9 +32,8 @@ import org.json.JSONTokener;
 import jsondb.sources.Sources;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
-import jsondb.messages.Messages;
-
 import java.io.FileInputStream;
+import jsondb.messages.Messages;
 import java.util.logging.Logger;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;

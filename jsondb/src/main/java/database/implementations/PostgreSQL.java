@@ -28,19 +28,19 @@ import database.definitions.JdbcInterface;
 
 public class PostgreSQL extends JdbcInterface
 {
-  public PostgreSQL(AdvancedPool pool)
-  {
-    super(pool);
-  }
+   public PostgreSQL(AdvancedPool pool)
+   {
+      super(pool);
+   }
 
-  @Override
-  public void setProxyUser(Connection conn, String username) throws Exception
-  {
-    super.execute("set role "+username);
-  }
+   @Override
+   public void setProxyUser(Connection conn, String username) throws Exception
+   {
+      super.execute("set role "+username);
+   }
 
-  @Override
-  public void releaseProxyUser(Connection conn) throws Exception
-  {
-  }
+   @Override
+   public void releaseProxyUser(Connection conn) throws Exception
+   {
+   }
 }

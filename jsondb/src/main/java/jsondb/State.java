@@ -24,8 +24,8 @@ SOFTWARE.
 
 package jsondb;
 
-import http.Server;
 import utils.Misc;
+import http.Server;
 import org.json.JSONObject;
 import jsondb.state.StateHandler;
 

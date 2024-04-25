@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb.files;
 
+
 public class FilePattern
 {
    private final long size;

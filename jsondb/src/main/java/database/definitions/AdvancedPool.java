@@ -24,6 +24,7 @@ package database.definitions;
 import java.sql.Connection;
 import database.implementations.DatabaseType;
 
+
 /**
  * The methods needed for JsonDB to work
  * Methods are hopefully self explanatory.

@@ -21,7 +21,6 @@
 
 package database;
 
-
 import jsondb.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;

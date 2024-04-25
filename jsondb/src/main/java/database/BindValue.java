@@ -24,6 +24,7 @@ SOFTWARE.
 
 package database;
 
+
 public class BindValue
 {
    private int pos = 0;
