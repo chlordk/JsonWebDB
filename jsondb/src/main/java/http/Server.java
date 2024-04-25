@@ -178,7 +178,7 @@ public class Server
       }
       catch (Exception e)
       {
-         System.err.println("Failed to stop server: "+e.getMessage());
+         System.err.println("Failed to stop server: "+e.toString());
       }
    }
 
