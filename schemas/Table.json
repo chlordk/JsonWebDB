@@ -51,7 +51,7 @@
                "bindvalues":
                {
                   "type": "array",
-                  "items": {"$ref": "#/types/BindValue"}
+                  "items": {"$ref": "#/types/NameValuePair"}
                }
                ,
                "insert()":
@@ -179,20 +179,6 @@
       ,
       "types":
       {
-         "BindValue":
-         {
-            "type": "object",
-            "required": ["name","type"],
-            "additionalProperties": false,
-
-            "properties":
-            {
-               "name": {"type": "string"},
-               "type": {"type": "string"},
-               "value": {"type": ["string","number","integer","boolean"]}
-            }
-         }
-         ,
          "NameValuePair":
          {
             "type": "object",

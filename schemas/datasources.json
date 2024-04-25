@@ -48,7 +48,7 @@
             ,
             "query":
             {
-               "$ref": "#/types/Text",
+               "$ref": "#/types/Query",
                "description": "Use this query as base for select statements (not for DML)"
             }
             ,
@@ -67,7 +67,7 @@
             "columns":
             {
                "type": "array",
-               "items": {"$ref": "#/types/Column"}
+               "items": {"$ref": "#/types/ColumnDefinition"}
             }
             ,
             "primary-key":
@@ -123,13 +123,43 @@
    ,
    "types":
    {
+      "Query":
+      {
+         "type": "object",
+         "required": ["sql"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "sql": {"$ref": "#/types/Text"},
+            "datatypes":
+            {
+               "object": "array",
+               "items": {"$ref": "#/types/DataType"}
+            }
+         }
+      }
+      ,
+      "DataType":
+      {
+         "type": "object",
+         "required": ["name","type"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
+            "type": {"type": ["string"]}
+         }
+      }
+      ,
       "Access":
       {
          "type": "string",
          "enum": ["denied","allowed","if-where-clause","by-primary-key"]
       }
       ,
-      "Column":
+      "ColumnDefinition":
       {
          "type": "object",
          "required": ["name"],

@@ -40,7 +40,7 @@ public class BindValue
 
    public BindValue(String name)
    {
-      this.name = name;
+      this.name = name.toLowerCase();
    }
 
    public int start()
@@ -86,13 +86,13 @@ public class BindValue
 
    public BindValue name(String name)
    {
-      this.name = name;
+      this.name = name.toLowerCase();
       return(this);
    }
 
    public BindValue type(String type)
    {
-      this.type = type;
+      this.type = type.toLowerCase();
       return(this);
    }
 

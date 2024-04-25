@@ -35,7 +35,6 @@ import java.util.ArrayList;
 public class Utils
 {
    private static final String NAME = "name";
-   private static final String TYPE = "type";
    private static final String VALUE = "value";
    private static final String SECTION = "bindvalues";
 
@@ -55,10 +54,9 @@ public class Utils
          JSONObject bdef = arr.getJSONObject(i);
 
          String name = bdef.getString(NAME);
-         String type = bdef.getString(TYPE);
          Object value = bdef.getString(VALUE);
 
-         bindvalues.add(new BindValue(name).type(type).value(value));
+         bindvalues.add(new BindValue(name).value(value));
       }
 
       return(bindvalues);

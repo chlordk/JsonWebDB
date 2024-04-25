@@ -22,7 +22,7 @@
    ,
    "session":
    {
-		"session-timeout": 120,
+		"session-timeout": 600,
 		"connection-timeout": 60,
 		"transaction-timeout": 30
    }

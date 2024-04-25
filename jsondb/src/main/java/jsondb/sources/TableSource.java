@@ -36,11 +36,14 @@ import org.json.JSONObject;
 public class TableSource extends Source
 {
    private static final String ID = "id";
+   private static final String SQL = "sql";
    private static final String VPD = "vpd";
    private static final String NAME = "name";
+   private static final String TYPE = "type";
    private static final String APPLY = "apply";
    private static final String QUERY = "query";
    private static final String OBJECT = "object";
+   private static final String TYPES = "datatypes";
    private static final String SORTING = "sorting";
    private static final String DERIVED = "derived";
    private static final String PRIMARY = "primary-key";
@@ -98,15 +101,24 @@ public class TableSource extends Source
    public static class QuerySource
    {
       public final SQLPart query;
+      public final HashMap<String,DataType> types;
 
       private static QuerySource parse(JSONObject def) throws Exception
       {
-         if (!def.has(QUERY)) return(null);
-         return(new QuerySource(Source.getString(def,QUERY)));
+         if (!def.has(QUERY))
+            return(null);
+
+         def = def.getJSONObject(QUERY);
+
+         String sql = Source.getString(def,SQL,true);
+         HashMap<String,DataType> types = DataType.parse(def);
+
+         return(new QuerySource(sql,types));
       }
 
-      private QuerySource(String query)
+      private QuerySource(String query, HashMap<String,DataType> types)
       {
+         this.types = types;
          this.query = Parser.parse(query);
       }
 
@@ -117,7 +129,11 @@ public class TableSource extends Source
          String sql = "from ("+query.sql()+")";
 
          for(BindValue bv : bindvalues)
-            bound.bind(bv.name(),bv.type(),bv.value());
+         {
+            DataType def = this.types.get(bv.name());
+            if (def != null) bv.type(def.type);
+            bound.bind(bv);
+         }
 
          return(bound.sql(sql).bindByValue());
       }
@@ -180,6 +196,41 @@ public class TableSource extends Source
       {
          this.filter = Parser.parse(filter);
          this.apply = apply;
+      }
+   }
+
+
+   public static class DataType
+   {
+      public final String name;
+      public final String type;
+
+
+      private static HashMap<String,DataType> parse(JSONObject def) throws Exception
+      {
+         HashMap<String,DataType> types =
+            new HashMap<String,DataType>();
+
+         if (!def.has(TYPES)) return(types);
+         JSONArray arr = def.getJSONArray(TYPES);
+
+         for (int i = 0; i < arr.length(); i++)
+         {
+            JSONObject tdef = arr.getJSONObject(i);
+
+            String name = tdef.getString(NAME);
+            String type = tdef.getString(TYPE);
+
+            types.put(name,new DataType(name,type));
+         }
+
+         return(types);
+      }
+
+      private DataType(String name, String type)
+      {
+         this.name = name;
+         this.type = type;
       }
    }
 }

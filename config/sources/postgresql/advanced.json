@@ -23,12 +23,16 @@
             }
          ]
         ,
+
          "query":
-			[
-            "select l.*, c.country_name",
-            "from locations l, countries c",
-            "where l.country_id = c.country_id"
-         ],
+         {
+            "sql":
+            [
+               "select l.*, c.country_name",
+               "from locations l, countries c",
+               "where l.country_id = c.country_id"
+            ]
+         },
 
          "vpd":
          {

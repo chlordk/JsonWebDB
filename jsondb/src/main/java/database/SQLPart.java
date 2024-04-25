@@ -42,7 +42,7 @@ public class SQLPart
    public SQLPart(String sql)
    {
       this.sql = sql;
-      this.bindvalues = null;
+      this.bindvalues = new ArrayList<BindValue>();
    }
 
 
@@ -73,9 +73,14 @@ public class SQLPart
    public SQLPart append(SQLPart next)
    {
       this.sql += " "+next.sql;
-      if (bindvalues == null) bindvalues = next.bindvalues;
-      else if (next.bindvalues != null) bindvalues.addAll(next.bindvalues);
+      this.bindvalues.addAll(next.bindvalues);
       return(this);
+   }
+
+
+   public SQLPart bind(BindValue bv)
+   {
+      return(bind(bv.name(),bv.type(),bv.value()));
    }
 
 
@@ -131,7 +136,10 @@ public class SQLPart
          delta += (value.length() - bv.len() - 1);
       }
 
-      return(new SQLPart(sql,bindvalues));
+      this.sql = sql;
+      this.bindvalues = bindvalues;
+
+      return(this);
    }
 
 
