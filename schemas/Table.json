@@ -32,9 +32,13 @@
                ,
                "invoke":
                {
-                  "type": "string",
-                  "description": "Method to invoke",
-                  "enum": ["select()", "insert()", "update()", "delete()"]
+                  "description": "Method(s) to invoke",
+
+                  "oneOf":
+                  [
+                     {"$ref": "#/types/Method"},
+                     {"type": "array", "items": {"$ref": "#/types/Method"}}
+                  ]
                }
                ,
                "bindvalues":
@@ -257,6 +261,12 @@
                {"required": ["filter","column","value"]},
                {"required": ["filter","columns","value"]}
             ]
+         }
+         ,
+         "Method":
+         {
+            "type": "string",
+            "enum": ["select()", "insert()", "update()", "delete()"]
          }
       }
    }
