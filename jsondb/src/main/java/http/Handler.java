@@ -177,7 +177,6 @@ public class Handler implements HttpHandler
 
          out.write(response.page);
          out.close();
-
       }
       catch (Throwable t)
       {

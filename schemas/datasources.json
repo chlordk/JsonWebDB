@@ -64,6 +64,12 @@
                "description": "The default 'order by' clause"
             }
             ,
+            "columns":
+            {
+               "type": "array",
+               "items": {"$ref": "#/types/Column"}
+            }
+            ,
             "primary-key":
             {
                "oneOf":
@@ -122,16 +128,41 @@
          "enum": ["denied","allowed","if-where-clause","by-primary-key"]
       }
       ,
+      "Column":
+      {
+         "type": "object",
+         "required": ["name"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
+            "datatype": {"type": "string"},
+
+            "precision":
+            {
+               "type": "array",
+               "items": {"type": "integer"}
+            }
+         }
+      }
+      ,
       "CustomFilter":
       {
+         "additionalProperties": false,
+         "required": ["name","where-clause"],
+
          "name": {"type": "string"},
-         "description": {"$ref": "#types/Text"},
+         "desc": {"$ref": "#types/Text"},
          "where-clause": {"$ref": "#types/Text"}
       }
       ,
       "VPD":
       {
-         "description": {"$ref": "#types/Text"},
+         "additionalProperties": false,
+         "required": ["where-clause","apply"],
+
+         "desc": {"$ref": "#types/Text"},
          "where-clause": {"$ref": "#types/Text"},
          "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
       }
