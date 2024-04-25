@@ -12,14 +12,14 @@
          [
             {
                "name": "loc_id",
-               "datatype": "number",
+               "type": "number",
                "precision": [6,0]
             }
             ,
             {
-            "name": "street",
-            "datatype": "string",
-            "precision": [20,0]
+               "name": "street",
+               "type": "string",
+               "precision": [20,0]
             }
          ]
         ,

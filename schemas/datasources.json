@@ -83,7 +83,8 @@
             ,
             "custom-filters":
             {
-               "$ref": "#/types/CustomFilter",
+               "type": "array",
+               "items": {"$ref": "#/types/CustomFilter"},
                "description": "Defines custom filters, to be used on this datasource"
             }
             ,
@@ -156,8 +157,8 @@
          "properties":
          {
             "name": {"type": "string"},
-            "description": {"$ref": "#types/Text"},
-            "where-clause": {"$ref": "#types/Text"}
+            "description": {"$ref": "#/types/Text"},
+            "where-clause": {"$ref": "#/types/Text"}
          }
       }
       ,
@@ -169,8 +170,8 @@
 
          "properties":
          {
-            "description": {"$ref": "#types/Text"},
-            "where-clause": {"$ref": "#types/Text"},
+            "description": {"$ref": "#/types/Text"},
+            "where-clause": {"$ref": "#/types/Text"},
             "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
          }
       }
