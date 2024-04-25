@@ -142,7 +142,7 @@ public class JsonWebDB extends HttpServlet
    {
       try
       {
-         if (!request.isSecure())
+         if (Options.adminSSLRequired() && !request.isSecure())
          {
             AdminResponse rsp = Admin.noSSLMessage();
             OutputStream out = response.getOutputStream();

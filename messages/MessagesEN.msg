@@ -7,3 +7,4 @@ NO_SUCH_SESSION            = Session does not exist
 SSL_REQUIRED               = Access to this page requires a safe protocol (https)
 EXCEPTION_WITHOUT_MESSAGE  = An error occured, but without any description
 SESSION_NOT_DEDICATED      = Cannot perform operation {%1} since {%2} is not dedcicated
+INSTANCE_NOT_REGISTERED    = Instance {%1} must be configured in the cluster section

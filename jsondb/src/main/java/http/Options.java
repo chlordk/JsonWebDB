@@ -41,11 +41,13 @@ public class Options
    private static final String USER = "username";
    private static final String PASW = "password";
    private static final String APPL = "application";
+   private static final String SSLR = "ssl-required";
 
    private static String usr = null;
    private static String pwd = null;
    private static String admin = null;
    private static String index = null;
+   private static boolean sslreq = true;
 
    private static ArrayList<VirtualPath> virtual =
       new ArrayList<VirtualPath>();
@@ -74,6 +76,8 @@ public class Options
       Options.admin = Config.get(auth,ADMN);
       Options.index = Config.get(http,INDX);
 
+      Options.sslreq = Config.get(auth,SSLR);
+
       if (!Options.index.startsWith("/"))
          Options.index = "/" + Options.index;
 
@@ -89,18 +93,20 @@ public class Options
       }
    }
 
-
    public static String admin()
    {
       return(admin);
    }
-
 
    public static String index()
    {
       return(index);
    }
 
+   public static boolean adminSSLRequired()
+   {
+      return(sslreq);
+   }
 
    public static String getVirtual(String path)
    {

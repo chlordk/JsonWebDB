@@ -139,7 +139,7 @@ public class Handler implements HttpHandler
       {
          OutputStream out = exchange.getResponseBody();
 
-         if (!(exchange instanceof HttpsExchange))
+         if (Options.adminSSLRequired() && !(exchange instanceof HttpsExchange))
          {
             AdminResponse response = Admin.noSSLMessage();
             exchange.sendResponseHeaders(response.code,response.size);

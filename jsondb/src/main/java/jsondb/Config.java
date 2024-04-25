@@ -32,6 +32,8 @@ import org.json.JSONTokener;
 import jsondb.sources.Sources;
 import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
+import jsondb.messages.Messages;
+
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import jsondb.state.StateHandler;
@@ -132,6 +134,9 @@ public class Config
       Sources.initialize();
       FileConfig.initialize();
       StateHandler.initialize();
+
+      if (Cluster.getServer(inst) == null)
+         throw new Exception(Messages.get("INSTANCE_NOT_REGISTERED",inst));
 
       Monitor.monitor();
    }
