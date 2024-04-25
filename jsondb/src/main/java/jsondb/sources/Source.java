@@ -27,6 +27,8 @@ package jsondb.sources;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import jsondb.messages.Messages;
+
 
 public class Source
 {
@@ -58,7 +60,7 @@ public class Source
 
       if (!def.has(attr))
       {
-         if (mandatory) throwNotExist(attr);
+         if (mandatory) throwNotExist(def,attr);
          return(null);
       }
 
@@ -89,7 +91,7 @@ public class Source
 
       if (!def.has(attr))
       {
-         if (mandatory) throwNotExist(attr);
+         if (mandatory) throwNotExist(def,attr);
          return(null);
       }
 
@@ -114,8 +116,8 @@ public class Source
       return(value);
    }
 
-   private static void throwNotExist(String attr) throws Exception
+   private static void throwNotExist(JSONObject json, String attr) throws Exception
    {
-      throw new Exception("Mandatory atrribute '"+attr+"' does not exist");
+      throw new Exception(Messages.get("MANDATORY_ATTR_MISSING",attr,json.toString(2)));
    }
 }
