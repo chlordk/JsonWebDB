@@ -77,15 +77,22 @@ public class Table
          return(new Response(response));
       }
 
-      SQLPart sql = null;
-
       JSONObject select = definition.getJSONObject(SELECT);
       String[] columns = Utils.getJSONList(select,COLUMNS,String.class);
 
-      if (source.query != null)
+      String stmt = "select ";
+
+      for (int i = 0; i < columns.length; i++)
       {
-         source.query.bind(bindvalues);
+         if (i > 0) stmt += ",";
+         stmt += columns[i];
       }
+
+
+      SQLPart sql = new SQLPart(stmt);
+      sql.append(source.from(bindvalues));
+
+      System.out.println(sql.sql()+" "+sql.bindValues().get(0));
 
       return(new Response(response));
    }

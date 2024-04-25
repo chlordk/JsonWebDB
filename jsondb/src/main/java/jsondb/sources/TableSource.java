@@ -79,6 +79,16 @@ public class TableSource extends Source
       this.primarykey = primarykey;
    }
 
+   public SQLPart from(ArrayList<BindValue> bindvalues)
+   {
+      SQLPart from;
+
+      if (query != null) from = query.from(bindvalues);
+      else               from = new SQLPart("from "+object);
+
+      return(from);
+   }
+
    public String toString()
    {
       return(this.getClass().getSimpleName()+": "+id);
@@ -100,15 +110,16 @@ public class TableSource extends Source
          this.query = Parser.parse(query);
       }
 
-      public SQLPart bind(ArrayList<BindValue> bindvalues)
+      private SQLPart from(ArrayList<BindValue> bindvalues)
       {
          SQLPart bound = query.clone();
+
+         String sql = "from ("+query.sql()+")";
 
          for(BindValue bv : bindvalues)
             bound.bind(bv.name(),bv.type(),bv.value());
 
-         bound = bound.bindByValue();
-         return(bound);
+         return(bound.sql(sql).bindByValue());
       }
    }
 

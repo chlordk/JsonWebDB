@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 public class SQLPart
 {
-   public final String sql;
-   public final ArrayList<BindValue> bindvalues;
+   private String sql;
+   private ArrayList<BindValue> bindvalues;
 
 
    public SQLPart(StringBuffer sql, ArrayList<BindValue> bindValues)
@@ -39,10 +39,43 @@ public class SQLPart
    }
 
 
+   public SQLPart(String sql)
+   {
+      this.sql = sql;
+      this.bindvalues = null;
+   }
+
+
    public SQLPart(String sql, ArrayList<BindValue> bindValues)
    {
       this.sql = sql;
       this.bindvalues = bindValues;
+   }
+
+   public String sql()
+   {
+      return(sql);
+   }
+
+   public SQLPart sql(String sql)
+   {
+      this.sql = sql;
+      return(this);
+   }
+
+
+   public ArrayList<BindValue> bindValues()
+   {
+      return(bindvalues);
+   }
+
+
+   public SQLPart append(SQLPart next)
+   {
+      this.sql += " "+next.sql;
+      if (bindvalues == null) bindvalues = next.bindvalues;
+      else if (next.bindvalues != null) bindvalues.addAll(next.bindvalues);
+      return(this);
    }
 
 
@@ -101,7 +134,7 @@ public class SQLPart
       return(new SQLPart(sql,bindvalues));
    }
 
-   
+
    public SQLPart clone()
    {
       return(new SQLPart(sql,bindvalues));
