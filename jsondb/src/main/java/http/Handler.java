@@ -81,7 +81,7 @@ public class Handler implements HttpHandler
       }
       catch (Throwable t)
       {
-         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         Config.logger().log(Level.SEVERE,t.toString(),t);
          throw new IOException(t);
       }
    }
@@ -127,7 +127,7 @@ public class Handler implements HttpHandler
       }
       catch (Throwable t)
       {
-         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         Config.logger().log(Level.SEVERE,t.toString(),t);
          throw new IOException(t);
       }
    }
@@ -181,7 +181,7 @@ public class Handler implements HttpHandler
       }
       catch (Throwable t)
       {
-         Config.logger().log(Level.SEVERE,t.getMessage(),t);
+         Config.logger().log(Level.SEVERE,t.toString(),t);
          throw new IOException(t);
       }
    }

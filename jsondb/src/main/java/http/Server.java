@@ -198,7 +198,7 @@ public class Server
       }
       catch (Exception e)
       {
-         System.err.println("Failed to get status for server: "+e.getMessage());
+         System.err.println("Failed to get status for server: "+e.toString());
       }
    }
 
