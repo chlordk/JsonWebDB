@@ -24,6 +24,7 @@ SOFTWARE.
 
 package utils;
 
+
 public class Misc
 {
    public static String url(String ...parts)
