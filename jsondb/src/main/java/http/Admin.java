@@ -54,7 +54,7 @@ public class Admin
    public static AdminResponse getBasicAuthMessage()
    {
       AdminResponse response = new AdminResponse(401,"");
-      response.setHeader("WWW-Authenticate","Basic realm='JsonWebDB'");
+      response.setHeader("WWW-Authenticate","Basic realm='JsonWebDB', charset='UTF-8'");
       return(response);
    }
 

@@ -153,7 +153,6 @@ public class Handler implements HttpHandler
          if (!auth)
          {
             AdminResponse response = Admin.getBasicAuthMessage();
-            exchange.sendResponseHeaders(response.code,response.size);
 
             for (int i = 0; i < response.headers.size(); i++)
             {
@@ -161,7 +160,9 @@ public class Handler implements HttpHandler
                exchange.getResponseHeaders().set(header.name,header.value);
             }
 
+            exchange.sendResponseHeaders(response.code,response.size);
             out.close();
+
             return;
          }
 

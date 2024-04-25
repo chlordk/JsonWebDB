@@ -9,7 +9,8 @@
 		{
 			"admin": "/admin",
 			"username": "admin",
-			"password": "Manager1"
+			"password": "Manager1",
+			"ssl-required": false
 		}
 		,
 		"cluster":
