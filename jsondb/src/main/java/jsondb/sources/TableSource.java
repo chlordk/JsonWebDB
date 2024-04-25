@@ -25,12 +25,12 @@ SOFTWARE.
 package jsondb.sources;
 
 import database.Parser;
+import database.SQLPart;
 import java.util.HashMap;
 import database.BindValue;
 import org.json.JSONArray;
 import java.util.ArrayList;
 import org.json.JSONObject;
-import database.Parser.SQL;
 
 
 public class TableSource extends Source
@@ -47,7 +47,6 @@ public class TableSource extends Source
    private static final String WHCLAUSE = "where-clause";
    private static final String CUSTOMFLTS = "custom-filters";
 
-
    public final String id;
    public final String object;
    public final VPDFilter vpd;
@@ -56,6 +55,7 @@ public class TableSource extends Source
    public final QuerySource query;
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
+
 
    public TableSource(JSONObject definition) throws Exception
    {
@@ -87,8 +87,7 @@ public class TableSource extends Source
 
    public static class QuerySource
    {
-      public final String query;
-      public final ArrayList<BindValue> bindValues;
+      public final SQLPart query;
 
       private static QuerySource parse(JSONObject def) throws Exception
       {
@@ -98,10 +97,18 @@ public class TableSource extends Source
 
       private QuerySource(String query)
       {
-         SQL parsed = Parser.parse(query);
+         this.query = Parser.parse(query);
+      }
 
-         this.query = parsed.sql;
-         this.bindValues = parsed.bindvalues;
+      public SQLPart bind(ArrayList<BindValue> bindvalues)
+      {
+         SQLPart bound = query.clone();
+
+         for(BindValue bv : bindvalues)
+            bound.bind(bv.name(),bv.type(),bv.value());
+
+         bound = bound.bindByValue();
+         return(bound);
       }
    }
 
@@ -109,8 +116,7 @@ public class TableSource extends Source
    public static class CustomFilter
    {
       public final String name;
-      public final String query;
-      public final ArrayList<BindValue> bindValues;
+      public final SQLPart filter;
 
       private static HashMap<String,CustomFilter> parse(JSONObject def) throws Exception
       {
@@ -136,20 +142,16 @@ public class TableSource extends Source
 
       private CustomFilter(String name, String whcl)
       {
-         SQL parsed = Parser.parse(whcl);
-
          this.name = name;
-         this.query = parsed.sql;
-         this.bindValues = parsed.bindvalues;
+         this.filter = Parser.parse(whcl);
       }
    }
 
 
    public static class VPDFilter
    {
-      public final String filter;
+      public SQLPart filter;
       public final String[] apply;
-      public final ArrayList<BindValue> bindValues;
 
       private static VPDFilter parse(JSONObject def) throws Exception
       {
@@ -165,11 +167,8 @@ public class TableSource extends Source
 
       private VPDFilter(String filter, String[] apply)
       {
-         SQL parsed = Parser.parse(filter);
-
+         this.filter = Parser.parse(filter);
          this.apply = apply;
-         this.filter = parsed.sql;
-         this.bindValues = parsed.bindvalues;
       }
    }
 }

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class Parser
 {
-   public static SQL parse(String sql)
+   public static SQLPart parse(String sql)
    {
       StringBuffer jdbc = new StringBuffer();
       StringBuffer stmt = new StringBuffer(sql);
@@ -71,7 +71,7 @@ public class Parser
          jdbc.append(c);
       }
 
-      return(new SQL(jdbc,bindvalues));
+      return(new SQLPart(jdbc,bindvalues));
    }
 
    private static String getBindValue(StringBuffer stmt, int pos)
@@ -105,64 +105,5 @@ public class Parser
       if (c >= 'A' && c <= 'Z') return(true);
 
       return(false);
-   }
-
-   public static class SQL
-   {
-      public final String sql;
-      public final ArrayList<BindValue> bindvalues;
-
-      public SQL(StringBuffer sql, ArrayList<BindValue> bindValues)
-      {
-         this(new String(sql),bindValues);
-      }
-
-      public SQL(String sql, ArrayList<BindValue> bindValues)
-      {
-         this.sql = sql;
-         this.bindvalues = bindValues;
-      }
-
-      public SQL bind(String name, Object value)
-      {
-         for(BindValue bv : this.bindvalues)
-         {
-            if (bv.name().equalsIgnoreCase(name))
-               bv.value(value);
-         }
-
-         return(this);
-      }
-
-      public SQL bindByValue()
-      {
-         int delta = 0;
-         String sql = this.sql;
-
-         ArrayList<BindValue> bindvalues =
-            new ArrayList<BindValue>();
-
-         for(BindValue bv : this.bindvalues)
-         {
-            if (!bv.ampersand())
-            {
-               bindvalues.add(bv);
-               continue;
-            }
-
-            int pe = bv.end() + delta;
-            int pb = bv.start() + delta;
-
-            String value = bv.value()+"";
-
-            String se = sql.substring(pe);
-            String sb = sql.substring(0,pb);
-
-            sql = sb + value + se;
-            delta += (value.length() - bv.len() - 1);
-         }
-
-         return(new SQL(sql,bindvalues));
-      }
    }
 }

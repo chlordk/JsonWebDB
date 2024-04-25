@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import jsondb.messages.Messages;
 
 
-public class Session implements DatabaseRequest
+public class Session
 {
    private final JSONObject definition;
 
@@ -123,7 +123,7 @@ public class Session implements DatabaseRequest
       if (session == null)
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION"));
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
          return(new Response(response));
       }
 
@@ -153,7 +153,7 @@ public class Session implements DatabaseRequest
       if (session == null || !session.touch())
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION"));
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
       }
 
       return(new Response(response));
@@ -173,7 +173,7 @@ public class Session implements DatabaseRequest
       if (session == null)
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION"));
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
          return(new Response(response));
       }
 
@@ -202,7 +202,7 @@ public class Session implements DatabaseRequest
       if (session == null)
       {
          response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION"));
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
          return(new Response(response));
       }
 

@@ -39,9 +39,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class JsonDB
 {
-   public static String version = "4.0.1";
+   private static String instance = null;
 
+   public static final String version = "4.0.1";
    public static final long started = (new Date()).getTime();
+
    private static final AtomicInteger dbreqs = new AtomicInteger(0);
    private static final AtomicInteger fireqs = new AtomicInteger(0);
 
@@ -76,6 +78,7 @@ public class JsonDB
       Config.logger().info("......................................................");
 
       Config.initialize();
+      instance = Config.inst();
    }
 
 
@@ -157,6 +160,7 @@ public class JsonDB
       dbreqs.incrementAndGet();
       Response response = ObjectHandler.handle(request);
       response.put("version",version);
+      response.put("instance",instance);
       log(request,response);
       return(response);
    }

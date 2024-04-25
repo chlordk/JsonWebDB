@@ -33,8 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectHandler
 {
-   private static final ConcurrentHashMap<String,Class<DatabaseRequest>> classes =
-      new ConcurrentHashMap<String,Class<DatabaseRequest>>();
+   private static final ConcurrentHashMap<String,Class<?>> classes =
+      new ConcurrentHashMap<String,Class<?>>();
 
    private static final String location = ObjectHandler.class.getPackage().getName();
 
@@ -50,7 +50,7 @@ public class ObjectHandler
          {
             String invk = payload.getString("invoke");
             invk = invk.substring(0,invk.indexOf("("));
-            DatabaseRequest dbrq = getInstance(names[0],payload);
+            Object dbrq = getInstance(names[0],payload);
             Method method = dbrq.getClass().getMethod(invk);
             return((Response) method.invoke(dbrq));
          }
@@ -67,15 +67,14 @@ public class ObjectHandler
    }
 
 
-   @SuppressWarnings("unchecked")
-   private static DatabaseRequest getInstance(String name, JSONObject definition) throws Exception
+   private static Object getInstance(String name, JSONObject definition) throws Exception
    {
       String cname = location+"."+name;
-      Class<DatabaseRequest> clazz = classes.get(cname);
+      Class<?> clazz = classes.get(cname);
 
       if (clazz == null)
       {
-         clazz = (Class<DatabaseRequest>) Class.forName(cname);
+         clazz = (Class<?>) Class.forName(cname);
          classes.put(cname,clazz);
       }
 

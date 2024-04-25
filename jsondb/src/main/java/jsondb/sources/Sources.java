@@ -120,12 +120,13 @@ public class Sources extends Thread
       instance.start();
    }
 
-   public static Source get(String id)
+   @SuppressWarnings("unchecked")
+   public static <T extends Source> T get(String id)
    {
       id = id.toLowerCase();
       Source source = sources.get(id);
       if (source == null) source = preload.get(id);
-      return(source);
+      return((T) source);
    }
 
    private Sources()
