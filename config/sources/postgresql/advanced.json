@@ -8,6 +8,21 @@
          "sorting": "loc_id",
          "primary-key": "loc_id",
 
+         "columns":
+         [
+            {
+               "name": "loc_id",
+               "datatype": "number",
+               "precision": [6,0]
+            }
+            ,
+            {
+            "name": "street",
+            "datatype": "string",
+            "precision": [20,0]
+            }
+         ]
+        ,
          "query":
 			[
             "select l.*, c.country_name",
