@@ -132,11 +132,7 @@
          "properties":
          {
             "sql": {"$ref": "#/types/Text"},
-            "datatypes":
-            {
-               "object": "array",
-               "items": {"$ref": "#/types/DataType"}
-            }
+            "datatypes": {"object": "array", "items": {"$ref": "#/types/DataType"}}
          }
       }
       ,
@@ -151,12 +147,6 @@
             "name": {"type": "string"},
             "type": {"type": ["string"]}
          }
-      }
-      ,
-      "Access":
-      {
-         "type": "string",
-         "enum": ["denied","allowed","if-where-clause","by-primary-key"]
       }
       ,
       "ColumnDefinition":
@@ -188,7 +178,8 @@
          {
             "name": {"type": "string"},
             "description": {"$ref": "#/types/Text"},
-            "where-clause": {"$ref": "#/types/Text"}
+            "where-clause": {"$ref": "#/types/Text"},
+            "datatypes": {"object": "array", "items": {"$ref": "#/types/DataType"}}
          }
       }
       ,
@@ -202,6 +193,7 @@
          {
             "description": {"$ref": "#/types/Text"},
             "where-clause": {"$ref": "#/types/Text"},
+            "datatypes": {"object": "array", "items": {"$ref": "#/types/DataType"}},
             "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
          }
       }
@@ -210,6 +202,12 @@
       {
          "type": "string",
          "enum": ["insert","update","delete","select"]
+      }
+      ,
+      "Access":
+      {
+         "type": "string",
+         "enum": ["denied","allowed","if-where-clause","by-primary-key"]
       }
       ,
       "Text":
