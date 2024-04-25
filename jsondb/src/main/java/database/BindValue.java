@@ -107,4 +107,10 @@ public class BindValue
       this.ampersand = ampersand;
       return(this);
    }
+
+   public String toString()
+   {
+      String t = ampersand ? "?" : ":";
+      return(t+name+"["+type+"] = "+value);
+   }
 }

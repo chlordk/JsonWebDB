@@ -77,23 +77,41 @@ public class Table
          return(new Response(response));
       }
 
-      JSONObject select = definition.getJSONObject(SELECT);
-      String[] columns = Utils.getJSONList(select,COLUMNS,String.class);
+      JSONObject args = definition.getJSONObject(SELECT);
+      String[] columns = Utils.getJSONList(args,COLUMNS,String.class);
 
-      String stmt = "select ";
+      String stmt = "select "+getColumnList(columns);
+
+      SQLPart select = new SQLPart(stmt);
+      select.append(source.from(bindvalues));
+
+      response.put("sql",select.sql());
+
+      return(new Response(response));
+   }
+
+
+   private String getColumnList(String[] columns) throws Exception
+   {
+
+      if (columns == null)
+         throw new Exception(Messages.get("MISSING_COLUNM_SPEC"));
 
       for (int i = 0; i < columns.length; i++)
       {
-         if (i > 0) stmt += ",";
-         stmt += columns[i];
+         columns[i] = columns[i].trim();
+         if (columns[i].indexOf('(') >= 0)
+            throw new Exception(Messages.get("BAD_COLUNM_SPEC"));
       }
 
+      String list = "";
 
-      SQLPart sql = new SQLPart(stmt);
-      sql.append(source.from(bindvalues));
+      for (int i = 0; i < columns.length; i++)
+      {
+         if (i > 0) list += ",";
+         list += columns[i];
+      }
 
-      System.out.println(sql.sql()+" "+sql.bindValues().get(0));
-
-      return(new Response(response));
+      return(list);
    }
 }

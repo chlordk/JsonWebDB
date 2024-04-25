@@ -10,3 +10,4 @@ SESSION_NOT_DEDICATED      = Cannot perform operation {%1} since {%2} is not ded
 INSTANCE_NOT_REGISTERED    = Instance {%1} must be configured in the cluster section
 MANDATORY_ATTR_MISSING     = Mandatory attribute {%1} is missing in {%2}
 UNKNOWN_SOURCE             = Unknown source '{%1}'
+MISSING_COLUNM_SPEC        = Mising column specification
