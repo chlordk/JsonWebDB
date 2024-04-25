@@ -12,7 +12,14 @@
          {
             "type": "object",
             "additionalProperties": false,
-            "required": ["session","source","invoke"],
+
+            "anyOf":
+            [
+               {"required": ["session","source","invoke","insert()"]},
+               {"required": ["session","source","invoke","update()"]},
+               {"required": ["session","source","invoke","delete()"]},
+               {"required": ["session","source","invoke","select()"]}
+            ],
 
             "description": "The source object (table,view or query)",
 
