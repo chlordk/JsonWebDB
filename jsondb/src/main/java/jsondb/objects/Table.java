@@ -27,6 +27,7 @@ package jsondb.objects;
 import jsondb.Session;
 import jsondb.Response;
 import database.SQLPart;
+import utils.JSONOObject;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -58,7 +59,7 @@ public class Table
    public Response select() throws Exception
    {
       Session session = Session.get(sessid);
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
       TableSource source = Sources.get(this.source);
       ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
 

@@ -27,6 +27,7 @@ package jsondb.objects;
 import jsondb.Config;
 import jsondb.Admins;
 import jsondb.Response;
+import utils.JSONOObject;
 import org.json.JSONObject;
 import jsondb.messages.Messages;
 
@@ -55,7 +56,7 @@ public class Session
       String signature = null;
       boolean dedicated = false;
 
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
 
       String username = Config.pool().defaultuser();
       JSONObject data = definition.getJSONObject(PARAMETERS);
@@ -113,7 +114,7 @@ public class Session
 
    public Response disconnect() throws Exception
    {
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
@@ -141,7 +142,7 @@ public class Session
 
    public Response keepalive() throws Exception
    {
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
 
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
@@ -162,7 +163,7 @@ public class Session
 
    public Response commit() throws Exception
    {
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
@@ -191,7 +192,7 @@ public class Session
 
    public Response rollback() throws Exception
    {
-      JSONObject response = new JSONObject();
+      JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
