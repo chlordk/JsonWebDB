@@ -137,7 +137,7 @@
          "properties":
          {
             "name": {"type": "string"},
-            "datatype": {"type": "string"},
+            "type": {"type": "string"},
 
             "precision":
             {
@@ -149,22 +149,30 @@
       ,
       "CustomFilter":
       {
+         "type": "object",
          "additionalProperties": false,
          "required": ["name","where-clause"],
 
-         "name": {"type": "string"},
-         "desc": {"$ref": "#types/Text"},
-         "where-clause": {"$ref": "#types/Text"}
+         "properties":
+         {
+            "name": {"type": "string"},
+            "description": {"$ref": "#types/Text"},
+            "where-clause": {"$ref": "#types/Text"}
+         }
       }
       ,
       "VPD":
       {
+         "type": "object",
          "additionalProperties": false,
          "required": ["where-clause","apply"],
 
-         "desc": {"$ref": "#types/Text"},
-         "where-clause": {"$ref": "#types/Text"},
-         "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
+         "properties":
+         {
+            "description": {"$ref": "#types/Text"},
+            "where-clause": {"$ref": "#types/Text"},
+            "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
+         }
       }
       ,
       "Operation":

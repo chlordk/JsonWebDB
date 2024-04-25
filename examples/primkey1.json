@@ -1,0 +1,34 @@
+{
+  "Table":
+  {
+    "invoke": "select()",
+    "source": "PostgresPrimaryKey",
+    "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
+      
+    "bindvalues":
+    [
+      {
+        "name": "Secret",
+        "type": "varchar",
+        "value": "37b1e99aff31"
+      }
+    ],
+    
+    "select()":
+    {
+      "columns": 
+      [
+        "*"
+      ]
+      ,
+      "bindvalues":
+      [
+        {
+          "name": "table",
+          "type": "string",
+          "value": "countries"
+        }
+      ]
+    }
+  }
+}
