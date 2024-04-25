@@ -37,6 +37,10 @@
          "vpd":
          {
             "where-clause": "country_id = :COUNTRY",
+            "datatypes":
+            [
+              {"name": "COUNTRY", "type": "string"}
+            ],
             "apply": ["update","delete"]
          },
 
