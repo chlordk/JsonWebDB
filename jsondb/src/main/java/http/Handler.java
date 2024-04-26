@@ -28,11 +28,11 @@ import jsondb.JsonDB;
 import jsondb.Config;
 import java.util.List;
 import jsondb.Response;
+import files.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
-import jsondb.files.FileResponse;
 import http.AdminResponse.Header;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
@@ -93,9 +93,9 @@ public class Handler implements HttpHandler
       OutputStream out = exchange.getResponseBody();
 
       String path = exchange.getRequestURI().getPath();
-      if (path.length() <= 2) path = Options.index();
+      if (path.length() <= 2) path = HTTPConfig.index();
 
-      if (path.startsWith(Options.admin()))
+      if (path.startsWith(HTTPConfig.admin()))
       {
          admin(path,exchange);
          return;
@@ -139,7 +139,7 @@ public class Handler implements HttpHandler
       {
          OutputStream out = exchange.getResponseBody();
 
-         if (Options.adminSSLRequired() && !(exchange instanceof HttpsExchange))
+         if (HTTPConfig.adminSSLRequired() && !(exchange instanceof HttpsExchange))
          {
             AdminResponse response = Admin.noSSLMessage();
             exchange.sendResponseHeaders(response.code,response.size);

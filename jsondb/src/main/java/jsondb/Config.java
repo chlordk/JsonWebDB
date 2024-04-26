@@ -24,13 +24,13 @@ SOFTWARE.
 
 package jsondb;
 
-import http.Options;
 import http.Cluster;
 import java.io.File;
+import http.HTTPConfig;
+import files.FileConfig;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import jsondb.sources.Sources;
-import jsondb.files.FileConfig;
 import jsondb.logger.Applogger;
 import java.io.FileInputStream;
 import jsondb.messages.Messages;
@@ -129,9 +129,9 @@ public class Config
    {
       Admins.initialize();
       Cluster.initialize();
-      Options.initialize();
       Sources.initialize();
       FileConfig.initialize();
+      HTTPConfig.initialize();
       StateHandler.initialize();
 
       if (Cluster.getServer(inst) == null)

@@ -25,10 +25,10 @@ SOFTWARE.
 package jsondb;
 
 import java.util.Date;
+import files.FileHandler;
+import files.FileResponse;
 import org.json.JSONObject;
 import java.util.logging.Level;
-import jsondb.files.FileHandler;
-import jsondb.files.FileResponse;
 import jsondb.objects.ObjectHandler;
 import database.definitions.AdvancedPool;
 import java.util.concurrent.atomic.AtomicInteger;

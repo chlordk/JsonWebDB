@@ -22,13 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.files;
+package files;
 
 import java.io.File;
 import jsondb.Config;
 import utils.GMTDate;
 import java.io.FileInputStream;
-import jsondb.files.FileCache.CacheEntry;
+
+import files.FileCache.CacheEntry;
 
 
 public class FileHandler

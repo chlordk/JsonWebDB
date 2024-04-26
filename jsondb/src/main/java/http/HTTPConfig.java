@@ -30,7 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class Options
+public class HTTPConfig
 {
    private static final String PATH = "path";
    private static final String PAGE = "page";
@@ -70,19 +70,19 @@ public class Options
       JSONObject http = Config.get(APPL);
       JSONObject auth = Config.get(http,AUTH);
 
-      Options.usr = Config.get(auth,USER);
-      Options.pwd = Config.get(auth,PASW);
+      HTTPConfig.usr = Config.get(auth,USER);
+      HTTPConfig.pwd = Config.get(auth,PASW);
 
-      Options.admin = Config.get(auth,ADMN);
-      Options.index = Config.get(http,INDX);
+      HTTPConfig.admin = Config.get(auth,ADMN);
+      HTTPConfig.index = Config.get(http,INDX);
 
-      Options.sslreq = Config.get(auth,SSLR);
+      HTTPConfig.sslreq = Config.get(auth,SSLR);
 
-      if (!Options.index.startsWith("/"))
-         Options.index = "/" + Options.index;
+      if (!HTTPConfig.index.startsWith("/"))
+         HTTPConfig.index = "/" + HTTPConfig.index;
 
-      if (!Options.admin.startsWith("/"))
-         Options.admin = "/" + Options.admin;
+      if (!HTTPConfig.admin.startsWith("/"))
+         HTTPConfig.admin = "/" + HTTPConfig.admin;
 
       JSONArray arr = Config.get(http,VIRT);
 

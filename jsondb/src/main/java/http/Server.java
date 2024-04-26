@@ -166,7 +166,7 @@ public class Server
    private static void stop()
    {
       String server = Cluster.getServer();
-      String url = Misc.url(server,Options.admin(),"stop");
+      String url = Misc.url(server,HTTPConfig.admin(),"stop");
 
       try
       {
@@ -186,7 +186,7 @@ public class Server
    private static void status()
    {
       String server = Cluster.getServer();
-      String url = Misc.url(server,Options.admin(),"status");
+      String url = Misc.url(server,HTTPConfig.admin(),"status");
 
       try
       {

@@ -72,7 +72,7 @@ public class Client
    {
       String[] header = new String[2];
 
-      String auth = Options.username() + ":" + Options.password();
+      String auth = HTTPConfig.username() + ":" + HTTPConfig.password();
       String value = Base64.getEncoder().encodeToString(auth.getBytes());
 
       header[0] = "Authorization";

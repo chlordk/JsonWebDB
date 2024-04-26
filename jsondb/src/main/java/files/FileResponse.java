@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.files;
+package files;
 
 import utils.GMTDate;
-import jsondb.files.FileCache.CacheEntry;
+import files.FileCache.CacheEntry;
 
 
 public class FileResponse

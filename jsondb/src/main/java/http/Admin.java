@@ -72,7 +72,7 @@ public class Admin
       String usr = auth.substring(0,pos);
       String pwd = auth.substring(pos+1);
 
-      if (usr.equals(Options.username()) && pwd.equals(Options.password()))
+      if (usr.equals(HTTPConfig.username()) && pwd.equals(HTTPConfig.password()))
          return(true);
 
       return(false);
@@ -83,7 +83,7 @@ public class Admin
    {
       AdminResponse response = null;
 
-      if (path.equals(Options.admin()+"/stop"))
+      if (path.equals(HTTPConfig.admin()+"/stop"))
       {
          response = new AdminResponse(200,"Instance "+Config.inst()+" stopping...");
          (new DelayedStop()).start();
