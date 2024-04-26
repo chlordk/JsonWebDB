@@ -86,12 +86,6 @@ public class Cursor
    {
       ResultSetMetaData meta = rset.getMetaData();
 
-      if (!rset.next())
-      {
-         close();
-         return;
-      }
-
       int cols = meta.getColumnCount();
 
       if (columns == null)
@@ -106,7 +100,12 @@ public class Cursor
 
             columns.add(new Column(name,type,sqltype));
          }
+      }
 
+      if (!rset.next())
+      {
+         close();
+         return;
       }
 
       for (int i = 0; i < cols; i++)

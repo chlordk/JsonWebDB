@@ -105,7 +105,7 @@ public abstract class JdbcInterface
       for (int i = 0; i < bindvalues.size(); i++)
       {
          BindValue bv = bindvalues.get(i);
-         stmt.setObject(i+1,bv.value());
+         stmt.setString(i+1,bv.value()+"");
       }
 
       cursor.resultset(stmt.executeQuery());
