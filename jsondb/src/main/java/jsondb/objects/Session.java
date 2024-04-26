@@ -27,9 +27,9 @@ package jsondb.objects;
 import jsondb.Config;
 import jsondb.Admins;
 import jsondb.Response;
+import messages.Messages;
 import utils.JSONOObject;
 import org.json.JSONObject;
-import jsondb.messages.Messages;
 
 
 public class Session

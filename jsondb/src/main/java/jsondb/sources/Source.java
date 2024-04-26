@@ -24,10 +24,9 @@ SOFTWARE.
 
 package jsondb.sources;
 
+import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import jsondb.messages.Messages;
 
 
 public class Source

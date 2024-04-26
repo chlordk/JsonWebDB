@@ -24,8 +24,8 @@ SOFTWARE.
 
 package jsondb;
 
+import messages.Messages;
 import org.json.JSONObject;
-import jsondb.messages.Messages;
 
 
 public class Response

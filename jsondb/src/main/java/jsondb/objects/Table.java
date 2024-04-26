@@ -29,11 +29,11 @@ import jsondb.Response;
 import database.Cursor;
 import database.SQLPart;
 import utils.JSONOObject;
+import messages.Messages;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import jsondb.sources.Sources;
-import jsondb.messages.Messages;
 import jsondb.sources.TableSource;
 
 

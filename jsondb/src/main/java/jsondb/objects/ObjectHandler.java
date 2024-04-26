@@ -25,9 +25,9 @@ SOFTWARE.
 package jsondb.objects;
 
 import jsondb.Response;
+import messages.Messages;
 import org.json.JSONObject;
 import java.lang.reflect.Method;
-import jsondb.messages.Messages;
 import java.util.concurrent.ConcurrentHashMap;
 
 
