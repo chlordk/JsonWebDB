@@ -41,6 +41,7 @@ public class SQLTypes
    {
       getAllJdbcTypeNames();
 
+      System.out.println("");
       System.out.println("-------------------------------------");
       System.out.println(String.format("  %-25s [%5s]","TYPE","SQLID"));
       System.out.println("-------------------------------------");
