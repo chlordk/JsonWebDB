@@ -35,6 +35,8 @@ import messages.Messages;
 import database.BindValue;
 import sources.TableSource;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -89,6 +91,15 @@ public class Table
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
       cursor.pagesize(Source.get(args,PAGESIZE));
+
+      JSONArray rows = new JSONArray();
+      ArrayList<Object[]> table = cursor.fetch();
+
+      response.put("success",true);
+      response.put("cursor",cursor.name());
+
+      response.put("rows",rows);
+      for(Object[] row : table) rows.put(row);
 
       return(new Response(response));
    }

@@ -268,7 +268,6 @@ public class Session
       JdbcInterface read = ensure(false);
       Cursor cursor = new Cursor(sql,bindvalues);
       read.executeQuery(cursor);
-      cursor.fetch();
       return(cursor);
    }
 

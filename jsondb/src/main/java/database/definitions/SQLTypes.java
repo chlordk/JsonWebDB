@@ -86,12 +86,12 @@ public class SQLTypes
       return(name);
    }
 
-   public static boolean isDate(int id)
+   public static boolean isDateType(int id)
    {
       return(dates.contains(id));
    }
 
-   public static boolean isDate(String name)
+   public static boolean isDateType(String name)
    {
       Integer id = getType(name);
       return(dates.contains(id));

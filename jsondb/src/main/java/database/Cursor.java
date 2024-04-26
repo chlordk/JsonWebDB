@@ -24,10 +24,14 @@ SOFTWARE.
 
 package database;
 
+import utils.Guid;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.sql.ResultSetMetaData;
+import database.definitions.SQLTypes;
 
 
 public class Cursor
@@ -40,6 +44,7 @@ public class Cursor
    private ArrayList<Column> columns = null;
 
    private final String sql;
+   private final String name;
    private final ArrayList<BindValue> bindvalues;
 
 
@@ -47,6 +52,7 @@ public class Cursor
    {
       this.pos = 0;
       this.sql = sql;
+      this.name = Guid.generate();
       this.bindvalues = bindvalues;
    }
 
@@ -58,6 +64,11 @@ public class Cursor
    public String sql()
    {
       return(sql);
+   }
+
+   public String name()
+   {
+      return(name);
    }
 
    public boolean next()
@@ -90,10 +101,9 @@ public class Cursor
       return(this);
    }
 
-   public synchronized void fetch() throws Exception
+   public synchronized ArrayList<Object[]> fetch() throws Exception
    {
       ResultSetMetaData meta = rset.getMetaData();
-
       int cols = meta.getColumnCount();
 
       if (columns == null)
@@ -110,15 +120,37 @@ public class Cursor
          }
       }
 
-      for (int i = 0; i < pagesize; i++)
+      ArrayList<Object[]> rows = new ArrayList<Object[]>();
+
+      for (int i = 0; i < pagesize || pagesize <= 0; i++)
       {
          if (!rset.next())
           {close();break;}
 
+         Object[] row = new Object[cols];
+
          for (int c = 0; c < cols; c++)
          {
+            Object value = rset.getObject(c+1);
+
+            if (columns.get(c).isDateType())
+            {
+               if (value instanceof Date)
+                  value = ((Date) value).getTime();
+
+               else
+
+               if (value instanceof Timestamp)
+                  value = ((Timestamp) value).getTime();
+            }
+
+            row[c] = value;
          }
+
+         rows.add(row);
       }
+
+      return(rows);
    }
 
    public void close() throws Exception
@@ -135,12 +167,16 @@ public class Cursor
       final String type;
       final String name;
 
-      Column(String name, String type,int sqltype)
+      Column(String name, String type, int sqltype)
       {
          this.type = type;
          this.name = name;
          this.sqltype = sqltype;
-         System.out.println(this.toString());
+      }
+
+      boolean isDateType()
+      {
+         return(SQLTypes.isDateType(sqltype));
       }
 
       public String toString()
