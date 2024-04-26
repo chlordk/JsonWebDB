@@ -80,7 +80,7 @@ public class SQLPart
 
    public SQLPart bind(BindValue bv)
    {
-      return(bind(bv.name(),bv.type(),bv.value()));
+      return(bind(bv.name(),bv.sqlTypeID(),bv.value()));
    }
 
 
@@ -90,6 +90,18 @@ public class SQLPart
       {
          if (bv.name().equalsIgnoreCase(name))
             bv.value(value);
+      }
+
+      return(this);
+   }
+
+
+   public SQLPart bind(String name, int type, Object value)
+   {
+      for(BindValue bv : this.bindvalues)
+      {
+         if (bv.name().equalsIgnoreCase(name))
+            bv.type(type).value(value);
       }
 
       return(this);

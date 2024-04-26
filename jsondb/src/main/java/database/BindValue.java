@@ -24,14 +24,18 @@ SOFTWARE.
 
 package database;
 
+import database.definitions.SQLTypes;
+
 
 public class BindValue
 {
    private int pos = 0;
    private String name = null;
-   private String type = null;
    private Object value = null;
    private boolean ampersand = false;
+
+   private Integer sqlTypeID = null;
+   private String sqlTypeName = null;
 
 
    public BindValue()
@@ -63,9 +67,14 @@ public class BindValue
       return(name);
    }
 
-   public String type()
+   public String sqlTypeName()
    {
-      return(type);
+      return(sqlTypeName);
+   }
+
+   public int sqlTypeID()
+   {
+      return(sqlTypeID);
    }
 
    public Object value()
@@ -92,7 +101,15 @@ public class BindValue
 
    public BindValue type(String type)
    {
-      this.type = type.toLowerCase();
+      this.sqlTypeName = type.toLowerCase();
+      this.sqlTypeID = SQLTypes.getType(type);
+      return(this);
+   }
+
+   public BindValue type(int type)
+   {
+      this.sqlTypeID = type;
+      this.sqlTypeName = SQLTypes.getType(type);
       return(this);
    }
 
@@ -111,6 +128,6 @@ public class BindValue
    public String toString()
    {
       String t = ampersand ? "?" : ":";
-      return(t+name+"["+type+"] = "+value);
+      return(t+name+"["+sqlTypeID+"] = "+value);
    }
 }

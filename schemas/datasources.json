@@ -58,6 +58,12 @@
                "description": "DML will ignore derived columns"
             }
             ,
+            "pagesize":
+            {
+               "type": "number",
+               "description": "The number of rows to fetch per call aka. array-fetch"
+            }
+            ,
             "sorting":
             {
                "type": "string",
@@ -145,7 +151,7 @@
          "properties":
          {
             "name": {"type": "string"},
-            "type": {"type": ["string"]}
+            "type": {"$ref": "#/types/Type"}
          }
       }
       ,
@@ -158,7 +164,7 @@
          "properties":
          {
             "name": {"type": "string"},
-            "type": {"type": "string"},
+            "type": {"$ref": "#/types/Type"},
 
             "precision":
             {
@@ -208,6 +214,11 @@
       {
          "type": "string",
          "enum": ["denied","allowed","if-where-clause","by-primary-key"]
+      }
+      ,
+      "Type":
+      {
+         "type": ["integer", "string"]
       }
       ,
       "Text":

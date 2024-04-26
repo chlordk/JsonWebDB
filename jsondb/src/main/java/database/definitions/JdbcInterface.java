@@ -107,8 +107,7 @@ public abstract class JdbcInterface
       for (int i = 0; i < bindvalues.size(); i++)
       {
          BindValue bv = bindvalues.get(i);
-         int type = SQLTypes.getType(bv.type());
-         stmt.setObject(i+1,bv.value(),type);
+         stmt.setObject(i+1,bv.value(),bv.sqlTypeID());
       }
 
       cursor.resultset(stmt.executeQuery());

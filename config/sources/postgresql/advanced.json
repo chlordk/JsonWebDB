@@ -8,21 +8,22 @@
          "sorting": "loc_id",
          "primary-key": "loc_id",
 
+         "pagesize": 36,
+
          "columns":
          [
             {
                "name": "loc_id",
-               "type": "number",
+               "type": "numeric",
                "precision": [6,0]
             }
             ,
             {
                "name": "street",
-               "type": "string",
+               "type": "vachar",
                "precision": [20,0]
             }
-         ]
-        ,
+         ],
 
          "query":
          {
@@ -58,8 +59,8 @@
                   ")"
                ]
             }
-         ]
-         ,
+         ],
+
          "insert": "allowed",
          "update": "by-primary-key",
          "delete": "by-primary-key",

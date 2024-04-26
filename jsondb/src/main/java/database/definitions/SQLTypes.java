@@ -35,6 +35,36 @@ public class SQLTypes
    private static HashSet<Integer> dates = null;
    private static HashMap<Integer,String> sqlids = null;
    private static HashMap<String,Integer> sqlnames = null;
+   private static HashMap<String,String> synonyms = null;
+
+   public static void main(String[] args)
+   {
+      getAllJdbcTypeNames();
+
+      System.out.println("-------------------------------------");
+      System.out.println(String.format("  %-25s [%5s]","TYPE","SQLID"));
+      System.out.println("-------------------------------------");
+
+      for (Integer id : sqlids.keySet())
+      {
+         String name = sqlids.get(id);
+         System.out.println(String.format("  %-25s [%5d]",name,id));
+      }
+
+      System.out.println("");
+      System.out.println("");
+      System.out.println("  +Synonyms");
+      System.out.println("");
+
+      for(String syn : synonyms.keySet())
+      {
+         String alt = synonyms.get(syn);
+         System.out.println(String.format("  %-10s %-10s",syn.toUpperCase(),alt.toUpperCase()));
+      }
+
+      System.out.println("");
+      System.out.println("-------------------------------------");
+   }
 
    public static void initialize()
    {
@@ -74,6 +104,12 @@ public class SQLTypes
       dates.add(Types.DATE);
       dates.add(Types.TIMESTAMP);
       dates.add(Types.TIMESTAMP_WITH_TIMEZONE);
+
+      synonyms = new HashMap<String,String>();
+
+      synonyms.put("string","varchar");
+      synonyms.put("number","numeric");
+      synonyms.put("varchar2","varchar");
 
       try
       {
