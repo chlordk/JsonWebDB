@@ -26,14 +26,14 @@ package jsondb;
 
 import java.util.Date;
 import database.Cursor;
+import state.StateHandler;
 import database.BindValue;
 import java.util.ArrayList;
-import jsondb.state.StateHandler;
+import state.StateHandler.SessionInfo;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
-import jsondb.state.StateHandler.SessionInfo;
+import state.StateHandler.TransactionInfo;
 import java.util.concurrent.ConcurrentHashMap;
-import jsondb.state.StateHandler.TransactionInfo;
 
 
 public class Session

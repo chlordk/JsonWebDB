@@ -22,8 +22,8 @@
 package jsondb;
 
 import java.util.Date;
+import state.StateHandler;
 import java.util.logging.Level;
-import jsondb.state.StateHandler;
 
 
 public class Monitor extends Thread

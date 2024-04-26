@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.state;
+package state;
 
+import utils.Guid;
 import java.io.File;
 import jsondb.Config;
 import java.util.Date;
-import java.util.UUID;
 import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -145,8 +145,8 @@ public class StateHandler
 
       while (!done)
       {
+         session = Guid.generate();
          FileOutputStream out = null;
-         session = UUID.randomUUID().toString();
 
          File file = sesFile(session);
 

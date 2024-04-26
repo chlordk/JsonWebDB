@@ -25,17 +25,17 @@ SOFTWARE.
 package jsondb.requests;
 
 import jsondb.Session;
-import jsondb.Response;
+import sources.Source;
+import sources.Sources;
 import database.Cursor;
+import jsondb.Response;
 import database.SQLPart;
 import utils.JSONOObject;
 import messages.Messages;
 import database.BindValue;
+import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
-import jsondb.sources.Source;
-import jsondb.sources.Sources;
-import jsondb.sources.TableSource;
 
 
 public class Table

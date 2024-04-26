@@ -22,12 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb;
+package state;
 
 import utils.Misc;
 import http.Server;
 import org.json.JSONObject;
-import jsondb.state.StateHandler;
 
 
 public class State

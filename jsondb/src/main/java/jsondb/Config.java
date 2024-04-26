@@ -27,17 +27,17 @@ package jsondb;
 import http.Cluster;
 import java.io.File;
 import http.HTTPConfig;
+import sources.Sources;
 import files.FileConfig;
 import logger.Applogger;
 import messages.Messages;
+import state.StateHandler;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import jsondb.sources.Sources;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
-import jsondb.state.StateHandler;
-import database.definitions.AdvancedPool;
 import database.definitions.SQLTypes;
+import database.definitions.AdvancedPool;
 
 
 public class Config
