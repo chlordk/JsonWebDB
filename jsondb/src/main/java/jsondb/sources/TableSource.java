@@ -131,7 +131,6 @@ public class TableSource extends Source
       private SQLPart from(ArrayList<BindValue> bindvalues)
       {
          SQLPart bound = query.clone();
-         String sql = "from ("+bound.snippet()+") "+object;
 
          for(BindValue bv : bindvalues)
          {
@@ -140,7 +139,10 @@ public class TableSource extends Source
             bound.bind(bv);
          }
 
-         return(bound.snippet(sql).bindByValue());
+         bound.bindByValue();
+         String sql = "from ("+bound.snippet()+") "+object;
+
+         return(bound.snippet(sql));
       }
    }
 

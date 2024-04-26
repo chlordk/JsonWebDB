@@ -33,6 +33,7 @@ import messages.Messages;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import jsondb.sources.Source;
 import jsondb.sources.Sources;
 import jsondb.sources.TableSource;
 
@@ -47,6 +48,7 @@ public class Table
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String SESSION = "session";
+   private static final String PAGESIZE = "pagesize";
 
 
    public Table(JSONObject definition) throws Exception
@@ -80,13 +82,13 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
       String[] columns = Utils.getJSONList(args,COLUMNS,String.class);
-
       String stmt = "select "+getColumnList(columns);
 
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
+      cursor.pagesize(Source.get(args,PAGESIZE));
 
       return(new Response(response));
    }

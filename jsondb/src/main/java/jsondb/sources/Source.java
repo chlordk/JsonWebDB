@@ -115,6 +115,13 @@ public class Source
       return(value);
    }
 
+   @SuppressWarnings("unchecked")
+   public static <T> T get(JSONObject def, String attr)
+   {
+      if (!def.has(attr)) return(null);
+      return((T) def.get(attr));
+   }
+
    private static void throwNotExist(JSONObject json, String attr) throws Exception
    {
       throw new Exception(Messages.get("MANDATORY_ATTR_MISSING",attr,json.toString(2)));

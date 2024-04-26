@@ -98,7 +98,8 @@ public abstract class JdbcInterface
 
    public void executeQuery(Cursor cursor)  throws Exception
    {
-      if (conn == null) throw new Exception(Messages.get("NOT_CONNECTED"));
+      if (conn == null)
+         throw new Exception(Messages.get("NOT_CONNECTED"));
 
       ArrayList<BindValue> bindvalues = cursor.bindvalues();
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());

@@ -33,6 +33,7 @@ import java.sql.ResultSetMetaData;
 public class Cursor
 {
    private long pos = 0;
+   private int pagesize = 0;
    private boolean eof = false;
    private ResultSet rset = null;
    private Statement stmt = null;
@@ -62,6 +63,13 @@ public class Cursor
    public boolean next()
    {
       return(!eof);
+   }
+
+   public Cursor pagesize(Integer pagesize)
+   {
+      if (pagesize == null) pagesize = 0;
+      this.pagesize = pagesize;
+      return(this);
    }
 
    public ArrayList<BindValue> bindvalues()
@@ -102,14 +110,14 @@ public class Cursor
          }
       }
 
-      if (!rset.next())
+      for (int i = 0; i < pagesize; i++)
       {
-         close();
-         return;
-      }
+         if (!rset.next())
+          {close();break;}
 
-      for (int i = 0; i < cols; i++)
-      {
+         for (int c = 0; c < cols; c++)
+         {
+         }
       }
    }
 
