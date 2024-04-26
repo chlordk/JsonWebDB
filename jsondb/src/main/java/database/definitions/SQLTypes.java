@@ -23,14 +23,16 @@ package database.definitions;
 
 import jsondb.Config;
 import java.sql.Types;
-import messages.Messages;
 import java.util.HashMap;
+import java.util.HashSet;
+import messages.Messages;
 import java.util.logging.Level;
 import java.lang.reflect.Field;
 
 
 public class SQLTypes
 {
+   private static HashSet<Integer> dates = null;
    private static HashMap<Integer,String> sqlids = null;
    private static HashMap<String,Integer> sqlnames = null;
 
@@ -53,8 +55,26 @@ public class SQLTypes
       return(name);
    }
 
+   public static boolean isDate(int id)
+   {
+      return(dates.contains(id));
+   }
+
+   public static boolean isDate(String name)
+   {
+      Integer id = getType(name);
+      return(dates.contains(id));
+   }
+
    private static void getAllJdbcTypeNames()
    {
+      dates = new HashSet<Integer>();
+
+      dates.add(Types.TIME);
+      dates.add(Types.DATE);
+      dates.add(Types.TIMESTAMP);
+      dates.add(Types.TIMESTAMP_WITH_TIMEZONE);
+
       try
       {
          sqlids = new HashMap<Integer,String>();
