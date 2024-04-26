@@ -58,7 +58,7 @@
                "description": "DML will ignore derived columns"
             }
             ,
-            "pagesize":
+            "page-size":
             {
                "type": "number",
                "description": "The number of rows to fetch per call aka. array-fetch"
@@ -218,7 +218,8 @@
       ,
       "Type":
       {
-         "type": ["integer", "string"]
+         "type": ["integer", "string"],
+         "description": "Either the datatype as in varchar, numeric... or the jdbc Types id"
       }
       ,
       "Text":
