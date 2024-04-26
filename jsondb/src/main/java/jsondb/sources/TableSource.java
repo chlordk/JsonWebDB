@@ -68,8 +68,12 @@ public class TableSource extends Source
       String[] derived = getStringArray(definition,DERIVED,false);
       String[] primarykey = getStringArray(definition,PRIMARY,false);
 
+      id = id.toLowerCase();
+      if (object == null) object = id;
+      else object = object.toLowerCase();
+
       VPDFilter vpd = VPDFilter.parse(definition);
-      QuerySource query = QuerySource.parse(definition);
+      QuerySource query = QuerySource.parse(definition,object);
       HashMap<String,CustomFilter> filters = CustomFilter.parse(definition);
 
       this.id = id;
@@ -100,10 +104,11 @@ public class TableSource extends Source
 
    public static class QuerySource
    {
+      public final String object;
       public final SQLPart query;
       public final HashMap<String,DataType> types;
 
-      private static QuerySource parse(JSONObject def) throws Exception
+      private static QuerySource parse(JSONObject def, String object) throws Exception
       {
          if (!def.has(QUERY))
             return(null);
@@ -113,19 +118,20 @@ public class TableSource extends Source
          String sql = Source.getString(def,SQL,true);
          HashMap<String,DataType> types = DataType.parse(def);
 
-         return(new QuerySource(sql,types));
+         return(new QuerySource(object,sql,types));
       }
 
-      private QuerySource(String query, HashMap<String,DataType> types)
+      private QuerySource(String object, String query, HashMap<String,DataType> types)
       {
          this.types = types;
+         this.object = object;
          this.query = Parser.parse(query);
       }
 
       private SQLPart from(ArrayList<BindValue> bindvalues)
       {
          SQLPart bound = query.clone();
-         String sql = "from ("+bound.snippet()+")";
+         String sql = "from ("+bound.snippet()+") "+object;
 
          for(BindValue bv : bindvalues)
          {

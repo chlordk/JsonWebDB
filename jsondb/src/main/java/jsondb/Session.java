@@ -265,11 +265,14 @@ public class Session
 
    public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
-      ensure(false);
-      return(new Cursor());
+      JdbcInterface read = ensure(false);
+      Cursor cursor = new Cursor(sql,bindvalues);
+      read.executeQuery(cursor);
+      cursor.fetch();
+      return(cursor);
    }
 
-   private synchronized void ensure(boolean write) throws Exception
+   private synchronized JdbcInterface ensure(boolean write) throws Exception
    {
       if (!write && !pool.secondary())
          write = true;
@@ -283,13 +286,13 @@ public class Session
       connused = new Date();
 
       if (write && wconn.isConnected())
-         return;
+         return(wconn);
 
       if (!write && rconn.isConnected())
-         return;
+         return(rconn);
 
-      if (write)  wconn.connect(this.user,write);
-      else        rconn.connect(this.user,write);
+      if (write)  return(wconn.connect(this.user,write));
+      else        return(rconn.connect(this.user,write));
    }
 
    public String toString()

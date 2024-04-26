@@ -12,3 +12,4 @@ MANDATORY_ATTR_MISSING     = Mandatory attribute {%1} is missing in {%2}
 UNKNOWN_SOURCE             = Unknown source '{%1}'
 MISSING_COLUNM_SPEC        = Mising column specification
 BAD_COLUNM_SPEC            = Column specification is potentially dangerous
+NOT_CONNECTED              = There is no database connection

@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.util.Properties;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
-import oracle.jdbc.OraclePreparedStatement;
 import oracle.jdbc.driver.OracleConnection;
 
 

@@ -22,8 +22,13 @@
 package database.definitions;
 
 import jsondb.Config;
+import database.Cursor;
+import messages.Messages;
 import java.sql.Statement;
+import database.BindValue;
+import java.util.ArrayList;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 
 public abstract class JdbcInterface
@@ -46,11 +51,12 @@ public abstract class JdbcInterface
       return(conn != null);
    }
 
-   public void connect(String username, boolean write) throws Exception
+   public JdbcInterface connect(String username, boolean write) throws Exception
    {
       this.conn = pool.getConnection(write);
       if (pool.proxy()) setProxyUser(conn,username);
       if (conn.getAutoCommit()) conn.setAutoCommit(false);
+      return(this);
    }
 
    public boolean disconnect() throws Exception
@@ -71,25 +77,39 @@ public abstract class JdbcInterface
       return(pool.authenticate(username,password));
    }
 
-   public boolean commit() throws Exception
+   public JdbcInterface commit() throws Exception
    {
-      if (conn == null) return(false);
-      conn.commit();
-      return(true);
+      if (conn != null) conn.commit();
+      return(this);
    }
 
-   public boolean rollback() throws Exception
+   public JdbcInterface rollback() throws Exception
    {
-      if (conn == null) return(false);
-      conn.rollback();
-      return(true);
+      if (conn != null) conn.rollback();
+      return(this);
    }
 
-  public boolean execute(String sql) throws Exception
-  {
-    Statement stmt = conn.createStatement();
-    return(stmt.execute(sql));
-  }
+   public boolean execute(String sql) throws Exception
+   {
+      Statement stmt = conn.createStatement();
+      return(stmt.execute(sql));
+   }
+
+   public void executeQuery(Cursor cursor)  throws Exception
+   {
+      if (conn == null) throw new Exception(Messages.get("NOT_CONNECTED"));
+
+      ArrayList<BindValue> bindvalues = cursor.bindvalues();
+      PreparedStatement stmt = conn.prepareStatement(cursor.sql());
+
+      for (int i = 0; i < bindvalues.size(); i++)
+      {
+         BindValue bv = bindvalues.get(i);
+         stmt.setObject(i+1,bv.value());
+      }
+
+      cursor.resultset(stmt.executeQuery());
+   }
 
   public abstract void releaseProxyUser(Connection conn) throws Exception;
   public abstract void setProxyUser(Connection conn, String username) throws Exception;
