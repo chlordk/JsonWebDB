@@ -29,6 +29,7 @@ import files.FileHandler;
 import files.FileResponse;
 import org.json.JSONObject;
 import java.util.logging.Level;
+import static jsondb.Version.*;
 import jsondb.requests.RequestHandler;
 import database.definitions.AdvancedPool;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,8 +41,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class JsonDB
 {
    private static String instance = null;
-
-   public static final String version = "4.0.1";
    public static final long started = (new Date()).getTime();
 
    private static final AtomicInteger dbreqs = new AtomicInteger(0);
