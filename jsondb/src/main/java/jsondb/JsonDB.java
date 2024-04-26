@@ -73,7 +73,7 @@ public class JsonDB
       Config.load(root,inst,file,logall);
 
       Config.logger().info("......................................................");
-      Config.logger().info("Starting JsonDB version "+version);
+      Config.logger().info("Starting "+library+" "+version);
       Config.logger().info("......................................................");
 
       Config.initialize();
