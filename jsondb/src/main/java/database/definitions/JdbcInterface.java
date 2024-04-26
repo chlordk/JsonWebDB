@@ -36,6 +36,7 @@ public abstract class JdbcInterface
    private Connection conn = null;
    private final AdvancedPool pool;
 
+
    public static JdbcInterface getInstance(boolean write) throws Exception
    {
       return(Config.pool().type(write).getInstance());
@@ -105,7 +106,8 @@ public abstract class JdbcInterface
       for (int i = 0; i < bindvalues.size(); i++)
       {
          BindValue bv = bindvalues.get(i);
-         stmt.setString(i+1,bv.value()+"");
+         int type = SQLTypes.getType(bv.type());
+         stmt.setObject(i+1,bv.value(),type);
       }
 
       cursor.resultset(stmt.executeQuery());

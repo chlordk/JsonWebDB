@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.util.logging.Logger;
 import jsondb.state.StateHandler;
 import database.definitions.AdvancedPool;
+import database.definitions.SQLTypes;
 
 
 public class Config
@@ -130,6 +131,7 @@ public class Config
       Admins.initialize();
       Cluster.initialize();
       Sources.initialize();
+      SQLTypes.initialize();
       FileConfig.initialize();
       HTTPConfig.initialize();
       StateHandler.initialize();

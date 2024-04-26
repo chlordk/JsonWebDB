@@ -1,0 +1,80 @@
+/*
+  MIT License
+
+  Copyright © 2023 Alex Høffner
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+  and associated documentation files (the “Software”), to deal in the Software without
+  restriction, including without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all copies or
+  substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+package database.definitions;
+
+import jsondb.Config;
+import java.sql.Types;
+import messages.Messages;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.lang.reflect.Field;
+
+
+public class SQLTypes
+{
+   private static HashMap<Integer,String> sqlids = null;
+   private static HashMap<String,Integer> sqlnames = null;
+
+   public static void initialize()
+   {
+      getAllJdbcTypeNames();
+   }
+
+   public static int getType(String name)
+   {
+      Integer id = sqlnames.get(name.toLowerCase());
+      if (id == null) id = sqlnames.get("varchar");
+      return(id);
+   }
+
+   public static String getType(int id)
+   {
+      String name = sqlids.get(id);
+      if (name == null) name = "varchar";
+      return(name);
+   }
+
+   private static void getAllJdbcTypeNames()
+   {
+      try
+      {
+         sqlids = new HashMap<Integer,String>();
+         sqlnames = new HashMap<String,Integer>();
+
+         for (Field field : Types.class.getFields())
+         {
+            String name = field.getName();
+            int id = (Integer) field.get(null);
+
+            sqlids.put(id,name);
+            sqlnames.put(name.toLowerCase(),id);
+         }
+
+      }
+      catch (Throwable t)
+      {
+         Config.logger().log(Level.SEVERE,t.toString(),t);
+         Config.logger().severe(Messages.get("SERVER_STOPPED"));
+         System.exit(-1);
+      }
+  }
+}
