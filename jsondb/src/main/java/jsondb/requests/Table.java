@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.objects;
+package jsondb.requests;
 
 import jsondb.Session;
 import jsondb.Response;

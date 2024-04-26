@@ -29,7 +29,7 @@ import files.FileHandler;
 import files.FileResponse;
 import org.json.JSONObject;
 import java.util.logging.Level;
-import jsondb.objects.ObjectHandler;
+import jsondb.requests.RequestHandler;
 import database.definitions.AdvancedPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -158,11 +158,9 @@ public class JsonDB
    public Response execute(JSONObject request) throws Exception
    {
       dbreqs.incrementAndGet();
-      Response response = ObjectHandler.handle(request);
-      response.put("version",version);
-      response.put("instance",instance);
-      log(request,response);
-      return(response);
+      Response response = RequestHandler.handle(request);
+      response.put("instance",instance); response.put("version",version);
+      log(request,response); return(response);
    }
 
 

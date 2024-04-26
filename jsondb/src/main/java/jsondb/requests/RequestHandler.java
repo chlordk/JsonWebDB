@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.objects;
+package jsondb.requests;
 
 import jsondb.Response;
 import messages.Messages;
@@ -31,12 +31,12 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class ObjectHandler
+public class RequestHandler
 {
    private static final ConcurrentHashMap<String,Class<?>> classes =
       new ConcurrentHashMap<String,Class<?>>();
 
-   private static final String location = ObjectHandler.class.getPackage().getName();
+   private static final String location = RequestHandler.class.getPackage().getName();
 
 
    public static Response handle(JSONObject request)

@@ -22,14 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package jsondb.objects;
+package jsondb.requests;
 
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.lang.reflect.Array;
 
 
 public class Utils
