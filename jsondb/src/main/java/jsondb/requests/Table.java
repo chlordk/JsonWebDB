@@ -125,8 +125,6 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
-
-      //cursor.
       cursor.pagesize(Misc.get(args,PAGESIZE));
 
       JSONArray rows = new JSONArray();
