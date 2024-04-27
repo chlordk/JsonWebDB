@@ -31,6 +31,7 @@ import database.BindValue;
 import org.json.JSONArray;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import static utils.Misc.*;
 
 
 public class TableSource extends Source
@@ -115,7 +116,7 @@ public class TableSource extends Source
 
          def = def.getJSONObject(QUERY);
 
-         String sql = Source.getString(def,SQL,true);
+         String sql = getString(def,SQL,true);
          HashMap<String,DataType> types = DataType.parse(def);
 
          return(new QuerySource(object,sql,types));
@@ -165,8 +166,8 @@ public class TableSource extends Source
          for (int i = 0; i < arr.length(); i++)
          {
             JSONObject flt = arr.getJSONObject(i);
-            String name = Source.getString(flt,NAME,true,true);
-            String whcl = Source.getString(flt,WHCLAUSE,true,false);
+            String name = getString(flt,NAME,true,true);
+            String whcl = getString(flt,WHCLAUSE,true,false);
             filters.put(name.toLowerCase(),new CustomFilter(name,whcl));
          }
 
@@ -193,8 +194,8 @@ public class TableSource extends Source
 
          def = def.getJSONObject(VPD);
 
-         String filter = Source.getString(def,WHCLAUSE,true);
-         String[] applies = Source.getStringArray(def,APPLY,true,true);
+         String filter = getString(def,WHCLAUSE,true);
+         String[] applies = getStringArray(def,APPLY,true,true);
 
          return(new VPDFilter(filter,applies));
       }

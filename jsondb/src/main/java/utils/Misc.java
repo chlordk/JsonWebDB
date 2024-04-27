@@ -24,6 +24,10 @@ SOFTWARE.
 
 package utils;
 
+import messages.Messages;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class Misc
 {
@@ -47,5 +51,107 @@ public class Misc
          else path += "/" + parts[i];
       }
       return(path);
+   }
+
+
+   public static String getString(JSONObject def, String attr) throws Exception
+   {
+      return(getString(def,attr,false,false));
+   }
+
+
+   public static String getString(JSONObject def, String attr, boolean mandatory) throws Exception
+   {
+      return(getString(def,attr,mandatory,false));
+   }
+
+
+   public static String[] getStringArray(JSONObject def, String attr) throws Exception
+   {
+      return(getStringArray(def,attr,false,false));
+   }
+
+
+   public static String[] getStringArray(JSONObject def, String attr, boolean mandatory) throws Exception
+   {
+      return(getStringArray(def,attr,mandatory,false));
+   }
+
+
+   public static String getString(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
+   {
+      String value = null;
+
+      if (!def.has(attr))
+      {
+         if (mandatory) throwNotExist(def,attr);
+         return(null);
+      }
+
+      Object object = def.get(attr);
+
+      if (object instanceof JSONArray)
+      {
+         JSONArray arr = (JSONArray) object;
+
+         for (int i = 0; i < arr.length(); i++)
+         {
+            if (i == 0) value = ""; else value += " ";
+            value += arr.getString(i);
+         }
+      }
+      else
+         value = ""+object;
+
+      if (lower)
+         value = value.toLowerCase();
+
+      return(value);
+   }
+
+
+   public static String[] getStringArray(JSONObject def, String attr, boolean mandatory, boolean lower) throws Exception
+   {
+      String[] value = null;
+
+      if (!def.has(attr))
+      {
+         if (mandatory) throwNotExist(def,attr);
+         return(null);
+      }
+
+      Object object = def.get(attr);
+
+      if (object instanceof JSONArray)
+      {
+         JSONArray arr = (JSONArray) object;
+         value = new String[arr.length()];
+
+         for (int i = 0; i < arr.length(); i++)
+            value[i] = arr.getString(i);
+      }
+      else value = new String[] {object+""};
+
+      if (lower)
+      {
+         for (int i = 0; i < value.length; i++)
+            value[i] = value[i].toLowerCase();
+      }
+
+      return(value);
+   }
+
+
+   @SuppressWarnings("unchecked")
+   public static <T> T get(JSONObject def, String attr)
+   {
+      if (!def.has(attr)) return(null);
+      return((T) def.get(attr));
+   }
+
+
+   private static void throwNotExist(JSONObject json, String attr) throws Exception
+   {
+      throw new Exception(Messages.get("MANDATORY_ATTR_MISSING",attr,json.toString(2)));
    }
 }

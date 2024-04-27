@@ -24,8 +24,8 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import utils.Misc;
 import jsondb.Session;
-import sources.Source;
 import sources.Sources;
 import database.Cursor;
 import jsondb.Response;
@@ -33,10 +33,9 @@ import database.SQLPart;
 import utils.JSONOObject;
 import messages.Messages;
 import database.BindValue;
+import org.json.JSONArray;
 import sources.TableSource;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -90,7 +89,7 @@ public class Table
       select.append(source.from(bindvalues));
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
-      cursor.pagesize(Source.get(args,PAGESIZE));
+      cursor.pagesize(Misc.get(args,PAGESIZE));
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();

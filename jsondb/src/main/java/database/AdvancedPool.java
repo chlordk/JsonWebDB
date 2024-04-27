@@ -25,6 +25,7 @@ import jsondb.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
+import static utils.Misc.*;
 import java.sql.DriverManager;
 import java.util.logging.Level;
 import database.implementations.DatabaseType;
@@ -50,6 +51,7 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
+   private static final String SAVEPOINT = "savepoint";
    private static final String SECONDARY = "secondary";
 
    private final int latency;
@@ -78,6 +80,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       String sql = Config.get(def,QUERY);
       String usr = Config.get(def,USERNAME);
       String pwd = Config.get(def,PASSWORD);
+
+      String[] savepoints = getStringArray(def,SAVEPOINT);
 
       prm.setUsername(usr);
       prm.setPassword(pwd);
