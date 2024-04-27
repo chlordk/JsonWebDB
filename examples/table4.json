@@ -1,36 +1,21 @@
 {
   "Table":
   {
-    "invoke": "insert()",
-    "source": "countries",
-    "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
-      
-    "bindvalues":
-    [
-      {
-        "name": "Secret",
-        "type": "varchar",
-        "value": "37b1e99aff31"
-      }
-    ],
+    "invoke": "select()",
+    "source": "employees",
+    "session": "eb826cf7-03b5-43f5-a74f-02f7587b27b0",
     
     "select()":
     {
-      "columns": 
-      [
-        "country_id","country_name"
-      ]
-      ,
-      "assertions": 
-      [
-        {"name": "country_id", "value": "UK"},
-        {"name": "country_name", "value": "United Kingdom"}
-      ]
-      ,
-      "filters":
-      [
-        {"column": "country_id", "filter": "Equals", "value": "UK"}
-      ]
+        "columns": "*",
+        "page-size": 2,
+
+        "filters":
+        [
+            {"column": "firat_name", "filter": "Equals", "value": "Mia"},
+            { "or": {"column": "last_name", "filter": "Like", "value": "Jens%"}}
+
+        ]
     }
   }
 }

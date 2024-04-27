@@ -196,6 +196,11 @@
                         "type": "boolean"
                      }
                      ,
+                     "sorting":
+                     {
+                        "type": "string"
+                     }
+                     ,
                      "filters":
                      {
                         "$ref": "#/types/FilterGroup"

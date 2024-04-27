@@ -8,8 +8,6 @@
          "sorting": "loc_id",
          "primary-key": "loc_id",
 
-         "page-size": 36,
-
          "columns":
          [
             {
