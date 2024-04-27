@@ -235,6 +235,18 @@ public class StateHandler
    }
 
 
+   public static boolean createCursor(String session, byte[] xx) throws Exception
+   {
+      File file = trxFile(session);
+      if (file.exists()) return(false);
+
+      FileOutputStream out = new FileOutputStream(file);
+      out.write((inst+" "+StateHandler.pid).getBytes()); out.close();
+
+      return(true);
+   }
+
+
    private static File pidFile(String inst)
    {
       return(new File(Config.path(STATE,inst+"."+PID)));

@@ -24,6 +24,8 @@ SOFTWARE.
 
 package database;
 
+import utils.JSONOObject;
+import org.json.JSONObject;
 import database.definitions.SQLTypes;
 
 
@@ -129,5 +131,16 @@ public class BindValue
    {
       String t = ampersand ? "?" : ":";
       return(t+name+"["+sqlTypeID+"] = "+value);
+   }
+
+   public JSONObject toJSON()
+   {
+      JSONOObject json = new JSONOObject();
+      json.put("name",name);
+      json.put("type",sqlTypeName);
+      json.put("sqltype",sqlTypeID);
+      json.put("ampersand",ampersand);
+      json.put("value",value);
+      return(json);
    }
 }

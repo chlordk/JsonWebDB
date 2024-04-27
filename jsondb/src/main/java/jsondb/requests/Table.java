@@ -131,7 +131,7 @@ public class Table
       ArrayList<Object[]> table = cursor.fetch();
 
       response.put("success",true);
-      response.put("cursor",cursor.name());
+      if (cursor.next()) response.put("cursor",cursor.name());
 
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);

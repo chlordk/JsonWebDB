@@ -24,11 +24,16 @@ SOFTWARE.
 
 package database;
 
+import utils.Bytes;
 import utils.Guid;
 import java.sql.Date;
+import jsondb.Session;
+import utils.JSONOObject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import org.json.JSONArray;
+import state.StateHandler;
 import java.util.ArrayList;
 import java.sql.ResultSetMetaData;
 
@@ -168,5 +173,32 @@ public class Cursor
       eof = true;
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
+   }
+
+   public void save(Session session) throws Exception
+   {
+      JSONArray bind = new JSONArray();
+      JSONOObject data = new JSONOObject();
+
+      data.put("query",sql);
+      data.put("bindvalues",bind);
+
+      if (bindvalues != null)
+      {
+         for(BindValue bv : bindvalues)
+            bind.put(bv.toJSON());
+      }
+
+      byte[] def = data.toString(0).getBytes();
+      byte[] bytes = new byte[4 + 8 + def.length];
+
+      byte[] pos = Bytes.getBytes(this.pos);
+      byte[] psz = Bytes.getBytes(this.pagesize);
+
+      System.arraycopy(pos,0,bytes,0,pos.length);
+      System.arraycopy(psz,0,bytes,8,psz.length);
+      System.arraycopy(def,0,bytes,12,def.length);
+
+      StateHandler.createCursor(session.getGuid(),this);
    }
 }
