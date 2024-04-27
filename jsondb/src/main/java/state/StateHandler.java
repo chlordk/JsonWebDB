@@ -27,12 +27,15 @@ package state;
 import utils.Guid;
 import java.io.File;
 import jsondb.Config;
+import messages.Messages;
+
 import java.util.Date;
 import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
 
 
 public class StateHandler
@@ -45,6 +48,7 @@ public class StateHandler
    private static final String PID = "pid";
    private static final String SES = "ses";
    private static final String TRX = "trx";
+   private static final String CUR = "cur";
    private static final String STATE = "state";
 
 
@@ -231,18 +235,70 @@ public class StateHandler
    {
       File file = trxFile(session);
       if (file.exists()) return(false);
+      file.delete();
       return(true);
    }
 
 
-   public static boolean createCursor(String session, byte[] xx) throws Exception
+   public static boolean createCursor(String session, String cursor, byte[] bytes) throws Exception
    {
-      File file = trxFile(session);
+      File file = curFile(session,cursor);
       if (file.exists()) return(false);
 
       FileOutputStream out = new FileOutputStream(file);
-      out.write((inst+" "+StateHandler.pid).getBytes()); out.close();
+      out.write(bytes); out.close();
 
+      return(true);
+   }
+
+
+   public static byte[] getCursor(String session, String cursor) throws Exception
+   {
+      File file = curFile(session,cursor);
+      if (!file.exists()) return(null);
+
+      FileInputStream in = new FileInputStream(file);
+      byte[] bytes = in.readAllBytes(); in.close();
+
+      return(bytes);
+   }
+
+
+   public static boolean removeCursor(String session, String cursor) throws Exception
+   {
+      File file = curFile(session,cursor);
+      if (!file.exists()) return(false);
+      file.delete();
+      return(true);
+   }
+
+
+   public static byte[] peekCursor(String session, String cursor, int len) throws Exception
+   {
+      File file = curFile(session,cursor);
+      if (!file.exists()) return(null);
+
+      byte[] bytes = new byte[len];
+      FileInputStream in = new FileInputStream(file);
+      int read = in.read(bytes); in.close();
+
+      if (read != len)
+         throw new Exception(Messages.get("FILE_CORRUPTION",len,file.toString()));
+
+      return(bytes);
+   }
+
+
+   public static boolean updateCursor(String session, String cursor, byte[] cpos, byte[] pgsz) throws Exception
+   {
+      File file = curFile(session,cursor);
+      if (!file.exists()) return(false);
+
+      byte[] bytes = new byte[cpos.length+pgsz.length];
+      System.arraycopy(cpos,0,bytes,0,cpos.length);
+      System.arraycopy(pgsz,0,bytes,8,pgsz.length);
+      RandomAccessFile raf = new RandomAccessFile(file,"rw");
+      raf.write(bytes); raf.close();
       return(true);
    }
 
@@ -250,6 +306,12 @@ public class StateHandler
    private static File pidFile(String inst)
    {
       return(new File(Config.path(STATE,inst+"."+PID)));
+   }
+
+
+   private static File curFile(String session, String cursor)
+   {
+      return(new File(Config.path(STATE,session,cursor+"."+CUR)));
    }
 
 

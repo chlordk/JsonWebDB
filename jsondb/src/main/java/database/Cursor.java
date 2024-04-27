@@ -199,6 +199,6 @@ public class Cursor
       System.arraycopy(psz,0,bytes,8,psz.length);
       System.arraycopy(def,0,bytes,12,def.length);
 
-      StateHandler.createCursor(session.getGuid(),this);
+      StateHandler.createCursor(session.getGuid(),name,bytes);
    }
 }
