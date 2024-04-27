@@ -160,20 +160,19 @@ public class Session
       return(info);
    }
 
-   public void addCursor(Cursor cursor) throws Exception
-   {
-      cursor.save(this.guid);
-      cursors.put(cursor.name(),cursor);
-   }
-
    public Cursor getCursor(String cursid) throws Exception
    {
       Cursor cursor = cursors.get(cursid);
 
-      if (cursor != null) cursor.setState(this.guid);
-      else cursor = Cursor.create(this.guid,cursid);
+      if (cursor != null) cursor.loadState();
+      else cursor = Cursor.create(this,cursid);
 
       return(cursor);
+  }
+
+  public void removeCursor(Cursor cursor) throws Exception
+  {
+     cursors.remove(cursor.name());
   }
 
    public synchronized boolean isConnected()
@@ -285,8 +284,11 @@ public class Session
    public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
    {
       JdbcInterface read = ensure(false);
-      Cursor cursor = new Cursor(sql,bindvalues);
+      Cursor cursor = new Cursor(this,sql,bindvalues);
+
       read.executeQuery(cursor,savepoint);
+      cursors.put(cursor.name(),cursor);
+
       return(cursor);
    }
 

@@ -50,12 +50,15 @@ public class Cursor
 
    private final String sql;
    private final String name;
+   private final Session session;
    private final ArrayList<BindValue> bindvalues;
 
 
-   public static Cursor create(String session, String cursid) throws Exception
+   public static Cursor create(Session session, String cursid) throws Exception
    {
-      byte[] bytes = StateHandler.getCursor(session,cursid);
+      String guid = session.getGuid();
+
+      byte[] bytes = StateHandler.getCursor(guid,cursid);
       if (bytes == null) return(null);
 
       String str = new String(bytes,0,12);
@@ -72,7 +75,7 @@ public class Cursor
       int pgsz = Bytes.getInt(bytes,8);
       long pos = Bytes.getLong(bytes,0);
 
-      Cursor cursor = new Cursor(sql,bindvalues);
+      Cursor cursor = new Cursor(session,sql,bindvalues);
 
       cursor.pos = pos;
       cursor.pagesize = pgsz;
@@ -81,12 +84,14 @@ public class Cursor
    }
 
 
-   public Cursor(String sql, ArrayList<BindValue> bindvalues)
+   public Cursor(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
       this.pos = 0;
       this.sql = sql;
+      this.session = session;
       this.name = Guid.generate();
       this.bindvalues = bindvalues;
+      this.save();
    }
 
    public long pos()
@@ -195,6 +200,7 @@ public class Cursor
          rows.add(row);
       }
 
+      if (!eof) saveState();
       return(rows);
    }
 
@@ -203,16 +209,24 @@ public class Cursor
       eof = true;
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
+
+      String guid = session.getGuid();
+
+      session.removeCursor(this);
+      StateHandler.removeCursor(guid,name);
    }
 
-   public void setState(String session) throws Exception
+   public void loadState() throws Exception
    {
-      byte[] header = StateHandler.peekCursor(session,name,12);
+      String guid = session.getGuid();
+      byte[] header = StateHandler.peekCursor(guid,name,12);
       this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 
-   public void save(String session) throws Exception
+   private void save() throws Exception
    {
+      String guid = session.getGuid();
+
       JSONArray bind = new JSONArray();
       JSONOObject data = new JSONOObject();
 
@@ -235,6 +249,14 @@ public class Cursor
       System.arraycopy(psz,0,bytes,8,psz.length);
       System.arraycopy(def,0,bytes,12,def.length);
 
-      StateHandler.createCursor(session,name,bytes);
+      StateHandler.createCursor(guid,name,bytes);
+   }
+
+   private void saveState() throws Exception
+   {
+      String guid = session.getGuid();
+      byte[] pos = Bytes.getBytes(this.pos);
+      byte[] psz = Bytes.getBytes(this.pagesize);
+      StateHandler.updateCursor(guid,name,pos,psz);
    }
 }

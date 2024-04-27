@@ -90,6 +90,7 @@ public class Table
 
                Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false);
                source.setColumns(cursor.describe());
+               cursor.close();
             }
          }
       }
@@ -133,10 +134,7 @@ public class Table
       response.put("success",true);
 
       if (cursor.next())
-      {
-         session.addCursor(cursor);
          response.put("cursor",cursor.name());
-      }
 
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);
