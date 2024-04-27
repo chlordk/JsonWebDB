@@ -24,6 +24,10 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import sources.Source;
+import jsondb.Session;
+import sources.Sources;
+import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,5 +62,34 @@ public class Utils
       }
 
       return(bindvalues);
+   }
+
+
+   public static Session getSession(JSONObject response, String sessid) throws Exception
+   {
+      Session session = Session.get(sessid);
+
+      if (session == null)
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+      }
+
+      return(session);
+   }
+
+
+   @SuppressWarnings("unchecked")
+   public static <T extends Source> T getSource(JSONObject response, String srcid) throws Exception
+   {
+      Source source = Sources.get(srcid);
+
+      if (source == null)
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("UNKNOWN_SOURCE",srcid));
+      }
+
+      return((T) source);
    }
 }

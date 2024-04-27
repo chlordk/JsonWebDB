@@ -31,7 +31,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.sql.ResultSetMetaData;
-import database.definitions.SQLTypes;
 
 
 public class Cursor
@@ -101,25 +100,36 @@ public class Cursor
       return(this);
    }
 
-   public synchronized ArrayList<Object[]> fetch() throws Exception
+   public ArrayList<Column> describe() throws Exception
    {
+      if (columns != null) return(columns);
       ResultSetMetaData meta = rset.getMetaData();
+
       int cols = meta.getColumnCount();
+      columns = new ArrayList<Column>();
 
-      if (columns == null)
+      for (int i = 0; i < cols; i++)
       {
-         columns = new ArrayList<Column>();
+         int sqltype = meta.getColumnType(i+1);
 
-         for (int i = 0; i < cols; i++)
-         {
-            int sqltype = meta.getColumnType(i+1);
-            String name = meta.getColumnName(i+1);
-            String type = meta.getColumnTypeName(i+1);
+         String name = meta.getColumnName(i+1);
+         String type = meta.getColumnTypeName(i+1);
 
-            columns.add(new Column(name,type,sqltype));
-         }
+         int scale = meta.getScale(i+1);
+         int precs = meta.getPrecision(i+1);
+
+         columns.add(new Column(name,type,sqltype,precs,scale));
       }
 
+      return(columns);
+   }
+
+   public synchronized ArrayList<Object[]> fetch() throws Exception
+   {
+      columns = describe();
+      ResultSetMetaData meta = rset.getMetaData();
+
+      int cols = meta.getColumnCount();
       ArrayList<Object[]> rows = new ArrayList<Object[]>();
 
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
@@ -158,30 +168,5 @@ public class Cursor
       eof = true;
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
-   }
-
-
-   private static class Column
-   {
-      final int sqltype;
-      final String type;
-      final String name;
-
-      Column(String name, String type, int sqltype)
-      {
-         this.type = type;
-         this.name = name;
-         this.sqltype = sqltype;
-      }
-
-      boolean isDateType()
-      {
-         return(SQLTypes.isDateType(sqltype));
-      }
-
-      public String toString()
-      {
-         return(name+" "+type+"["+sqltype+"]");
-      }
    }
 }

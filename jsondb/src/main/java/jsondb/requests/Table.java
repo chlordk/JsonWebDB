@@ -25,11 +25,11 @@ SOFTWARE.
 package jsondb.requests;
 
 import utils.Misc;
-import jsondb.Session;
-import sources.Sources;
-import database.Cursor;
 import jsondb.Config;
+import jsondb.Session;
+import database.Cursor;
 import jsondb.Response;
+import database.Column;
 import database.SQLPart;
 import utils.JSONOObject;
 import messages.Messages;
@@ -62,26 +62,49 @@ public class Table
    }
 
 
-   public Response select() throws Exception
+   public Response describe() throws Exception
    {
-      Session session = Session.get(sessid);
       JSONObject response = new JSONOObject();
-      TableSource source = Sources.get(this.source);
+
+      Session session = Utils.getSession(response,sessid);
+      if (session == null) return(new Response(response));
+
+      TableSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
       ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
 
-      if (session == null)
-      {
-         response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
-         return(new Response(response));
-      }
+      String stmt = "select *";
+      SQLPart select = new SQLPart(stmt);
+      select.append(source.from(bindvalues));
+      select.snippet(select.snippet()+" where 1 = 2");
 
-      if (source == null)
-      {
-         response.put("success",false);
-         response.put("message",Messages.get("UNKNOWN_SOURCE",this.source));
-         return(new Response(response));
-      }
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false);
+
+      JSONArray rows = new JSONArray();
+      ArrayList<Column> table = cursor.describe();
+
+      for (int i = 0; i < table.size(); i++)
+         rows.put(table.get(i).toJSONObject());
+
+      response.put("success",true);
+      response.put("rows",rows);
+
+      return(new Response(response));
+   }
+
+
+   public Response select() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid);
+      if (session == null) return(new Response(response));
+
+      TableSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
 
       JSONObject args = definition.getJSONObject(SELECT);
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
@@ -92,7 +115,6 @@ public class Table
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
-
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
       cursor.pagesize(Misc.get(args,PAGESIZE));
