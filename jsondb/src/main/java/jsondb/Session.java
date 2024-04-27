@@ -290,8 +290,8 @@ public class Session
       if (!write && rconn.isConnected())
          return(rconn);
 
-      if (write)  return(wconn.connect(this.user,write));
-      else        return(rconn.connect(this.user,write));
+      if (write)  return(wconn.connect(this.user,write,dedicated));
+      else        return(rconn.connect(this.user,write,dedicated));
    }
 
    public String toString()

@@ -52,11 +52,11 @@ public abstract class JdbcInterface
       return(conn != null);
    }
 
-   public JdbcInterface connect(String username, boolean write) throws Exception
+   public JdbcInterface connect(String username, boolean write, boolean dedicated) throws Exception
    {
       this.conn = pool.getConnection(write);
       if (pool.proxy()) setProxyUser(conn,username);
-      if (conn.getAutoCommit()) conn.setAutoCommit(false);
+      conn.setAutoCommit(!dedicated);
       return(this);
    }
 

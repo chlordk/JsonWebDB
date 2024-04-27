@@ -50,7 +50,7 @@ public class Table
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String SESSION = "session";
-   private static final String PAGESIZE = "pagesize";
+   private static final String PAGESIZE = "page-size";
 
 
    public Table(JSONObject definition) throws Exception

@@ -24,11 +24,13 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import jsondb.Config;
 import jsondb.Response;
 import messages.Messages;
 import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 
 public class RequestHandler
@@ -56,6 +58,8 @@ public class RequestHandler
          }
          catch (Throwable t)
          {
+            t = t.getCause();
+            Config.logger().log(Level.WARNING,t.toString(),t);
             return(new Response().exception(t));
          }
       }
