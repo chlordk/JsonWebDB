@@ -167,8 +167,11 @@
                   {
                      "columns":
                      {
-                        "type": "array",
-                        "items": {"type": "string"}
+                        "anyOf":
+                        [
+                           {"type": "string"},
+                           {"type": "array", "items": {"type": "string"}}
+                        ]
                      }
                      ,
                      "lock":
@@ -180,6 +183,12 @@
                      {
                         "type": "array",
                         "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "page-size":
+                     {
+                        "type": "number",
+                        "description": "The number of rows to fetch per call aka. array-fetch"
                      }
                      ,
                      "savepoint":

@@ -58,12 +58,6 @@
                "description": "DML will ignore derived columns"
             }
             ,
-            "page-size":
-            {
-               "type": "number",
-               "description": "The number of rows to fetch per call aka. array-fetch"
-            }
-            ,
             "sorting":
             {
                "type": "string",
