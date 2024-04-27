@@ -31,10 +31,10 @@ import database.definitions.SQLTypes;
 
 public class Column
 {
-   final int sqltype;
-   final String type;
-   final String name;
-   final Integer[] precision;
+   public final int sqltype;
+   public final String type;
+   public final String name;
+   public final Integer[] precision;
 
    Column(String name, String type, int sqltype, int prec, int scale)
    {

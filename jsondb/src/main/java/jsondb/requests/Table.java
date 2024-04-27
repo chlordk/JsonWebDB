@@ -72,25 +72,29 @@ public class Table
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
 
-      ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
-
-      String stmt = "select *";
-      SQLPart select = new SQLPart(stmt);
-      select.append(source.from(bindvalues));
-      select.snippet(select.snippet()+" where 1 = 2");
-
-      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false);
-
-      JSONArray rows = new JSONArray();
-      ArrayList<Column> table = cursor.describe();
-
-      for (int i = 0; i < table.size(); i++)
-         rows.put(table.get(i).toJSONObject());
-
       response.put("success",true);
-      response.put("rows",rows);
 
-      return(new Response(response));
+      if (!source.described())
+      {
+         // We only need to describe it once
+         synchronized(source)
+         {
+            if (!source.described())
+            {
+               ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
+
+               String stmt = "select *";
+               SQLPart select = new SQLPart(stmt);
+               select.append(source.from(bindvalues));
+               select.snippet(select.snippet()+" where 1 = 2");
+
+               Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false);
+               source.setColumns(cursor.describe());
+            }
+         }
+      }
+
+      return(pack(response,source));
    }
 
 
@@ -102,9 +106,15 @@ public class Table
       if (session == null) return(new Response(response));
 
       TableSource source = Utils.getSource(response,this.source);
-      if (source == null) return(new Response(response));
 
-      ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
+      if (source == null)
+         return(new Response(response));
+
+      if (!source.described())
+         this.describe();
+
+      ArrayList<BindValue> bindvalues =
+         Utils.getBindValues(definition);
 
       JSONObject args = definition.getJSONObject(SELECT);
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
@@ -154,5 +164,17 @@ public class Table
       }
 
       return(list);
+   }
+
+   private Response pack(JSONObject response, TableSource source)
+   {
+      JSONArray rows = new JSONArray();
+      ArrayList<Column> columns = source.getColumns();
+
+      for (int i = 0; i < columns.size(); i++)
+         rows.put(columns.get(i).toJSONObject());
+
+      response.put("rows",rows);
+      return(new Response(response));
    }
 }

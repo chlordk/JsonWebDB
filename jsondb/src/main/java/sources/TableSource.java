@@ -25,6 +25,7 @@ SOFTWARE.
 package sources;
 
 import database.Parser;
+import database.Column;
 import database.SQLPart;
 import java.util.HashMap;
 import database.BindValue;
@@ -60,6 +61,8 @@ public class TableSource extends Source
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
 
+   public HashMap<String,Column> columns;
+
 
    public TableSource(JSONObject definition) throws Exception
    {
@@ -85,6 +88,26 @@ public class TableSource extends Source
       this.derived = derived;
       this.filters = filters;
       this.primarykey = primarykey;
+   }
+
+   public boolean described()
+   {
+      return(columns == null);
+   }
+
+   public ArrayList<Column> getColumns()
+   {
+      if (columns == null) return(null);
+      ArrayList<Column> columns = new ArrayList<Column>();
+      columns.addAll(this.columns.values());
+      return(columns);
+   }
+
+   public void setColumns(ArrayList<Column> columns)
+   {
+      HashMap<String,Column> index = new HashMap<String,Column>();
+      for(Column column : columns) index.put(column.name.toLowerCase(),column);
+      this.columns = index;
    }
 
    public SQLPart from(ArrayList<BindValue> bindvalues)
