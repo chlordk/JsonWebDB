@@ -1,0 +1,8 @@
+{
+  "Table":
+  {
+    "invoke": "describe()",
+    "source": "employees",
+    "session": "9951bc48-ada6-4a8c-957f-bbed924e42e7"
+  }
+}

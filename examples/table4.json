@@ -3,7 +3,7 @@
   {
     "invoke": "select()",
     "source": "employees",
-    "session": "eb826cf7-03b5-43f5-a74f-02f7587b27b0",
+    "session": "9951bc48-ada6-4a8c-957f-bbed924e42e7",
     
     "select()":
     {
@@ -12,7 +12,7 @@
 
         "filters":
         [
-            {"column": "firat_name", "filter": "Equals", "value": "Mia"},
+            {"column": "first_name", "filter": "Equals", "value": "Mia"},
             { "or": {"column": "last_name", "filter": "Like", "value": "Jens%"}}
 
         ]
