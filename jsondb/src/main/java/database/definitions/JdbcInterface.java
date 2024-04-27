@@ -66,6 +66,7 @@ public abstract class JdbcInterface
       if (conn == null) return(false);
 
       conn.rollback();
+      releaseProxyUser(conn);
       pool.freeConnection(conn);
 
       conn = null;
@@ -91,14 +92,85 @@ public abstract class JdbcInterface
       return(this);
    }
 
-   public boolean execute(String sql) throws Exception
+   public void releaseSavePoint(Savepoint savepoint, boolean rollback) throws Exception
    {
+      if (savepoint == null) return;
+      if (rollback) conn.rollback(savepoint);
+      else conn.releaseSavepoint(savepoint);
+   }
+
+
+   public boolean execute(String sql, boolean savepoint) throws Exception
+   {
+      Savepoint sp = null;
+
+      if (conn.getAutoCommit())
+         savepoint = false;
+
       Statement stmt = conn.createStatement();
+
+      if (savepoint)
+      {
+         try
+         {
+            synchronized(conn)
+            {
+               sp = conn.setSavepoint();
+               boolean success = stmt.execute(sql);
+               releaseSavePoint(sp,false);
+               return(success);
+            }
+         }
+         catch (Exception e)
+         {
+            releaseSavePoint(sp,true);
+            throw new Exception(e);
+         }
+      }
+
       return(stmt.execute(sql));
    }
 
+
+   public int executeUpdate(String sql, boolean savepoint) throws Exception
+   {
+      Savepoint sp = null;
+
+      if (conn.getAutoCommit())
+         savepoint = false;
+
+      Statement stmt = conn.createStatement();
+
+      if (savepoint)
+      {
+         try
+         {
+            synchronized(conn)
+            {
+               sp = conn.setSavepoint();
+               int affected = stmt.executeUpdate(sql);
+               releaseSavePoint(sp,false);
+               return(affected);
+            }
+         }
+         catch (Exception e)
+         {
+            releaseSavePoint(sp,true);
+            throw new Exception(e);
+         }
+      }
+
+      return(stmt.executeUpdate(sql));
+   }
+
+
    public void executeQuery(Cursor cursor, boolean savepoint)  throws Exception
    {
+      Savepoint sp = null;
+
+      if (conn.getAutoCommit())
+         savepoint = false;
+
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
@@ -111,10 +183,8 @@ public abstract class JdbcInterface
          stmt.setObject(i+1,bv.value(),bv.sqlTypeID());
       }
 
-      if (savepoint && !conn.getAutoCommit())
+      if (savepoint)
       {
-         Savepoint sp = null;
-
          try
          {
             synchronized(conn)
@@ -132,14 +202,6 @@ public abstract class JdbcInterface
       }
 
       cursor.resultset(stmt.executeQuery());
-   }
-
-
-   public void releaseSavePoint(Savepoint savepoint, boolean rollback) throws Exception
-   {
-      if (savepoint == null) return;
-      if (rollback) conn.rollback(savepoint);
-      else  conn.releaseSavepoint(savepoint);
    }
 
    public abstract void releaseProxyUser(Connection conn) throws Exception;

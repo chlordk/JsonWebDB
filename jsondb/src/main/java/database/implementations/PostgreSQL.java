@@ -36,7 +36,7 @@ public class PostgreSQL extends JdbcInterface
    @Override
    public void setProxyUser(Connection conn, String username) throws Exception
    {
-      super.execute("set role "+username);
+      super.execute("set role "+username,false);
    }
 
    @Override
