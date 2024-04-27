@@ -55,6 +55,7 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String SECONDARY = "secondary";
 
    private final int latency;
+   private final int savepoint;
    private final String defusr;
    private final boolean proxy;
    private final DatabaseType type;
@@ -81,8 +82,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       String usr = Config.get(def,USERNAME);
       String pwd = Config.get(def,PASSWORD);
 
-      String[] savepoints = getStringArray(def,SAVEPOINT);
-
       prm.setUsername(usr);
       prm.setPassword(pwd);
       prm.setValidationQuery(sql);
@@ -108,9 +107,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       this.latency = latency;
       this.primary = new DataSource(prm);
       this.type = DatabaseType.getType(type);
-
-      if (!secondary) this.secondary = null;
-      else this.secondary = new DataSource(sec);
+      this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));
+      if (!secondary) this.secondary = null; else this.secondary = new DataSource(sec);
    }
 
 
@@ -146,6 +144,19 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    public DatabaseType type(boolean write)
    {
       return(type);
+   }
+
+
+   @Override
+   public boolean savepoint(boolean write)
+   {
+      switch (savepoint)
+      {
+         case 3: return(true);
+         case 2: return(write);
+         case 1: return(!write);
+         default: return(false);
+      }
    }
 
 
@@ -203,5 +214,33 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       props.setValidationInterval(cval);
 
       return(props);
+   }
+
+
+   private int savepoint(String[] spec)
+   {
+      int sp = 0;
+
+      if (spec == null) return(sp);
+      if (spec.length == 0) return(sp);
+
+      for (int i = 0; i < spec.length; i++)
+      {
+         if (spec[i].equalsIgnoreCase("read"))
+         {
+            if (sp == 0) sp = 1;
+            if (sp == 2) sp = 3;
+         }
+
+         else
+
+         if (spec[i].equalsIgnoreCase("write"))
+         {
+            if (sp == 0) sp = 2;
+            if (sp == 1) sp = 3;
+         }
+      }
+
+      return(sp);
    }
 }

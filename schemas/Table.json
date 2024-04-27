@@ -67,6 +67,11 @@
                         "items": {"$ref": "#/types/NameValuePair"}
                      }
                      ,
+                     "savepoint":
+                     {
+                        "type": "boolean"
+                     }
+                     ,
                      "returning":
                      {
                         "type": "array",
@@ -99,6 +104,11 @@
                         "items": {"$ref": "#/types/NameValuePair"}
                      }
                      ,
+                     "savepoint":
+                     {
+                        "type": "boolean"
+                     }
+                     ,
                      "returning":
                      {
                         "type": "array",
@@ -128,6 +138,11 @@
                      {
                         "type": "array",
                         "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "savepoint":
+                     {
+                        "type": "boolean"
                      }
                      ,
                      "returning":
@@ -165,6 +180,11 @@
                      {
                         "type": "array",
                         "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "savepoint":
+                     {
+                        "type": "boolean"
                      }
                      ,
                      "filters":

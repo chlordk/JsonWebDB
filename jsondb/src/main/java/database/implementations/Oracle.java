@@ -22,6 +22,7 @@
 package database.implementations;
 
 import java.sql.Connection;
+import java.sql.Savepoint;
 import java.util.Properties;
 import database.definitions.AdvancedPool;
 import database.definitions.JdbcInterface;
@@ -49,5 +50,13 @@ public class Oracle extends JdbcInterface
    {
       OracleConnection oconn = (OracleConnection) conn;
       oconn.close(OracleConnection.PROXY_SESSION);
+   }
+
+   @Override
+   public void releaseSavePoint(Savepoint savepoint, boolean rollback) throws Exception
+   {
+      if (savepoint == null) return;
+      // Oracle only supports rollback. Savepoints are released when commit/rollback
+      if (rollback) super.releaseSavePoint(savepoint,rollback);
    }
 }

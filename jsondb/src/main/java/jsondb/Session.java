@@ -263,11 +263,11 @@ public class Session
       return(true);
    }
 
-   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
+   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
    {
       JdbcInterface read = ensure(false);
       Cursor cursor = new Cursor(sql,bindvalues);
-      read.executeQuery(cursor);
+      read.executeQuery(cursor,savepoint);
       return(cursor);
    }
 

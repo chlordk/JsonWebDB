@@ -28,7 +28,6 @@ import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.lang.reflect.Array;
 
 
 public class Utils
@@ -59,32 +58,5 @@ public class Utils
       }
 
       return(bindvalues);
-   }
-
-
-   @SuppressWarnings("unchecked")
-   public static <T> T[] getJSONList(JSONObject json, String section, Class<?> clz)
-   {
-      if (!json.has(section))
-         return(null);
-
-      Object object = json.get(section);
-
-      T[] values = (T[]) Array.newInstance(clz,1);
-
-      if (object instanceof JSONArray)
-      {
-         JSONArray arr = (JSONArray) object;
-         values = (T[]) Array.newInstance(clz,1);
-
-         for (int i = 0; i < values.length; i++)
-            values[i] = (T) arr.get(i);
-      }
-      else
-      {
-         values[0] = (T) object;
-      }
-
-      return(values);
    }
 }

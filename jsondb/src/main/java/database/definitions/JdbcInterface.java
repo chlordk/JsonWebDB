@@ -26,6 +26,7 @@ import database.Cursor;
 import messages.Messages;
 import java.sql.Statement;
 import database.BindValue;
+import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -96,7 +97,7 @@ public abstract class JdbcInterface
       return(stmt.execute(sql));
    }
 
-   public void executeQuery(Cursor cursor)  throws Exception
+   public void executeQuery(Cursor cursor, boolean savepoint)  throws Exception
    {
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
@@ -110,9 +111,37 @@ public abstract class JdbcInterface
          stmt.setObject(i+1,bv.value(),bv.sqlTypeID());
       }
 
+      if (savepoint && !conn.getAutoCommit())
+      {
+         Savepoint sp = null;
+
+         try
+         {
+            synchronized(conn)
+            {
+               sp = conn.setSavepoint();
+               cursor.resultset(stmt.executeQuery());
+               releaseSavePoint(sp,false);
+            }
+         }
+         catch (Exception e)
+         {
+            releaseSavePoint(sp,true);
+            throw new Exception(e);
+         }
+      }
+
       cursor.resultset(stmt.executeQuery());
    }
 
-  public abstract void releaseProxyUser(Connection conn) throws Exception;
-  public abstract void setProxyUser(Connection conn, String username) throws Exception;
+
+   public void releaseSavePoint(Savepoint savepoint, boolean rollback) throws Exception
+   {
+      if (savepoint == null) return;
+      if (rollback) conn.rollback(savepoint);
+      else  conn.releaseSavepoint(savepoint);
+   }
+
+   public abstract void releaseProxyUser(Connection conn) throws Exception;
+   public abstract void setProxyUser(Connection conn, String username) throws Exception;
 }

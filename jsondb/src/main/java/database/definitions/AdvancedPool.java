@@ -35,6 +35,7 @@ public interface AdvancedPool
    boolean proxy();
    boolean secondary();
    String defaultuser();
+   boolean savepoint(boolean write);
    DatabaseType type(boolean write);
    void freeConnection(Connection conn) throws Exception;
    Connection getConnection(boolean write) throws Exception;

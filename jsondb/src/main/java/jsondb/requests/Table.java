@@ -28,6 +28,7 @@ import utils.Misc;
 import jsondb.Session;
 import sources.Sources;
 import database.Cursor;
+import jsondb.Config;
 import jsondb.Response;
 import database.SQLPart;
 import utils.JSONOObject;
@@ -50,6 +51,7 @@ public class Table
    private static final String COLUMNS = "columns";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
+   private static final String SAVEPOINT = "savepoint";
 
 
    public Table(JSONObject definition) throws Exception
@@ -82,13 +84,17 @@ public class Table
       }
 
       JSONObject args = definition.getJSONObject(SELECT);
-      String[] columns = Utils.getJSONList(args,COLUMNS,String.class);
+      String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
       String stmt = "select "+getColumnList(columns);
 
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
-      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
+      boolean savepoint = Config.pool().savepoint(false);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
       cursor.pagesize(Misc.get(args,PAGESIZE));
 
       JSONArray rows = new JSONArray();
