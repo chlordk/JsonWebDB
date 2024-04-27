@@ -44,6 +44,9 @@ public class Session
    private final boolean dedicated;
    private final AdvancedPool pool;
 
+   private final ConcurrentHashMap<String,Cursor> cursors =
+      new ConcurrentHashMap<String,Cursor>();
+
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
@@ -103,8 +106,8 @@ public class Session
       this.user = user;
       this.used = new Date();
       this.pool = Config.pool();
-      this.idle = Config.conTimeout();
       this.dedicated = dedicated;
+      this.idle = Config.conTimeout();
    }
 
    public String getGuid()
@@ -156,6 +159,22 @@ public class Session
       TransactionInfo info = StateHandler.touchTransaction(guid,trxused);
       return(info);
    }
+
+   public void addCursor(Cursor cursor) throws Exception
+   {
+      cursor.save(this.guid);
+      cursors.put(cursor.name(),cursor);
+   }
+
+   public Cursor getCursor(String cursid) throws Exception
+   {
+      Cursor cursor = cursors.get(cursid);
+
+      if (cursor != null) cursor.setState(this.guid);
+      else cursor = Cursor.create(this.guid,cursid);
+
+      return(cursor);
+  }
 
    public synchronized boolean isConnected()
    {

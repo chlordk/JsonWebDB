@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import org.json.JSONArray;
 import state.StateHandler;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.sql.ResultSetMetaData;
 
@@ -50,6 +51,34 @@ public class Cursor
    private final String sql;
    private final String name;
    private final ArrayList<BindValue> bindvalues;
+
+
+   public static Cursor create(String session, String cursid) throws Exception
+   {
+      byte[] bytes = StateHandler.getCursor(session,cursid);
+      if (bytes == null) return(null);
+
+      String str = new String(bytes,0,12);
+      JSONObject json = new JSONObject(str);
+
+      String sql = json.getString("query");
+
+      JSONArray bind = json.getJSONArray("bindvalues");
+      ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
+
+      for (int i = 0; i < bind.length(); i++)
+         bindvalues.add(BindValue.from(bind.getJSONObject(i)));
+
+      int pgsz = Bytes.getInt(bytes,8);
+      long pos = Bytes.getLong(bytes,0);
+
+      Cursor cursor = new Cursor(sql,bindvalues);
+
+      cursor.pos = pos;
+      cursor.pagesize = pgsz;
+
+      return(cursor);
+   }
 
 
    public Cursor(String sql, ArrayList<BindValue> bindvalues)
@@ -142,6 +171,7 @@ public class Cursor
          if (!rset.next())
           {close();break;}
 
+         this.pos++;
          Object[] row = new Object[cols];
 
          for (int c = 0; c < cols; c++)
@@ -175,7 +205,13 @@ public class Cursor
       if (stmt != null) stmt.close();
    }
 
-   public void save(Session session) throws Exception
+   public void setState(String session) throws Exception
+   {
+      byte[] header = StateHandler.peekCursor(session,name,12);
+      this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
+   }
+
+   public void save(String session) throws Exception
    {
       JSONArray bind = new JSONArray();
       JSONOObject data = new JSONOObject();
@@ -199,6 +235,6 @@ public class Cursor
       System.arraycopy(psz,0,bytes,8,psz.length);
       System.arraycopy(def,0,bytes,12,def.length);
 
-      StateHandler.createCursor(session.getGuid(),name,bytes);
+      StateHandler.createCursor(session,name,bytes);
    }
 }

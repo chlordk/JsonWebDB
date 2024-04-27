@@ -40,6 +40,21 @@ public class BindValue
    private String sqlTypeName = null;
 
 
+   public static BindValue from(JSONObject json)
+   {
+      BindValue bv = new BindValue();
+
+      bv.value       = json.get("value");
+      bv.name        = json.getString("name");
+
+      bv.sqlTypeID   = json.getInt("sqltype");
+      bv.sqlTypeName = json.getString("type");
+      bv.ampersand   = json.getBoolean("ampersand");
+
+      return(bv);
+   }
+
+
    public BindValue()
    {
    }
