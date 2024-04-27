@@ -106,9 +106,7 @@ public class Table
       if (session == null) return(new Response(response));
 
       TableSource source = Utils.getSource(response,this.source);
-
-      if (source == null)
-         return(new Response(response));
+      if (source == null) return(new Response(response));
 
       if (!source.described())
          this.describe();
@@ -127,6 +125,8 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
+
+      //cursor.
       cursor.pagesize(Misc.get(args,PAGESIZE));
 
       JSONArray rows = new JSONArray();

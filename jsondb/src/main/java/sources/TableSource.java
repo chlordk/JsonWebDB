@@ -92,7 +92,7 @@ public class TableSource extends Source
 
    public boolean described()
    {
-      return(columns == null);
+      return(columns != null);
    }
 
    public ArrayList<Column> getColumns()
