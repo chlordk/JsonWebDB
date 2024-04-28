@@ -57,8 +57,8 @@ public class Table
    public Table(JSONObject definition) throws Exception
    {
       this.definition = definition;
-      source = definition.optString(SOURCE);
-      sessid = definition.optString(SESSION);
+      source = definition.getString(SOURCE);
+      sessid = definition.getString(SESSION);
    }
 
 
@@ -134,7 +134,10 @@ public class Table
       response.put("success",true);
 
       if (cursor.next())
+      {
+         response.put("more",true);
          response.put("cursor",cursor.name());
+      }
 
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);

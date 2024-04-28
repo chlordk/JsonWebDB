@@ -1,0 +1,55 @@
+{
+   "$id": "Cursor.json",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+   "type": "object",
+   "title": "Cursor-schema",
+
+   "properties":
+   {
+      "Cursor":
+      {
+         "description": "Object that handles fetching more data from a query",
+
+         "required": ["invoke","session","cursor"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "session":
+            {
+               "type": "string",
+               "description": "Unique identifier. Handed out after successful connect"
+            }
+            ,
+            "cursor":
+            {
+               "type": "string",
+               "description": "Unique identifier. Handed out when cursor is created"
+            }
+            ,
+            "invoke":
+            {
+               "type": "string",
+               "description": "Method to invoke",
+               "enum": ["fetch()", "close()"]
+            }
+            ,
+            "fetch()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "page-size":
+                  {
+                     "type": "number",
+                     "description": "The number of rows to fetch per call aka. array-fetch"
+               }
+               }
+            }
+         }
+      }
+   }
+}

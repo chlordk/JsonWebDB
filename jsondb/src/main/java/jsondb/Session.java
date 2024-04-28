@@ -196,6 +196,9 @@ public class Session
       if (rconn != null && rconn.isConnected())
          rconn.disconnect();
 
+      for(Cursor cursor : cursors.values())
+         cursor.close();
+
       trxused = null;
       connused = null;
 
@@ -234,6 +237,8 @@ public class Session
       }
 
       boolean success = StateHandler.removeSession(guid);
+
+      cursors.clear();
       sessions.remove(guid);
 
       trxused = null;

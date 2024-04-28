@@ -27,6 +27,7 @@ package jsondb.requests;
 import sources.Source;
 import jsondb.Session;
 import sources.Sources;
+import database.Cursor;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
@@ -76,6 +77,20 @@ public class Utils
       }
 
       return(session);
+   }
+
+
+   public static Cursor getCursor(JSONObject response, Session session, String cursid) throws Exception
+   {
+      Cursor cursor = session.getCursor(cursid);
+
+      if (cursor == null)
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("NO_SUCH_CURSOR",cursid));
+      }
+
+      return(cursor);
    }
 
 

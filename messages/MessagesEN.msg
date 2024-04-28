@@ -15,3 +15,4 @@ BAD_COLUNM_SPEC            = Column specification is potentially dangerous
 NOT_CONNECTED              = There is no database connection
 SERVER_STOPPED             = Server stopped due to a severe problem
 FILE_CORRUPTION            = Unable to read {%1} bytes from file '{%2}'
+NO_SUCH_CURSOR             = Cursor {%1} does not exist
