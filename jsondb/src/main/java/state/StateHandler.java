@@ -240,9 +240,9 @@ public class StateHandler
    }
 
 
-   public static boolean createCursor(String session, String cursor, byte[] bytes) throws Exception
+   public static boolean createCursor(String sessid, String cursid, byte[] bytes) throws Exception
    {
-      File file = curFile(session,cursor);
+      File file = curFile(sessid,cursid);
       if (file.exists()) return(false);
 
       FileOutputStream out = new FileOutputStream(file);
@@ -252,9 +252,9 @@ public class StateHandler
    }
 
 
-   public static byte[] getCursor(String session, String cursor) throws Exception
+   public static byte[] getCursor(String sessid, String cursid) throws Exception
    {
-      File file = curFile(session,cursor);
+      File file = curFile(sessid,cursid);
       if (!file.exists()) return(null);
 
       FileInputStream in = new FileInputStream(file);
@@ -264,18 +264,18 @@ public class StateHandler
    }
 
 
-   public static boolean removeCursor(String session, String cursor) throws Exception
+   public static boolean removeCursor(String sessid, String cursid) throws Exception
    {
-      File file = curFile(session,cursor);
+      File file = curFile(sessid,cursid);
       if (!file.exists()) return(false);
       file.delete();
       return(true);
    }
 
 
-   public static byte[] peekCursor(String session, String cursor, int len) throws Exception
+   public static byte[] peekCursor(String sessid, String cursid, int len) throws Exception
    {
-      File file = curFile(session,cursor);
+      File file = curFile(sessid,cursid);
       if (!file.exists()) return(null);
 
       byte[] bytes = new byte[len];
@@ -289,16 +289,18 @@ public class StateHandler
    }
 
 
-   public static boolean updateCursor(String session, String cursor, byte[] cpos, byte[] pgsz) throws Exception
+   public static boolean updateCursor(String sessid, String cursid, byte[] cpos, byte[] pgsz) throws Exception
    {
-      File file = curFile(session,cursor);
+      File file = curFile(sessid,cursid);
       if (!file.exists()) return(false);
 
       byte[] bytes = new byte[cpos.length+pgsz.length];
       System.arraycopy(cpos,0,bytes,0,cpos.length);
       System.arraycopy(pgsz,0,bytes,8,pgsz.length);
+
       RandomAccessFile raf = new RandomAccessFile(file,"rw");
       raf.write(bytes); raf.close();
+      
       return(true);
    }
 

@@ -75,7 +75,7 @@ public class Cursor
       int pgsz = Bytes.getInt(bytes,8);
       long pos = Bytes.getLong(bytes,0);
 
-      Cursor cursor = new Cursor(session,sql,bindvalues);
+      Cursor cursor = new Cursor(cursid,session,sql,bindvalues);
 
       cursor.pos = pos;
       cursor.pagesize = pgsz;
@@ -86,12 +86,27 @@ public class Cursor
 
    public Cursor(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
+      this(null,session,sql,bindvalues);
+   }
+
+
+   public Cursor(String name, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   {
+      boolean save = false;
+
+      if (name == null)
+      {
+         save = true;
+         name = Guid.generate();
+      }
+
       this.pos = 0;
       this.sql = sql;
+      this.name = name;
       this.session = session;
-      this.name = Guid.generate();
       this.bindvalues = bindvalues;
-      this.save();
+
+      if (save) this.save();
    }
 
    public long pos()

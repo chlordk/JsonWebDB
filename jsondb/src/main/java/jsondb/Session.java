@@ -171,10 +171,12 @@ public class Session
       else
       {
          cursor = Cursor.create(this,cursid);
+         if (cursor == null) return(null);
+
          JdbcInterface read = ensure(false);
          read.executeQuery(cursor,false);
-         //cursors.put(cursid,cursor);
-         System.out.println("remember to add cursor");
+
+         cursors.put(cursid,cursor);
          cursor.position();
       }
 
