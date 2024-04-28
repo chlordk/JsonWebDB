@@ -95,6 +95,11 @@ public class TableSource extends Source
       return(columns != null);
    }
 
+   public Column getColumn(String column)
+   {
+      return(columns.get(column.toLowerCase()));
+   }
+
    public ArrayList<Column> getColumns()
    {
       if (columns == null) return(null);

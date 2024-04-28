@@ -48,6 +48,7 @@ public abstract class Filter
 
    protected Object value = null;
    protected String column = null;
+   protected Source source = null;
    protected String[] columns = null;
    protected JSONObject definition = null;
 
@@ -59,8 +60,9 @@ public abstract class Filter
    public abstract ArrayList<BindValue> bindvalues();
 
 
-   public Filter(JSONObject definition)
+   public Filter(Source source, JSONObject definition)
    {
+      this.source = source;
       this.definition = definition;
 
       if (definition.has(VALUE))

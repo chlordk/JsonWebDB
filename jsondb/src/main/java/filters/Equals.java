@@ -24,8 +24,8 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
 import database.BindValue;
+import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.definitions.Filter;
@@ -33,9 +33,9 @@ import filters.definitions.Filter;
 
 public class Equals extends Filter
 {
-   public Equals(Source source, JSONObject definition)
+   public Equals(TableSource source, JSONObject definition)
    {
-      super(definition);
+      super(source,definition);
    }
 
    @Override
@@ -50,6 +50,7 @@ public class Equals extends Filter
       if (bindvalues.size() == 0)
       {
          BindValue bv = new BindValue(column);
+         
       }
 
       return(bindvalues);

@@ -24,15 +24,13 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
+import jsondb.JsonDB;
 import sources.Sources;
-import java.io.FileInputStream;
+import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import filters.definitions.Filter;
-import jsondb.JsonDB;
-import messages.Messages;
+import sources.TableSource;
+import java.io.FileInputStream;
 
 
 public class WhereClause
@@ -47,7 +45,7 @@ public class WhereClause
       JSONObject test = new JSONObject(content).getJSONObject("Table");
       String srcname = test.getString("source");
 
-      Source source = Sources.get(srcname);
+      TableSource source = Sources.get(srcname);
 
       test = test.getJSONObject("select()");
       WhereClause whcl = new WhereClause(source,test);
@@ -59,11 +57,10 @@ public class WhereClause
    private JSONArray filters;
 
 
-   public WhereClause(Source source, JSONObject definition) throws Exception
+   public WhereClause(TableSource source, JSONObject definition) throws Exception
    {
       if (!definition.has(FILTERS)) return;
       filters = definition.getJSONArray(FILTERS);
-      Filter.getInstance("equals",source,definition);
    }
 
 
