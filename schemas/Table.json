@@ -39,13 +39,8 @@
                ,
                "invoke":
                {
-                  "description": "Method(s) to invoke",
-
-                  "oneOf":
-                  [
-                     {"$ref": "#/types/Method"},
-                     {"type": "array", "items": {"$ref": "#/types/Method"}}
-                  ]
+                  "$ref": "#/types/Method",
+                  "description": "Method to invoke"
                }
                ,
                "bindvalues":
