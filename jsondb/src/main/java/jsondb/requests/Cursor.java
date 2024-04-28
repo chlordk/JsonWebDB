@@ -68,8 +68,6 @@ public class Cursor
          if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
       }
 
-      System.out.println("fetch "+cursid);
-
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
 
