@@ -25,14 +25,35 @@ SOFTWARE.
 package filters;
 
 import sources.Source;
+import sources.Sources;
+import java.io.FileInputStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import oracle.net.aso.f;
+import filters.definitions.Filter;
+import jsondb.JsonDB;
+import messages.Messages;
 
 
 public class WhereClause
 {
+   public static void main(String[] args) throws Exception
+   {
+      JsonDB.initialize(args[0],args[1]);
+
+      FileInputStream in = new FileInputStream("/Users/alhof/Repository/JsonWebDB/examples/table-select.json");
+      String content = new String(in.readAllBytes()); in.close();
+
+      JSONObject test = new JSONObject(content).getJSONObject("Table");
+      String srcname = test.getString("source");
+
+      Source source = Sources.get(srcname);
+
+      test = test.getJSONObject("select()");
+      WhereClause whcl = new WhereClause(source,test);
+      whcl.parse();
+   }
+
    private static final String FILTERS = "filters";
 
    private JSONArray filters;
@@ -42,6 +63,7 @@ public class WhereClause
    {
       if (!definition.has(FILTERS)) return;
       filters = definition.getJSONArray(FILTERS);
+      Filter.getInstance("equals",source,definition);
    }
 
 
@@ -62,20 +84,56 @@ public class WhereClause
    {
       int entries = fltlist.length();
       if (entries == 0) return(entries);
-      JSONObject[] filters = new JSONObject[entries];
+      Clause[] filters = new Clause[entries];
 
       for (int i = 0; i < entries; i++)
-         filters[i] = fltlist.getJSONObject(i);
+         filters[i] = new Clause(fltlist.getJSONObject(i));
+
+      validateFirst(filters[0]);
 
       return(entries);
    }
 
 
-   private boolean validateFirst(JSONObject first) throws Exception
+   private void validateFirst(Clause first) throws Exception
    {
+      if (first.type.equals("or"))
+        throw new Exception(Messages.get("WHERECLAUSE_OR_START",first.toString()));
+   }
 
-      String[] attr = JSONObject.getNames(filters[0]);
-      if (attr[0].equalsIgnoreCase("or"))
 
+   private static class Clause
+   {
+      String type;
+      JSONObject filter;
+      JSONArray filters;
+
+      Clause(JSONObject filter)
+      {
+         this.type = "and";
+         this.filter = filter;
+
+         String[] attr = JSONObject.getNames(filter);
+
+         if (attr[0].equalsIgnoreCase("and"))
+         {
+            Object flt = filter.get("and");
+            if (flt instanceof JSONArray) filters = (JSONArray) flt;
+            else if (flt instanceof JSONObject) filter = (JSONObject) flt;
+         }
+
+         if (attr[0].equalsIgnoreCase("or"))
+         {
+            this.type = "or";
+            Object flt = filter.get("or");
+            if (flt instanceof JSONArray) filters = (JSONArray) flt;
+            else if (flt instanceof JSONObject) filter = (JSONObject) flt;
+         }
+      }
+
+      boolean list()
+      {
+         return(filters != null);
+      }
    }
 }

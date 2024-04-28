@@ -3,19 +3,24 @@
   {
     "invoke": "select()",
     "source": "employees",
-    "session": "9951bc48-ada6-4a8c-957f-bbed924e42e7",
+    "session": "baba42e4-33d1-41a0-a11a-b47f7a203d64",
     
     "select()":
     {
         "columns": "*",
         "page-size": 2,
+        "for-update": true,
         "order": "last_name, first_name",
 
         "filters":
         [
             {"column": "first_name", "filter": "Equals", "value": "Mia"},
-            { "or": {"column": "last_name", "filter": "Like", "value": "Jens%"}}
-
+            { "or": {"column": "last_name", "filter": "Like", "value": "Jens%"}},
+            { "or": 
+                [
+                    {"column": "last_name", "filter": "Like", "value": "Jens%"}
+                ]
+            }
         ]
     }
   }

@@ -28,9 +28,9 @@ import jsondb.Config;
 import jsondb.Response;
 import messages.Messages;
 import org.json.JSONObject;
+import java.util.logging.Level;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 
 public class RequestHandler
