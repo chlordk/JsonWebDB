@@ -131,7 +131,7 @@ public class Table
       select.append(source.from(bindvalues));
 
       if (order != null) select.append("order by "+order);
-      if (lock) select.append("for update");
+      if (lock && session.isDedicated()) select.append("for update");
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
