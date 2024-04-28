@@ -9,6 +9,7 @@
     {
         "columns": "*",
         "page-size": 2,
+        "order": "last_name, first_name",
 
         "filters":
         [

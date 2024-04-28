@@ -58,7 +58,7 @@
                "description": "DML will ignore derived columns"
             }
             ,
-            "sorting":
+            "order":
             {
                "type": "string",
                "description": "The default 'order by' clause"

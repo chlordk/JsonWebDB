@@ -25,17 +25,17 @@ SOFTWARE.
 package jsonwebdb;
 
 import http.Admin;
-import http.Options;
 import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
+import http.HTTPConfig;
 import http.AdminResponse;
+import files.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import http.AdminResponse.Header;
-import jsondb.files.FileResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +78,7 @@ public class JsonWebDB extends HttpServlet
             FileResponse file = null;
             String path = getPath(request);
 
-            if (path.startsWith(Options.admin()))
+            if (path.startsWith(HTTPConfig.admin()))
             {
                admin(path,request,response);
                return;
@@ -142,7 +142,7 @@ public class JsonWebDB extends HttpServlet
    {
       try
       {
-         if (Options.adminSSLRequired() && !request.isSecure())
+         if (HTTPConfig.adminSSLRequired() && !request.isSecure())
          {
             AdminResponse rsp = Admin.noSSLMessage();
             OutputStream out = response.getOutputStream();
@@ -190,7 +190,7 @@ public class JsonWebDB extends HttpServlet
    private String getPath(HttpServletRequest request)
    {
       String path = request.getRequestURI().substring(request.getContextPath().length());
-      if (path.length() <= 1) path = Options.index();
+      if (path.length() <= 1) path = HTTPConfig.index();
       return(path);
    }
 

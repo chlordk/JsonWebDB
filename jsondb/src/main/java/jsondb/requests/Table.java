@@ -46,6 +46,7 @@ public class Table
    private final String source;
    private final JSONObject definition;
 
+   private static final String ORDER = "order";
    private static final String SOURCE = "source";
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
@@ -116,6 +117,9 @@ public class Table
          Utils.getBindValues(definition);
 
       JSONObject args = definition.getJSONObject(SELECT);
+
+      String sorting = Misc.getString(args,ORDER,false);
+
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
       String stmt = "select "+getColumnList(columns);
 
