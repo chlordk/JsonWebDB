@@ -164,8 +164,19 @@ public class Session
    {
       Cursor cursor = cursors.get(cursid);
 
-      if (cursor != null) cursor.loadState();
-      else cursor = Cursor.create(this,cursid);
+      if (cursor != null)
+      {
+         cursor.loadState();
+      }
+      else
+      {
+         cursor = Cursor.create(this,cursid);
+         JdbcInterface read = ensure(false);
+         read.executeQuery(cursor,false);
+         //cursors.put(cursid,cursor);
+         System.out.println("remember to add cursor");
+         cursor.position();
+      }
 
       return(cursor);
   }

@@ -61,7 +61,7 @@ public class Cursor
       byte[] bytes = StateHandler.getCursor(guid,cursid);
       if (bytes == null) return(null);
 
-      String str = new String(bytes,0,12);
+      String str = new String(bytes,12,bytes.length-12);
       JSONObject json = new JSONObject(str);
 
       String sql = json.getString("query");
@@ -166,9 +166,7 @@ public class Cursor
    public synchronized ArrayList<Object[]> fetch() throws Exception
    {
       columns = describe();
-      ResultSetMetaData meta = rset.getMetaData();
-
-      int cols = meta.getColumnCount();
+      int cols = columns.size();
       ArrayList<Object[]> rows = new ArrayList<Object[]>();
 
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
@@ -202,6 +200,15 @@ public class Cursor
 
       if (!eof) saveState();
       return(rows);
+   }
+
+   public synchronized void position() throws Exception
+   {
+      for (int i = 0; i < this.pos; i++)
+      {
+         if (!rset.next())
+          {close();break;}
+      }
    }
 
    public void close() throws Exception
