@@ -155,12 +155,24 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
+            Config.logger().severe(sql);
             releaseSavePoint(sp,true);
             throw new Exception(e);
          }
       }
-
-      return(stmt.executeUpdate(sql));
+      else
+      {
+         try
+         {
+            int affected = stmt.executeUpdate(sql);
+            return(affected);
+         }
+         catch (Exception e)
+         {
+            Config.logger().severe(sql);
+            throw new Exception(e);
+         }
+      }
    }
 
 
@@ -196,12 +208,23 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
+            Config.logger().severe(cursor.sql());
             releaseSavePoint(sp,true);
             throw new Exception(e);
          }
       }
-
-      cursor.resultset(stmt.executeQuery());
+      else
+      {
+         try
+         {
+            cursor.resultset(stmt.executeQuery());
+         }
+         catch (Exception e)
+         {
+            Config.logger().severe(cursor.sql());
+            throw new Exception(e);
+         }
+      }
    }
 
    public abstract void releaseProxyUser(Connection conn) throws Exception;
