@@ -42,6 +42,31 @@ public class Utils
    private static final String SECTION = "bindvalues";
 
 
+
+   public static String getColumnList(String[] columns) throws Exception
+   {
+      if (columns == null)
+         throw new Exception(Messages.get("MISSING_COLUNM_SPEC"));
+
+      for (int i = 0; i < columns.length; i++)
+      {
+         columns[i] = columns[i].trim();
+         if (columns[i].indexOf('(') >= 0)
+            throw new Exception(Messages.get("BAD_COLUNM_SPEC"));
+      }
+
+      String list = "";
+
+      for (int i = 0; i < columns.length; i++)
+      {
+         if (i > 0) list += ",";
+         list += columns[i];
+      }
+
+      return(list);
+   }
+
+
    public static ArrayList<BindValue> getBindValues(JSONObject def)
    {
       if (!def.has(SECTION))

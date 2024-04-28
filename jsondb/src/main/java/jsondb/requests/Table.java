@@ -32,12 +32,12 @@ import jsondb.Response;
 import database.Column;
 import database.SQLPart;
 import utils.JSONOObject;
-import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import filters.WhereClause;
 
 
 public class Table
@@ -97,7 +97,15 @@ public class Table
          }
       }
 
-      return(pack(response,source));
+      JSONArray rows = new JSONArray();
+      ArrayList<Column> columns = source.getColumns();
+
+      for (int i = 0; i < columns.size(); i++)
+         rows.put(columns.get(i).toJSONObject());
+
+      response.put("rows",rows);
+
+      return(new Response(response));
    }
 
 
@@ -125,7 +133,7 @@ public class Table
       String order = Misc.getString(args,ORDER,false);
 
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
-      String stmt = "select "+getColumnList(columns);
+      String stmt = "select "+Utils.getColumnList(columns);
 
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
@@ -135,6 +143,8 @@ public class Table
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      WhereClause where = new WhereClause(source,args);
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
       cursor.pagesize(Misc.get(args,PAGESIZE));
@@ -153,43 +163,6 @@ public class Table
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);
 
-      return(new Response(response));
-   }
-
-
-   private String getColumnList(String[] columns) throws Exception
-   {
-
-      if (columns == null)
-         throw new Exception(Messages.get("MISSING_COLUNM_SPEC"));
-
-      for (int i = 0; i < columns.length; i++)
-      {
-         columns[i] = columns[i].trim();
-         if (columns[i].indexOf('(') >= 0)
-            throw new Exception(Messages.get("BAD_COLUNM_SPEC"));
-      }
-
-      String list = "";
-
-      for (int i = 0; i < columns.length; i++)
-      {
-         if (i > 0) list += ",";
-         list += columns[i];
-      }
-
-      return(list);
-   }
-
-   private Response pack(JSONObject response, TableSource source)
-   {
-      JSONArray rows = new JSONArray();
-      ArrayList<Column> columns = source.getColumns();
-
-      for (int i = 0; i < columns.size(); i++)
-         rows.put(columns.get(i).toJSONObject());
-
-      response.put("rows",rows);
       return(new Response(response));
    }
 }
