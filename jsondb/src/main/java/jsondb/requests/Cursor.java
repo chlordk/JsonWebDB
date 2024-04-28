@@ -40,8 +40,10 @@ public class Cursor
    private final String cursid;
    private final JSONObject definition;
 
+   private static final String FETCH = "fetch()";
    private static final String CURSOR = "cursor";
    private static final String SESSION = "session";
+   private static final String PAGESIZE = "page-size";
 
 
    public Cursor(JSONObject definition)
@@ -61,6 +63,12 @@ public class Cursor
 
       database.Cursor cursor = Utils.getCursor(response,session,cursid);
       if (cursor == null) return(new Response(response));
+
+      if (definition.has(FETCH))
+      {
+         JSONObject fetch = definition.getJSONObject(FETCH);
+         if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
+      }
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
