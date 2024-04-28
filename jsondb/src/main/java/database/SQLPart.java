@@ -70,6 +70,13 @@ public class SQLPart
    }
 
 
+   public SQLPart append(String next)
+   {
+      this.sql += " "+next;
+      return(this);
+   }
+
+
    public SQLPart append(SQLPart next)
    {
       this.sql += " "+next.sql;

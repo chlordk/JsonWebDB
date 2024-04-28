@@ -53,6 +53,7 @@ public class Table
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
+   private static final String FORUPDATE = "for-update";
 
 
    public Table(JSONObject definition) throws Exception
@@ -118,13 +119,19 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
 
-      String sorting = Misc.getString(args,ORDER,false);
+      Boolean lock = Misc.get(args,FORUPDATE);
+      if (lock == null) lock = false;
+
+      String order = Misc.getString(args,ORDER,false);
 
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
       String stmt = "select "+getColumnList(columns);
 
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
+
+      if (lock) select.append("for update");
+      if (order != null) select.append("order by "+order);
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);

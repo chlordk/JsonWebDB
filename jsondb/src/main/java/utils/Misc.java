@@ -172,10 +172,21 @@ public class Misc
    }
 
 
-   @SuppressWarnings("unchecked")
-   public static <T> T get(JSONObject def, String attr)
+   public static <T> T get(JSONObject def, String attr) throws Exception
    {
-      if (!def.has(attr)) return(null);
+      return(get(def,attr,false));
+   }
+
+
+   @SuppressWarnings("unchecked")
+   public static <T> T get(JSONObject def, String attr, boolean mandatory) throws Exception
+   {
+      if (!def.has(attr))
+      {
+         if (mandatory) throwNotExist(def,attr);
+         return(null);
+      }
+
       return((T) def.get(attr));
    }
 
