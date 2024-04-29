@@ -51,7 +51,7 @@ public class Equals extends Filter
       if (bindvalues.size() == 0)
       {
          BindValue bv = new BindValue(column);
-         bindvalues.add(bv);
+         bindvalues.add(bv.value(value));
 
          if (source instanceof TableSource)
          {

@@ -186,16 +186,14 @@ public abstract class JdbcInterface
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
+      Config.logger().fine("\n"+cursor.sql());
 
       ArrayList<BindValue> bindvalues = cursor.bindvalues();
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
-      Config.logger().info("\n"+cursor.sql());
-
       for (int i = 0; i < bindvalues.size(); i++)
       {
          BindValue bv = bindvalues.get(i);
-         Config.logger().info(bv.toString());
          if (bv.untyped()) stmt.setObject(i+1,bv.value());
          else stmt.setObject(i+1,bv.value(),bv.sqlTypeID());
       }

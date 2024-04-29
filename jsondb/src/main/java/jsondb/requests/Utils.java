@@ -51,7 +51,11 @@ public class Utils
       for (int i = 0; i < columns.length; i++)
       {
          columns[i] = columns[i].trim();
+
          if (columns[i].indexOf('(') >= 0)
+            throw new Exception(Messages.get("BAD_COLUNM_SPEC"));
+
+         if (columns[i].indexOf('&') >= 0)
             throw new Exception(Messages.get("BAD_COLUNM_SPEC"));
       }
 

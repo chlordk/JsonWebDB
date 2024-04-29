@@ -48,6 +48,7 @@ public class Table
 
    private static final String ORDER = "order";
    private static final String SOURCE = "source";
+   private static final String CURSOR = "cursor";
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String SESSION = "session";
@@ -127,6 +128,9 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
 
+      Boolean usecurs = Misc.get(args,CURSOR);
+      if (usecurs == null) usecurs = true;
+
       Boolean lock = Misc.get(args,FORUPDATE);
       if (lock == null) lock = false;
 
@@ -153,6 +157,7 @@ public class Table
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
 
+      if (!usecurs) cursor.close();
       response.put("success",true);
 
       if (cursor.next())
