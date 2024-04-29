@@ -201,13 +201,13 @@ public class WhereClause
                   sql += " "+group[i].type+" ";
 
                if (group[i].isGroup()) sql += group[i].toString();
-               else sql += "select for " + group[i].filter.sql();
+               else sql += group[i].filter.sql();
             }
             if (!root) sql += "\n)\n";
          }
          else
          {
-            sql += "select for " + filter.sql();
+            sql += filter.sql();
          }
 
          return(sql);
