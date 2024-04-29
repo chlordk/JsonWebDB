@@ -170,13 +170,20 @@
                      ,
                      "for-update":
                      {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "Lock rows (select for update)"
                      }
                      ,
                      "assertions":
                      {
                         "type": "array",
                         "items": {"$ref": "#/types/NameValuePair"}
+                     }
+                     ,
+                     "cursor":
+                     {
+                        "type": "boolean",
+                        "description": "Keep cursor for subsequent fetch"
                      }
                      ,
                      "page-size":
