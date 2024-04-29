@@ -30,9 +30,12 @@ import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import database.BindValue;
+import database.SQLPart;
 import filters.definitions.Filter;
 import sources.TableSource;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 
 
 public class WhereClause
@@ -52,9 +55,8 @@ public class WhereClause
       test = test.getJSONObject("select()");
       WhereClause whcl = new WhereClause(source,test);
 
-      whcl.parse(source);
-      String rep = whcl.toString();
-      System.out.println(rep);
+      SQLPart sql = whcl.build(source);
+      System.out.println(sql.bindValues().size()+" "+sql.snippet());
    }
 
    private Clause clause;
@@ -75,11 +77,12 @@ public class WhereClause
    }
 
 
-   public WhereClause parse(TableSource source) throws Exception
+   public SQLPart build(TableSource source) throws Exception
    {
       this.clause = new Clause(source,filters);
       this.clause.root = true;
-      return(this);
+      this.clause.build();
+      return(new SQLPart("where\n"+clause.sql,clause.bindvalues));
    }
 
 
@@ -91,11 +94,14 @@ public class WhereClause
 
    private static class Clause
    {
+      String sql;
       String type;
       boolean root;
       boolean empty;
       Filter filter;
       Clause[] group;
+      JSONArray definition;
+      ArrayList<BindValue> bindvalues;
 
       Clause(TableSource source, JSONArray filters) throws Exception
       {
@@ -103,6 +109,8 @@ public class WhereClause
          empty = true;
          this.type = "and";
          this.filter = null;
+         this.definition = filters;
+         this.bindvalues = new ArrayList<BindValue>();
 
          int entries = filters.length();
          this.group = new Clause[entries];
@@ -120,6 +128,7 @@ public class WhereClause
       {
          empty = true;
          this.type = "and";
+         this.bindvalues = new ArrayList<BindValue>();
 
          String[] attr = JSONObject.getNames(filter);
 
@@ -138,6 +147,7 @@ public class WhereClause
                {
                   this.group[i] = new Clause(source,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
+                  bindvalues.addAll(this.group[i].bindvalues);
                   if (i == 0) StartWithAnd(this.group[i]);
                }
             }
@@ -166,6 +176,7 @@ public class WhereClause
                {
                   this.group[i] = new Clause(source,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
+                  bindvalues.addAll(this.group[i].bindvalues);
                   if (i == 0) StartWithAnd(this.group[i]);
                }
             }
@@ -188,35 +199,41 @@ public class WhereClause
       }
 
 
-      public String toString()
+      public String build()
       {
          String sql = "";
 
          if (isGroup())
          {
-            if (!root) sql += "\n(\n";
+            if (!root) sql += "(\n";
             for (int i = 0; i < group.length; i++)
             {
                if (group[i].type != null)
-                  sql += " "+group[i].type+" ";
+                  sql += "\n"+group[i].type+"\n";
 
-               if (group[i].isGroup()) sql += group[i].toString();
-               else sql += group[i].filter.sql();
+               if (group[i].isGroup()) sql += group[i].build();
+               else
+               {
+                  sql += group[i].filter.sql();
+                  bindvalues.addAll(group[i].filter.bindvalues());
+               }
             }
             if (!root) sql += "\n)\n";
          }
          else
          {
             sql += filter.sql();
+            bindvalues.addAll(filter.bindvalues());
          }
 
+         this.sql = sql;
          return(sql);
       }
 
       private void StartWithAnd(Clause clause) throws Exception
       {
          if (!clause.type.equals("and"))
-            throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
+            throw new Exception(Messages.get("WHERECLAUSE_OR_START",clause.definition.toString(2)));
 
          clause.type = null;
       }
