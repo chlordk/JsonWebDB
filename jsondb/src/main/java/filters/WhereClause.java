@@ -30,9 +30,6 @@ import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sources.TableSource;
-
-import static utils.Misc.getJSONList;
-
 import java.io.FileInputStream;
 
 
@@ -52,59 +49,71 @@ public class WhereClause
 
       test = test.getJSONObject("select()");
       WhereClause whcl = new WhereClause(source,test);
+
       whcl.parse();
+      whcl.clause.tree();
+      //String rep = whcl.toString();
+      //System.out.println(rep);
    }
 
-   private static final String FILTERS = "filters";
-
+   private Clause clause;
    private JSONArray filters;
+   private static final String FILTERS = "filters";
 
 
    public WhereClause(TableSource source, JSONObject definition) throws Exception
    {
       if (!definition.has(FILTERS)) return;
-      filters = definition.getJSONArray(FILTERS);
+      this.filters = definition.getJSONArray(FILTERS);
    }
 
 
    public boolean isEmpty()
    {
-      return(filters == null || filters.length() == 0);
+      return(clause.empty);
    }
 
 
    public WhereClause parse() throws Exception
    {
-      parse(filters);
+      this.clause = new Clause(filters);
       return(this);
    }
 
 
-   private int parse(JSONArray fltlist) throws Exception
+   public String toString()
    {
-      int entries = fltlist.length();
-      if (entries == 0) return(entries);
-
-      Clause[] filters = new Clause[entries];
-
-      for (int i = 0; i < entries; i++)
-         filters[i] = new Clause(fltlist.getJSONObject(i));
-
-      for (int i = 0; i < entries; i++)
-         System.out.println(filters[i].toString());
-
-      return(entries);
+      return(clause.toString());
    }
 
 
    private static class Clause
    {
       String type;
+      boolean empty;
       Clause[] group;
       JSONObject filter;
 
+      Clause(JSONArray filters) throws Exception
+      {
+         empty = true;
+         this.type = "and";
+         this.filter = null;
+
+         int entries = filters.length();
+         this.group = new Clause[entries];
+
+         for (int i = 0; i < entries; i++)
+         {
+            this.group[i] = new Clause(filters.getJSONObject(i));
+            if (!this.group[i].empty) this.empty = false;
+         }
+      }
+
+
       Clause(JSONObject filter) throws Exception
       {
+         empty = true;
          this.type = "and";
          this.filter = filter;
 
@@ -116,16 +125,22 @@ public class WhereClause
 
             if (fltdef instanceof JSONArray)
             {
+               this.filter = null;
+
                JSONArray flts = (JSONArray) fltdef;
                this.group = new Clause[flts.length()];
 
                for (int i = 0; i < this.group.length; i++)
+               {
                   this.group[i] = new Clause(flts.getJSONObject(i));
+                  if (!this.group[i].empty) this.empty = false;
+               }
 
                validateFirst();
             }
             else
             {
+               this.empty = false;
                this.filter = (JSONObject) fltdef;
             }
          }
@@ -139,16 +154,22 @@ public class WhereClause
 
             if (fltdef instanceof JSONArray)
             {
+               this.filter = null;
+
                JSONArray flts = (JSONArray) fltdef;
                this.group = new Clause[flts.length()];
 
                for (int i = 0; i < this.group.length; i++)
+               {
                   this.group[i] = new Clause(flts.getJSONObject(i));
+                  if (!this.group[i].empty) this.empty = false;
+               }
 
                validateFirst();
             }
             else
             {
+               this.empty = false;
                this.filter = (JSONObject) fltdef;
             }
          }
@@ -159,9 +180,48 @@ public class WhereClause
          return(group != null);
       }
 
-      boolean isFilter()
+      public void tree()
       {
-         return(filter != null);
+         if (isGroup()) System.out.println("array");
+         else System.out.println(filter.toString());
+
+         if (isGroup())
+         {
+            for(Clause clause : group)
+             clause.tree();
+         }
+      }
+
+      public String toString()
+      {
+         return(type+" group: "+(group != null)+" filter: "+(filter != null));
+         //return(toJSON().toString(2));
+      }
+
+      public JSONArray toJSON()
+      {
+         return(toJSON(new JSONArray()));
+      }
+
+      private JSONArray toJSON(JSONArray whcl)
+      {
+         if (isGroup())
+         {
+            for (int i = 0; i < group.length; i++)
+            {
+               JSONObject entry = new JSONObject();
+               entry.put("type",group[i].type);
+               whcl.put(group[i].toJSON());
+            }
+         }
+         else
+         {
+            JSONObject entry = new JSONObject();
+            entry.put(type,filter);
+            whcl.put(entry);
+         }
+
+         return(whcl);
       }
 
       private void validateFirst() throws Exception
@@ -171,25 +231,6 @@ public class WhereClause
             if (this.group[0].type.equals("or"))
                throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
          }
-      }
-
-      public String toString()
-      {
-         String str = type+"\n";
-
-         if (isFilter())
-         {
-            System.out.println("filter");
-            str += filter.toString(2);
-         }
-         else
-         {
-            System.out.println("group");
-            for(Clause clause : group)
-               str += clause.toString();
-         }
-
-         return(str);
       }
    }
 }
