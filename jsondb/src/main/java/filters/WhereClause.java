@@ -119,6 +119,7 @@ public class WhereClause
          {
             this.group[i] = new Clause(source,filters.getJSONObject(i));
             if (!this.group[i].empty) this.empty = false;
+            bindvalues.addAll(this.group[i].bindvalues);
             if (i == 0) StartWithAnd(this.group[i]);
          }
       }
@@ -155,6 +156,7 @@ public class WhereClause
             {
                this.empty = false;
                this.filter = getFilter(source,(JSONObject) fltdef);
+               this.bindvalues.addAll(this.filter.bindvalues());
             }
          }
 
@@ -184,12 +186,14 @@ public class WhereClause
             {
                this.empty = false;
                this.filter = getFilter(source,(JSONObject) fltdef);
+               this.bindvalues.addAll(this.filter.bindvalues());
             }
          }
 
          else
          {
             this.filter = getFilter(source,filter);
+            this.bindvalues.addAll(this.filter.bindvalues());
          }
       }
 
@@ -215,7 +219,6 @@ public class WhereClause
                else
                {
                   sql += group[i].filter.sql();
-                  bindvalues.addAll(group[i].filter.bindvalues());
                }
             }
             if (!root) sql += "\n)\n";
@@ -223,7 +226,6 @@ public class WhereClause
          else
          {
             sql += filter.sql();
-            bindvalues.addAll(filter.bindvalues());
          }
 
          this.sql = sql;
