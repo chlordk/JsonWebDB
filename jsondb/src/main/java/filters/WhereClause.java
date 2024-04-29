@@ -30,6 +30,9 @@ import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sources.TableSource;
+
+import static utils.Misc.getJSONList;
+
 import java.io.FileInputStream;
 
 
@@ -81,31 +84,26 @@ public class WhereClause
    {
       int entries = fltlist.length();
       if (entries == 0) return(entries);
+
       Clause[] filters = new Clause[entries];
 
       for (int i = 0; i < entries; i++)
          filters[i] = new Clause(fltlist.getJSONObject(i));
 
-      validateFirst(filters[0]);
+      for (int i = 0; i < entries; i++)
+         System.out.println(filters[i].toString());
 
       return(entries);
-   }
-
-
-   private void validateFirst(Clause first) throws Exception
-   {
-      if (first.type.equals("or"))
-        throw new Exception(Messages.get("WHERECLAUSE_OR_START",first.toString()));
    }
 
 
    private static class Clause
    {
       String type;
+      Clause[] group;
       JSONObject filter;
-      JSONArray filters;
 
-      Clause(JSONObject filter)
+      Clause(JSONObject filter) throws Exception
       {
          this.type = "and";
          this.filter = filter;
@@ -114,23 +112,84 @@ public class WhereClause
 
          if (attr[0].equalsIgnoreCase("and"))
          {
-            Object flt = filter.get("and");
-            if (flt instanceof JSONArray) filters = (JSONArray) flt;
-            else if (flt instanceof JSONObject) filter = (JSONObject) flt;
+            Object fltdef = filter.get("and");
+
+            if (fltdef instanceof JSONArray)
+            {
+               JSONArray flts = (JSONArray) fltdef;
+               this.group = new Clause[flts.length()];
+
+               for (int i = 0; i < this.group.length; i++)
+                  this.group[i] = new Clause(flts.getJSONObject(i));
+
+               validateFirst();
+            }
+            else
+            {
+               this.filter = (JSONObject) fltdef;
+            }
          }
+
+         else
 
          if (attr[0].equalsIgnoreCase("or"))
          {
             this.type = "or";
-            Object flt = filter.get("or");
-            if (flt instanceof JSONArray) filters = (JSONArray) flt;
-            else if (flt instanceof JSONObject) filter = (JSONObject) flt;
+            Object fltdef = filter.get("or");
+
+            if (fltdef instanceof JSONArray)
+            {
+               JSONArray flts = (JSONArray) fltdef;
+               this.group = new Clause[flts.length()];
+
+               for (int i = 0; i < this.group.length; i++)
+                  this.group[i] = new Clause(flts.getJSONObject(i));
+
+               validateFirst();
+            }
+            else
+            {
+               this.filter = (JSONObject) fltdef;
+            }
          }
       }
 
-      boolean list()
+      boolean isGroup()
       {
-         return(filters != null);
+         return(group != null);
+      }
+
+      boolean isFilter()
+      {
+         return(filter != null);
+      }
+
+      private void validateFirst() throws Exception
+      {
+         if (isGroup() && this.group.length > 0)
+         {
+            if (this.group[0].type.equals("or"))
+               throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
+         }
+      }
+
+      public String toString()
+      {
+         String str = type+"\n";
+
+         if (isFilter())
+         {
+            System.out.println("filter");
+            str += filter.toString(2);
+         }
+         else
+         {
+            System.out.println("group");
+            for(Clause clause : group)
+               str += clause.toString();
+         }
+
+         return(str);
       }
    }
 }

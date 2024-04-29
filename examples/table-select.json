@@ -15,9 +15,10 @@
         "filters":
         [
             {"column": "first_name", "filter": "Equals", "value": "Mia"},
-            { "or": {"column": "last_name", "filter": "Like", "value": "Jens%"}},
+            { "or": {"column": "last_name", "filter": "Like", "value": "Jensen"}},
             { "or": 
                 [
+                    {"column": "first_name", "filter": "Like", "value": "Mia%"},
                     {"column": "last_name", "filter": "Like", "value": "Jens%"}
                 ]
             }
