@@ -29,6 +29,8 @@ import sources.Sources;
 import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import filters.definitions.Filter;
 import sources.TableSource;
 import java.io.FileInputStream;
 
@@ -50,7 +52,7 @@ public class WhereClause
       test = test.getJSONObject("select()");
       WhereClause whcl = new WhereClause(source,test);
 
-      whcl.parse();
+      whcl.parse(source);
       String rep = whcl.toString();
       System.out.println(rep);
    }
@@ -73,9 +75,9 @@ public class WhereClause
    }
 
 
-   public WhereClause parse() throws Exception
+   public WhereClause parse(TableSource source) throws Exception
    {
-      this.clause = new Clause(filters);
+      this.clause = new Clause(source,filters);
       this.clause.root = true;
       return(this);
    }
@@ -92,10 +94,10 @@ public class WhereClause
       String type;
       boolean root;
       boolean empty;
+      Filter filter;
       Clause[] group;
-      JSONObject filter;
 
-      Clause(JSONArray filters) throws Exception
+      Clause(TableSource source, JSONArray filters) throws Exception
       {
          root = false;
          empty = true;
@@ -107,18 +109,17 @@ public class WhereClause
 
          for (int i = 0; i < entries; i++)
          {
-            this.group[i] = new Clause(filters.getJSONObject(i));
+            this.group[i] = new Clause(source,filters.getJSONObject(i));
             if (!this.group[i].empty) this.empty = false;
             if (i == 0) StartWithAnd(this.group[i]);
          }
       }
 
 
-      Clause(JSONObject filter) throws Exception
+      Clause(TableSource source, JSONObject filter) throws Exception
       {
          empty = true;
          this.type = "and";
-         this.filter = filter;
 
          String[] attr = JSONObject.getNames(filter);
 
@@ -135,7 +136,7 @@ public class WhereClause
 
                for (int i = 0; i < this.group.length; i++)
                {
-                  this.group[i] = new Clause(flts.getJSONObject(i));
+                  this.group[i] = new Clause(source,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
                   if (i == 0) StartWithAnd(this.group[i]);
                }
@@ -143,7 +144,7 @@ public class WhereClause
             else
             {
                this.empty = false;
-               this.filter = (JSONObject) fltdef;
+               this.filter = getFilter(source,(JSONObject) fltdef);
             }
          }
 
@@ -163,7 +164,7 @@ public class WhereClause
 
                for (int i = 0; i < this.group.length; i++)
                {
-                  this.group[i] = new Clause(flts.getJSONObject(i));
+                  this.group[i] = new Clause(source,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
                   if (i == 0) StartWithAnd(this.group[i]);
                }
@@ -171,8 +172,13 @@ public class WhereClause
             else
             {
                this.empty = false;
-               this.filter = (JSONObject) fltdef;
+               this.filter = getFilter(source,(JSONObject) fltdef);
             }
+         }
+
+         else
+         {
+            this.filter = getFilter(source,filter);
          }
       }
 
@@ -195,13 +201,13 @@ public class WhereClause
                   sql += " "+group[i].type+" ";
 
                if (group[i].isGroup()) sql += group[i].toString();
-               else sql += "select for " + group[i].filter.toString(2);
+               else sql += "select for " + group[i].filter.sql();
             }
-            if (!root) sql += ")\n";
+            if (!root) sql += "\n)\n";
          }
          else
          {
-            sql += "select for " + filter.toString(2);
+            sql += "select for " + filter.sql();
          }
 
          return(sql);
@@ -213,6 +219,13 @@ public class WhereClause
             throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
 
          clause.type = null;
+      }
+
+      private static Filter getFilter(TableSource source, JSONObject def) throws Exception
+      {
+         String name = def.getString("filter");
+         Filter filter = Filter.getInstance(name,source,def);
+         return(filter);
       }
    }
 }

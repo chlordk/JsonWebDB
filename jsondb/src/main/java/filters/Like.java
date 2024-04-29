@@ -25,15 +25,12 @@ SOFTWARE.
 package filters;
 
 import sources.Source;
-import database.BindValue;
-import java.util.ArrayList;
 import org.json.JSONObject;
-import filters.definitions.Filter;
 
 
-public class Equals extends Filter
+public class Like extends Equals
 {
-   public Equals(Source source, JSONObject definition)
+   public Like(Source source, JSONObject definition)
    {
       super(source,definition);
    }
@@ -41,18 +38,6 @@ public class Equals extends Filter
    @Override
    public String sql()
    {
-      return(column+" = ?");
-   }
-
-   @Override
-   public ArrayList<BindValue> bindvalues()
-   {
-      if (bindvalues.size() == 0)
-      {
-         BindValue bv = new BindValue(column);
-         bindvalues.add(bv);
-      }
-
-      return(bindvalues);
+      return(column+" like ?");
    }
 }

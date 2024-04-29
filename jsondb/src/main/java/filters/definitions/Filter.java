@@ -29,6 +29,7 @@ import org.json.JSONObject;
 
 import database.BindValue;
 import sources.Source;
+import sources.TableSource;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,7 +83,8 @@ public abstract class Filter
    }
 
 
-   public static Object getInstance(String name, Source source, JSONObject definition) throws Exception
+   @SuppressWarnings("unchecked")
+   public static <T extends Filter> T getInstance(String name, Source source, JSONObject definition) throws Exception
    {
       name = Character.toUpperCase(name.charAt(0)) +
                name.substring(1).toLowerCase();
@@ -96,7 +98,7 @@ public abstract class Filter
          classes.put(cname,clazz);
       }
 
-      return(clazz.getConstructor(Source.class,JSONObject.class).newInstance(source,definition));
+      return((T) clazz.getConstructor(Source.class,JSONObject.class).newInstance(source,definition));
    }
 
 
