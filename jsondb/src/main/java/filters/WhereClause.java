@@ -54,18 +54,19 @@ public class WhereClause
 
       test = test.getJSONObject("select()");
       WhereClause whcl = new WhereClause(source,test);
-
-      SQLPart sql = whcl.build(source);
+      SQLPart sql = whcl.build();
       System.out.println(sql.bindValues().size()+" "+sql.snippet());
    }
 
    private Clause clause;
    private JSONArray filters;
+   private TableSource source;
    private static final String FILTERS = "filters";
 
 
    public WhereClause(TableSource source, JSONObject definition) throws Exception
    {
+      this.source = source;
       if (!definition.has(FILTERS)) return;
       this.filters = definition.getJSONArray(FILTERS);
    }
@@ -77,8 +78,11 @@ public class WhereClause
    }
 
 
-   public SQLPart build(TableSource source) throws Exception
+   public SQLPart build() throws Exception
    {
+      if (filters == null)
+         return(new SQLPart());
+
       this.clause = new Clause(source,filters);
       this.clause.root = true;
       this.clause.build();

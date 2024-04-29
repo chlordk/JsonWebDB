@@ -138,13 +138,14 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
+      WhereClause whcl = new WhereClause(source,args);
+      select.append(whcl.build());
+
       if (order != null) select.append("order by "+order);
       if (lock && session.isDedicated()) select.append("for update");
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
-
-      WhereClause where = new WhereClause(source,args);
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
       cursor.pagesize(Misc.get(args,PAGESIZE));

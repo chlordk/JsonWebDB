@@ -39,6 +39,13 @@ public class SQLPart
    }
 
 
+   public SQLPart()
+   {
+      this.sql = "";
+      this.bindvalues = new ArrayList<BindValue>();
+   }
+
+
    public SQLPart(String sql)
    {
       this.sql = sql;
