@@ -51,9 +51,8 @@ public class WhereClause
       WhereClause whcl = new WhereClause(source,test);
 
       whcl.parse();
-      whcl.clause.tree();
-      //String rep = whcl.toString();
-      //System.out.println(rep);
+      String rep = whcl.toString();
+      System.out.println(rep);
    }
 
    private Clause clause;
@@ -77,25 +76,28 @@ public class WhereClause
    public WhereClause parse() throws Exception
    {
       this.clause = new Clause(filters);
+      this.clause.root = true;
       return(this);
    }
 
 
    public String toString()
    {
-      return(clause.toString());
+      return("where "+clause.toString());
    }
 
 
    private static class Clause
    {
       String type;
+      boolean root;
       boolean empty;
       Clause[] group;
       JSONObject filter;
 
       Clause(JSONArray filters) throws Exception
       {
+         root = false;
          empty = true;
          this.type = "and";
          this.filter = null;
@@ -107,6 +109,7 @@ public class WhereClause
          {
             this.group[i] = new Clause(filters.getJSONObject(i));
             if (!this.group[i].empty) this.empty = false;
+            if (i == 0) StartWithAnd(this.group[i]);
          }
       }
 
@@ -134,9 +137,8 @@ public class WhereClause
                {
                   this.group[i] = new Clause(flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
+                  if (i == 0) StartWithAnd(this.group[i]);
                }
-
-               validateFirst();
             }
             else
             {
@@ -163,9 +165,8 @@ public class WhereClause
                {
                   this.group[i] = new Clause(flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
+                  if (i == 0) StartWithAnd(this.group[i]);
                }
-
-               validateFirst();
             }
             else
             {
@@ -180,57 +181,38 @@ public class WhereClause
          return(group != null);
       }
 
-      public void tree()
-      {
-         if (isGroup()) System.out.println("array");
-         else System.out.println(filter.toString());
-
-         if (isGroup())
-         {
-            for(Clause clause : group)
-             clause.tree();
-         }
-      }
 
       public String toString()
       {
-         return(type+" group: "+(group != null)+" filter: "+(filter != null));
-         //return(toJSON().toString(2));
-      }
+         String sql = "";
 
-      public JSONArray toJSON()
-      {
-         return(toJSON(new JSONArray()));
-      }
-
-      private JSONArray toJSON(JSONArray whcl)
-      {
          if (isGroup())
          {
+            if (!root) sql += "\n(\n";
             for (int i = 0; i < group.length; i++)
             {
-               JSONObject entry = new JSONObject();
-               entry.put("type",group[i].type);
-               whcl.put(group[i].toJSON());
+               if (group[i].type != null)
+                  sql += " "+group[i].type+" ";
+
+               if (group[i].isGroup()) sql += group[i].toString();
+               else sql += "select for " + group[i].filter.toString(2);
             }
+            if (!root) sql += ")\n";
          }
          else
          {
-            JSONObject entry = new JSONObject();
-            entry.put(type,filter);
-            whcl.put(entry);
+            sql += "select for " + filter.toString(2);
          }
 
-         return(whcl);
+         return(sql);
       }
 
-      private void validateFirst() throws Exception
+      private void StartWithAnd(Clause clause) throws Exception
       {
-         if (isGroup() && this.group.length > 0)
-         {
-            if (this.group[0].type.equals("or"))
-               throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
-         }
+         if (!clause.type.equals("and"))
+            throw new Exception(Messages.get("WHERECLAUSE_OR_START",this.group[0].toString()));
+
+         clause.type = null;
       }
    }
 }
