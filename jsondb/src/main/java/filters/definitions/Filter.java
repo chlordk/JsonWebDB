@@ -24,13 +24,10 @@ SOFTWARE.
 
 package filters.definitions;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import database.BindValue;
 import sources.Source;
-import sources.TableSource;
-
+import org.json.JSONArray;
+import database.BindValue;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -24,25 +24,25 @@ SOFTWARE.
 
 package filters;
 
+import sources.Source;
 import database.SQLPart;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sources.TableSource;
 import java.util.ArrayList;
 import filters.definitions.Filter;
 
 
 public class WhereClause
 {
+   private Source source;
    private Clause clause;
    private JSONArray filters;
-   private TableSource source;
    private static final String FILTERS = "filters";
 
 
-   public WhereClause(TableSource source, JSONObject definition) throws Exception
+   public WhereClause(Source source, JSONObject definition) throws Exception
    {
       this.source = source;
       if (!definition.has(FILTERS)) return;
@@ -79,7 +79,7 @@ public class WhereClause
       JSONArray definition;
       ArrayList<BindValue> bindvalues;
 
-      Clause(TableSource source, JSONArray filters) throws Exception
+      Clause(Source source, JSONArray filters) throws Exception
       {
          root = false;
          empty = true;
@@ -101,7 +101,7 @@ public class WhereClause
       }
 
 
-      Clause(TableSource source, JSONObject filter) throws Exception
+      Clause(Source source, JSONObject filter) throws Exception
       {
          empty = true;
          this.type = "and";
@@ -216,7 +216,7 @@ public class WhereClause
          clause.type = null;
       }
 
-      private static Filter getFilter(TableSource source, JSONObject def) throws Exception
+      private static Filter getFilter(Source source, JSONObject def) throws Exception
       {
          String name = def.getString("filter");
          Filter filter = Filter.getInstance(name,source,def);
