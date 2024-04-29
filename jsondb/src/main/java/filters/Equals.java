@@ -27,6 +27,7 @@ package filters;
 import sources.Source;
 import database.BindValue;
 import java.util.ArrayList;
+import sources.TableSource;
 import org.json.JSONObject;
 import filters.definitions.Filter;
 
@@ -51,6 +52,12 @@ public class Equals extends Filter
       {
          BindValue bv = new BindValue(column);
          bindvalues.add(bv);
+
+         if (source instanceof TableSource)
+         {
+            TableSource ts = (TableSource) source;
+            bv.type(ts.getColumn(column).sqltype);
+         }
       }
 
       return(bindvalues);

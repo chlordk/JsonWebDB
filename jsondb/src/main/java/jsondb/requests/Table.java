@@ -141,8 +141,8 @@ public class Table
       WhereClause whcl = new WhereClause(source,args);
       select.append(whcl.build());
 
-      if (order != null) select.append("order by "+order);
-      if (lock && session.isDedicated()) select.append("for update");
+      if (order != null) select.append("\norder by "+order);
+      if (lock && session.isDedicated()) select.append("\nfor update");
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);

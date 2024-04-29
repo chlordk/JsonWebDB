@@ -24,40 +24,18 @@ SOFTWARE.
 
 package filters;
 
-import jsondb.JsonDB;
-import sources.Sources;
+import database.SQLPart;
 import messages.Messages;
+import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import database.BindValue;
-import database.SQLPart;
-import filters.definitions.Filter;
 import sources.TableSource;
-import java.io.FileInputStream;
 import java.util.ArrayList;
+import filters.definitions.Filter;
 
 
 public class WhereClause
 {
-   public static void main(String[] args) throws Exception
-   {
-      JsonDB.initialize(args[0],args[1]);
-
-      FileInputStream in = new FileInputStream("/Users/alhof/Repository/JsonWebDB/examples/table-select.json");
-      String content = new String(in.readAllBytes()); in.close();
-
-      JSONObject test = new JSONObject(content).getJSONObject("Table");
-      String srcname = test.getString("source");
-
-      TableSource source = Sources.get(srcname);
-
-      test = test.getJSONObject("select()");
-      WhereClause whcl = new WhereClause(source,test);
-      SQLPart sql = whcl.build();
-      System.out.println(sql.bindValues().size()+" "+sql.snippet());
-   }
-
    private Clause clause;
    private JSONArray filters;
    private TableSource source;
@@ -86,13 +64,7 @@ public class WhereClause
       this.clause = new Clause(source,filters);
       this.clause.root = true;
       this.clause.build();
-      return(new SQLPart("where\n"+clause.sql,clause.bindvalues));
-   }
-
-
-   public String toString()
-   {
-      return("where "+clause.toString());
+      return(new SQLPart("\nwhere "+clause.sql,clause.bindvalues));
    }
 
 

@@ -89,9 +89,14 @@ public class BindValue
       return(sqlTypeName);
    }
 
-   public int sqlTypeID()
+   public Integer sqlTypeID()
    {
       return(sqlTypeID);
+   }
+
+   public boolean untyped()
+   {
+      return(sqlTypeID == null);
    }
 
    public Object value()

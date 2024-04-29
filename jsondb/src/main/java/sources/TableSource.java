@@ -120,7 +120,7 @@ public class TableSource extends Source
       SQLPart from;
 
       if (query != null) from = query.from(bindvalues);
-      else               from = new SQLPart("from "+object);
+      else               from = new SQLPart("\nfrom "+object);
 
       return(from);
    }
@@ -169,7 +169,7 @@ public class TableSource extends Source
          }
 
          bound.bindByValue();
-         String sql = "from ("+bound.snippet()+") "+object;
+         String sql = "\nfrom ("+bound.snippet()+") "+object;
 
          return(bound.snippet(sql));
       }
