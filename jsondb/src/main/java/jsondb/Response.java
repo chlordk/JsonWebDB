@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb;
 
 import messages.Messages;
+import utils.JSONOObject;
 import org.json.JSONObject;
 
 
@@ -52,6 +53,12 @@ public class Response
    {
       ensure();
       return(payload.put(name,value));
+   }
+
+   public JSONObject put(int pos, String name, Object value)
+   {
+      ensure();
+      return(((JSONOObject) payload).put(pos,name,value));
    }
 
    public JSONObject payload()

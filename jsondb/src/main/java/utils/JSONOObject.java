@@ -24,6 +24,8 @@ SOFTWARE.
 
 package utils;
 
+import java.util.Set;
+import java.util.Map.Entry;
 import org.json.JSONObject;
 import org.json.JSONException;
 import java.lang.reflect.Field;
@@ -51,5 +53,34 @@ public class JSONOObject extends org.json.JSONObject
       }
 
       return((JSONOObject) super.put(key, value));
+   }
+
+   @SuppressWarnings("unchecked")
+   public JSONOObject put(int pos, String key, Object value) throws JSONException
+   {
+      try
+      {
+         Field map = JSONObject.class.getDeclaredField("map");
+         map.setAccessible(true);
+
+         LinkedHashMap<String,Object> mapval = (LinkedHashMap<String,Object>) map.get(this);
+         LinkedHashMap<String,Object> cloned = (LinkedHashMap<String,Object>) mapval.clone();
+
+         mapval.clear();
+         Set<Entry<String,Object>> entries = cloned.entrySet();
+
+         int p = 0;
+         for(Entry<String,Object> entry : entries)
+         {
+            if (p++ == pos) mapval.put(key,value);
+            mapval.put(entry.getKey(),entry.getValue());
+         }
+
+         return(this);
+      }
+      catch (NoSuchFieldException | IllegalAccessException e)
+      {
+         throw new RuntimeException(e);
+      }
    }
 }

@@ -24,9 +24,12 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import utils.Misc;
 import jsondb.Config;
 import jsondb.Response;
 import messages.Messages;
+import utils.JSONOObject;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.logging.Level;
 import java.lang.reflect.Method;
@@ -40,17 +43,54 @@ public class RequestHandler
 
    private static final String location = RequestHandler.class.getPackage().getName();
 
-
-   public static Response handle(JSONObject request)
+   public static Response handle(JSONObject request) throws Exception
    {
+      return(handle(request,null));
+   }
+
+
+   public static Response handle(JSONObject request, Integer methno) throws Exception
+   {
+      String invk = null;
+
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
+      String[] methods = Misc.getStringArray(payload,"invoke",true);
+
+      if (methno == null && methods.length == 1)
+         methno = 0;
+
+      if (methno == null && methods.length > 1)
+      {
+         JSONArray steps = new JSONArray();
+         JSONOObject response = new JSONOObject();
+
+         response.put("steps",steps);
+         Response merged = new Response(response);
+
+         for (int i = 0; i < methods.length; i++)
+         {
+            Response resp = handle(request,i);
+            resp.put(1,"method",methods[i]);
+
+            steps.put(resp.payload());
+            merged.exception(resp.exception());
+
+            System.out.println(merged.toString(2));
+
+            if (!resp.payload().getBoolean("success"))
+               return(merged);
+         }
+
+         return(merged);
+      }
+
 
       if (names != null && names.length == 1)
       {
          try
          {
-            String invk = payload.getString("invoke");
+            invk = methods[methno];
             invk = invk.substring(0,invk.indexOf("("));
             Object dbrq = getInstance(names[0],payload);
             Method method = dbrq.getClass().getMethod(invk);

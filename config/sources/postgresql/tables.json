@@ -19,7 +19,7 @@
          "insert": "allowed",
          "update": "by-primary-key",
          "delete": "by-primary-key",
-         "select": "allowed"
+         "select": "by-primary-key"
       }
       ,
       {
