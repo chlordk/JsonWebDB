@@ -30,9 +30,13 @@
             ,
             "invoke":
             {
-               "type": "string",
-               "description": "Method to invoke",
-               "enum": ["fetch()", "close()"]
+               "description": "Method(s) to invoke",
+
+               "anyOf":
+               [
+                  {"$ref": "#/types/Method"},
+                  {"type": "array", "items": {"$ref": "#/types/Method"}}
+               ]
             }
             ,
             "fetch()":
@@ -50,6 +54,15 @@
                }
             }
          }
+      }
+   }
+   ,
+   "types":
+   {
+      "Method":
+      {
+         "type": "string",
+         "enum": ["describe()","select()", "insert()", "update()", "delete()"]
       }
    }
 }
