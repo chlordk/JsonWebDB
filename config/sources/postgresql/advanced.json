@@ -8,21 +8,6 @@
          "sorting": "loc_id",
          "primary-key": "loc_id",
 
-         "columns":
-         [
-            {
-               "name": "loc_id",
-               "type": "numeric",
-               "precision": [6,0]
-            }
-            ,
-            {
-               "name": "street",
-               "type": "vachar",
-               "precision": [20,0]
-            }
-         ],
-
          "query":
          {
             "sql":
@@ -38,7 +23,7 @@
             "where-clause": "country_id = :COUNTRY",
             "datatypes":
             [
-              {"name": "COUNTRY", "type": "string"}
+              {"name": "COUNTRY", "type": "string", "sqlid": 12}
             ],
             "apply": ["update","delete"]
          },

@@ -92,7 +92,18 @@
          "sorting": "employee_id",
          "primary-key": "employee_id",
 
-         "custom-filters": [
+         "vpd":
+         {
+            "where-clause": "employee_id > :id",
+            "datatypes":
+            [
+              {"name": "id", "type": "numeric", "sqlid": 2}
+            ],
+            "apply": ["update","delete"]
+         },
+
+         "custom-filters":
+         [
             {
                "name": "contains",
                "where-clause": "upper(first_name||' '||last_name) like upper('%'||:name||'%')"

@@ -145,7 +145,8 @@
          "properties":
          {
             "name": {"type": "string"},
-            "type": {"$ref": "#/types/Type"}
+            "type": {"$ref": "#/types/Type"},
+            "sqlid": {"type": "number"}
          }
       }
       ,
