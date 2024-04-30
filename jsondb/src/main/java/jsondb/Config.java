@@ -30,13 +30,13 @@ import http.HTTPConfig;
 import sources.Sources;
 import files.FileConfig;
 import logger.Applogger;
+import database.SQLTypes;
 import messages.Messages;
 import state.StateHandler;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
-import database.definitions.SQLTypes;
 import database.definitions.AdvancedPool;
 
 
@@ -129,7 +129,7 @@ public class Config
    public static void initialize() throws Exception
    {
       SQLTypes.initialize();
-      
+
       Admins.initialize();
       Cluster.initialize();
       Sources.initialize();

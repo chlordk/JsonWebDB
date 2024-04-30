@@ -26,7 +26,6 @@ package database;
 
 import utils.JSONOObject;
 import org.json.JSONObject;
-import database.definitions.SQLTypes;
 
 
 public class Column

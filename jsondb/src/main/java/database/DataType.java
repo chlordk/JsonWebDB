@@ -28,7 +28,6 @@ import messages.Messages;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import database.definitions.SQLTypes;
 
 
 public class DataType
