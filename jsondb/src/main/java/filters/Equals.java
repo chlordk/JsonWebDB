@@ -39,6 +39,16 @@ public class Equals extends Filter
       super(source,definition);
    }
 
+   public Object value()
+   {
+      return(value);
+   }
+
+   public String column()
+   {
+      return(column);
+   }
+
    @Override
    public String sql()
    {

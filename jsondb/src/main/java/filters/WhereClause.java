@@ -27,6 +27,7 @@ package filters;
 import sources.Source;
 import database.SQLPart;
 import messages.Messages;
+import java.util.HashSet;
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,7 +52,7 @@ public class WhereClause
 
    public boolean usesPrimaryKey(String... columns)
    {
-      return(false);
+      return(clause.usesPrimaryKey(columns));
    }
 
    public boolean exists()
@@ -184,11 +185,25 @@ public class WhereClause
 
       public boolean usesPrimaryKey(String... columns)
       {
+         Equals test = null;
+         HashSet<String> keys = new HashSet<String>();
+         for(String column : columns) keys.add(column);
+
          for (int i = 0; i < this.group.length; i++)
          {
-            System.out.println(this.group[i]);
+            String type = this.group[i].type;
+
+            if (type != null && type.equals("or"))
+               return(false);
+
+            if (this.group[i].filter instanceof Equals)
+            {
+               test = (Equals) this.group[i].filter;
+               keys.remove(test.column());
+            }
          }
-         return(false);
+
+         return(keys.size() == 0);
       }
 
 
