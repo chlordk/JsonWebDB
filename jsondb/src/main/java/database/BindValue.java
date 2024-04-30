@@ -28,6 +28,11 @@ import utils.JSONOObject;
 import org.json.JSONObject;
 
 
+/**
+ * Bind values are always named and defined by the colon ':' and a name, like in ":country".
+ * Using the ampersand '&' form in sql indicates that this value should be passed by value.
+ * With stored procedures, the ampersand form suggests that the value is an out parameter.
+ */
 public class BindValue
 {
    private int pos = 0;
