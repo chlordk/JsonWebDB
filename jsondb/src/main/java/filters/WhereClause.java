@@ -49,12 +49,15 @@ public class WhereClause
       this.filters = definition.getJSONArray(FILTERS);
    }
 
-
-   public boolean isEmpty()
+   public boolean usesPrimaryKey(String... columns)
    {
-      return(clause.empty);
+      return(false);
    }
 
+   public boolean exists()
+   {
+      return(!clause.empty);
+   }
 
    public SQLPart build() throws Exception
    {
@@ -176,6 +179,16 @@ public class WhereClause
       boolean isGroup()
       {
          return(group != null);
+      }
+
+
+      public boolean usesPrimaryKey(String... columns)
+      {
+         for (int i = 0; i < this.group.length; i++)
+         {
+            System.out.println(this.group[i]);
+         }
+         return(false);
       }
 
 

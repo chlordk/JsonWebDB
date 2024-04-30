@@ -54,6 +54,7 @@ public class TableSource extends Source
 
    public final String id;
    public final String object;
+   public final Access access;
    public final VPDFilter vpd;
    public final String sorting;
    public final String[] derived;
@@ -76,6 +77,7 @@ public class TableSource extends Source
       if (object == null) object = id;
       else object = object.toLowerCase();
 
+      Access access = new Access(definition);
       VPDFilter vpd = VPDFilter.parse(definition);
       QuerySource query = QuerySource.parse(definition,object);
       HashMap<String,CustomFilter> filters = CustomFilter.parse(definition);
@@ -84,10 +86,16 @@ public class TableSource extends Source
       this.vpd = vpd;
       this.query = query;
       this.object = object;
+      this.access = access;
       this.sorting = sorting;
       this.derived = derived;
       this.filters = filters;
       this.primarykey = primarykey;
+   }
+
+   public AccessType getAccessLimit(String operation)
+   {
+      return(this.access.getType(operation));
    }
 
    public boolean described()
@@ -267,6 +275,52 @@ public class TableSource extends Source
       {
          this.name = name;
          this.type = type;
+      }
+   }
+
+   public static enum AccessType
+   {
+      denied,
+      allowed,
+      byprimarykey,
+      ifwhereclause
+   }
+
+   public static class Access
+   {
+      public final AccessType insert;
+      public final AccessType update;
+      public final AccessType delete;
+      public final AccessType select;
+
+      Access(JSONObject def)
+      {
+         insert = getType(def,"insert");
+         update = getType(def,"update");
+         delete = getType(def,"delete");
+         select = getType(def,"select");
+      }
+
+      public AccessType getType(String op)
+      {
+         op = op.toLowerCase();
+
+         switch (op)
+         {
+            case "insert": return(insert);
+            case "update": return(update);
+            case "delete": return(delete);
+            case "select": return(select);
+            default: return(AccessType.denied);
+         }
+      }
+
+      private AccessType getType(JSONObject def, String type)
+      {
+         String act = def.optString(type);
+         if (act.length() == 0) act = "denied";
+         act = act.replaceAll("-","");
+         return(AccessType.valueOf(act));
       }
    }
 }

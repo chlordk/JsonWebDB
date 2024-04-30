@@ -41,6 +41,20 @@ public class Messages
    private static final PropertyResourceBundle messages = load();
 
 
+   public static String flatten(Object[] args)
+   {
+      String list = null;
+
+      for (int i = 0; i < args.length; i++)
+      {
+         if (i == 0) list = ""+args[i];
+         else list += ", "+args[i];
+      }
+
+      return(list);
+   }
+
+
    public static String get(String name, Object ...args)
    {
       if (messages == null)

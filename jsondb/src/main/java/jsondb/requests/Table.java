@@ -32,12 +32,14 @@ import jsondb.Response;
 import database.Column;
 import database.SQLPart;
 import utils.JSONOObject;
+import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.WhereClause;
+import sources.TableSource.AccessType;
 
 
 public class Table
@@ -120,6 +122,9 @@ public class Table
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
 
+      AccessType limit = source.getAccessLimit("select");
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));
+
       if (!source.described())
          this.describe();
 
@@ -143,6 +148,13 @@ public class Table
       select.append(source.from(bindvalues));
 
       WhereClause whcl = new WhereClause(source,args);
+
+      if (limit == AccessType.ifwhereclause && !whcl.exists())
+         throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
+
+      if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
+         throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
+
       select.append(whcl.build());
 
       if (order != null) select.append("\norder by "+order);
