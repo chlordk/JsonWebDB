@@ -74,8 +74,15 @@ public class SQLTypes
 
    public static int getType(String name)
    {
-      Integer id = sqlnames.get(name.toLowerCase());
-      if (id == null) id = sqlnames.get("varchar");
+      name = name.toLowerCase();
+      Integer id = sqlnames.get(name);
+
+      if (id == null)
+         id = sqlnames.get(synonyms.get(name));
+
+      if (id == null)
+         id = sqlnames.get("varchar");
+
       return(id);
    }
 
