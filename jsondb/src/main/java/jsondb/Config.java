@@ -128,10 +128,11 @@ public class Config
 
    public static void initialize() throws Exception
    {
+      SQLTypes.initialize();
+      
       Admins.initialize();
       Cluster.initialize();
       Sources.initialize();
-      SQLTypes.initialize();
       FileConfig.initialize();
       HTTPConfig.initialize();
       StateHandler.initialize();

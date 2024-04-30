@@ -86,7 +86,8 @@ public class Table
          {
             if (!source.described())
             {
-               ArrayList<BindValue> bindvalues = Utils.getBindValues(definition);
+               ArrayList<BindValue> bindvalues =
+                  Utils.getBindValues(definition);
 
                String stmt = "select *";
                SQLPart select = new SQLPart(stmt);

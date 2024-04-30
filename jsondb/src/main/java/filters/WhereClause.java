@@ -46,10 +46,14 @@ public class WhereClause
 
    public WhereClause(Source source, JSONObject definition) throws Exception
    {
-      this.source = source;
-      if (!definition.has(FILTERS)) return;
-      this.filters = definition.getJSONArray(FILTERS);
-      this.whcl = this.build();
+      this.whcl = new SQLPart();
+
+      if (definition.has(FILTERS))
+      {
+         this.source = source;
+         this.filters = definition.getJSONArray(FILTERS);
+         this.whcl = this.build();
+      }
    }
 
    public boolean usesPrimaryKey(String... columns)
@@ -69,9 +73,6 @@ public class WhereClause
 
    private SQLPart build() throws Exception
    {
-      if (filters == null)
-         return(new SQLPart());
-
       this.clause = new Clause(source,filters);
       this.clause.root = true; this.clause.build();
       return(new SQLPart("\nwhere "+clause.sql,clause.bindvalues));

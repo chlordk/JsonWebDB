@@ -195,7 +195,7 @@ public abstract class JdbcInterface
       {
          BindValue bv = bindvalues.get(i);
          if (bv.untyped()) stmt.setObject(i+1,bv.value());
-         else stmt.setObject(i+1,bv.value(),bv.sqlTypeID());
+         else stmt.setObject(i+1,bv.value(),bv.type());
       }
 
       if (savepoint)

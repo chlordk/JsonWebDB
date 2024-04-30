@@ -26,7 +26,6 @@ package database;
 
 import utils.JSONOObject;
 import org.json.JSONObject;
-import database.definitions.SQLTypes;
 
 
 public class BindValue
@@ -34,10 +33,8 @@ public class BindValue
    private int pos = 0;
    private String name = null;
    private Object value = null;
+   private Integer type = null;
    private boolean ampersand = false;
-
-   private Integer sqlTypeID = null;
-   private String sqlTypeName = null;
 
 
    public static BindValue from(JSONObject json)
@@ -45,10 +42,8 @@ public class BindValue
       BindValue bv = new BindValue();
 
       bv.value       = json.get("value");
+      bv.type        = json.getInt("type");
       bv.name        = json.getString("name");
-
-      bv.sqlTypeID   = json.getInt("sqltype");
-      bv.sqlTypeName = json.getString("type");
       bv.ampersand   = json.getBoolean("ampersand");
 
       return(bv);
@@ -84,19 +79,19 @@ public class BindValue
       return(name);
    }
 
-   public String sqlTypeName()
-   {
-      return(sqlTypeName);
-   }
-
-   public Integer sqlTypeID()
-   {
-      return(sqlTypeID);
-   }
-
    public boolean untyped()
    {
-      return(sqlTypeID == null);
+      return(type == null);
+   }
+
+   public boolean hasTypeID()
+   {
+      return(type instanceof Integer);
+   }
+
+   public Integer type()
+   {
+      return(type);
    }
 
    public Object value()
@@ -121,17 +116,9 @@ public class BindValue
       return(this);
    }
 
-   public BindValue type(String type)
+   public BindValue type(Integer type)
    {
-      this.sqlTypeName = type.toLowerCase();
-      this.sqlTypeID = SQLTypes.getType(type);
-      return(this);
-   }
-
-   public BindValue type(int type)
-   {
-      this.sqlTypeID = type;
-      this.sqlTypeName = SQLTypes.getType(type);
+      this.type = type;
       return(this);
    }
 
@@ -150,15 +137,14 @@ public class BindValue
    public String toString()
    {
       String t = ampersand ? "?" : ":";
-      return(t+name+"["+sqlTypeID+"] = "+value);
+      return(t+name+"["+type+"] = "+value);
    }
 
    public JSONObject toJSON()
    {
       JSONOObject json = new JSONOObject();
       json.put("name",name);
-      json.put("type",sqlTypeName);
-      json.put("sqltype",sqlTypeID);
+      json.put("type",type);
       json.put("ampersand",ampersand);
       json.put("value",value);
       return(json);

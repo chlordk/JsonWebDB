@@ -139,27 +139,7 @@
          "properties":
          {
             "name": {"type": "string"},
-            "type": {"$ref": "#/types/Type"},
-            "sqlid": {"type": "number"}
-         }
-      }
-      ,
-      "ColumnDefinition":
-      {
-         "type": "object",
-         "required": ["name"],
-         "additionalProperties": false,
-
-         "properties":
-         {
-            "name": {"type": "string"},
-            "type": {"$ref": "#/types/Type"},
-
-            "precision":
-            {
-               "type": "array",
-               "items": {"type": "integer"}
-            }
+            "type": {"$ref": "#/types/Type"}
          }
       }
       ,

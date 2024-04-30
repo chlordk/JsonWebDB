@@ -27,6 +27,7 @@ package sources;
 import database.Parser;
 import database.Column;
 import database.SQLPart;
+import database.DataType;
 import java.util.HashMap;
 import database.BindValue;
 import org.json.JSONArray;
@@ -41,11 +42,9 @@ public class TableSource extends Source
    private static final String SQL = "sql";
    private static final String VPD = "vpd";
    private static final String NAME = "name";
-   private static final String TYPE = "type";
    private static final String APPLY = "apply";
    private static final String QUERY = "query";
    private static final String OBJECT = "object";
-   private static final String TYPES = "datatypes";
    private static final String SORTING = "sorting";
    private static final String DERIVED = "derived";
    private static final String PRIMARY = "primary-key";
@@ -172,7 +171,7 @@ public class TableSource extends Source
          for(BindValue bv : bindvalues)
          {
             DataType def = this.types.get(bv.name());
-            if (def != null) bv.type(def.type);
+            if (def != null) bv.type(def.sqlid);
             bound.bind(bv);
          }
 
@@ -243,49 +242,6 @@ public class TableSource extends Source
       }
    }
 
-
-   public static class DataType
-   {
-      public final String name;
-      public final String type;
-
-
-      private static HashMap<String,DataType> parse(JSONObject def) throws Exception
-      {
-         HashMap<String,DataType> types =
-            new HashMap<String,DataType>();
-
-         if (!def.has(TYPES)) return(types);
-         JSONArray arr = def.getJSONArray(TYPES);
-
-         for (int i = 0; i < arr.length(); i++)
-         {
-            JSONObject tdef = arr.getJSONObject(i);
-
-            String name = tdef.getString(NAME);
-            String type = tdef.getString(TYPE);
-
-            types.put(name,new DataType(name,type));
-         }
-
-         return(types);
-      }
-
-      private DataType(String name, String type)
-      {
-         this.name = name;
-         this.type = type;
-      }
-   }
-
-   public static enum AccessType
-   {
-      denied,
-      allowed,
-      byprimarykey,
-      ifwhereclause
-   }
-
    public static class Access
    {
       public final AccessType insert;
@@ -322,5 +278,13 @@ public class TableSource extends Source
          act = act.replaceAll("-","");
          return(AccessType.valueOf(act));
       }
+   }
+
+   public static enum AccessType
+   {
+      denied,
+      allowed,
+      byprimarykey,
+      ifwhereclause
    }
 }
