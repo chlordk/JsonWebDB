@@ -37,6 +37,7 @@ import filters.definitions.Filter;
 
 public class WhereClause
 {
+   private SQLPart whcl;
    private Source source;
    private Clause clause;
    private JSONArray filters;
@@ -48,6 +49,7 @@ public class WhereClause
       this.source = source;
       if (!definition.has(FILTERS)) return;
       this.filters = definition.getJSONArray(FILTERS);
+      this.whcl = this.build();
    }
 
    public boolean usesPrimaryKey(String... columns)
@@ -60,14 +62,18 @@ public class WhereClause
       return(!clause.empty);
    }
 
-   public SQLPart build() throws Exception
+   public SQLPart asSQL()
+   {
+      return(whcl);
+   }
+
+   private SQLPart build() throws Exception
    {
       if (filters == null)
          return(new SQLPart());
 
       this.clause = new Clause(source,filters);
-      this.clause.root = true;
-      this.clause.build();
+      this.clause.root = true; this.clause.build();
       return(new SQLPart("\nwhere "+clause.sql,clause.bindvalues));
    }
 

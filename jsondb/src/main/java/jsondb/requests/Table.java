@@ -148,7 +148,6 @@ public class Table
       select.append(source.from(bindvalues));
 
       WhereClause whcl = new WhereClause(source,args);
-      SQLPart where = whcl.build();
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
          throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
@@ -156,7 +155,7 @@ public class Table
       if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
          throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
 
-      select.append(where);
+      select.append(whcl.asSQL());
 
       if (order != null) select.append("\norder by "+order);
       if (lock && session.isDedicated()) select.append("\nfor update");

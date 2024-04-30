@@ -90,7 +90,7 @@
          "object": "employees",
 
          "sorting": "employee_id",
-         "primary-key": ["employee_id","first_name"],
+         "primary-key": "employee_id",
 
          "custom-filters": [
             {
@@ -102,7 +102,7 @@
          "insert": "allowed",
          "update": "by-primary-key",
          "delete": "by-primary-key",
-         "select": "by-primary-key"
+         "select": "allowed"
       }
    ]
 }
