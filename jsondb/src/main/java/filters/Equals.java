@@ -25,6 +25,7 @@ SOFTWARE.
 package filters;
 
 import sources.Source;
+import database.Column;
 import database.BindValue;
 import java.util.ArrayList;
 import sources.TableSource;
@@ -66,7 +67,8 @@ public class Equals extends Filter
          if (source instanceof TableSource)
          {
             TableSource ts = (TableSource) source;
-            bv.type(ts.getColumn(column).sqltype);
+            Column coldef = ts.getColumn(column);
+            if (coldef != null) bv.type(coldef.sqltype);
          }
       }
 

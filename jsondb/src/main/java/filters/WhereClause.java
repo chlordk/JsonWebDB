@@ -179,6 +179,7 @@ public class WhereClause
 
          else
          {
+            this.empty = false;
             this.filter = getFilter(source,filter);
             this.bindvalues.addAll(this.filter.bindvalues());
          }
