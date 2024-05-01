@@ -142,7 +142,7 @@ public class BindValue
    public String toString()
    {
       String t = ampersand ? "?" : ":";
-      return(t+name+"["+type+"] = "+value);
+      return("name: "+t+name+", sqltype: "+type+", value: "+value);
    }
 
    public JSONObject toJSON()

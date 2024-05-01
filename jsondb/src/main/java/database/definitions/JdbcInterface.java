@@ -186,14 +186,21 @@ public abstract class JdbcInterface
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
-      Config.logger().fine("\n"+cursor.sql());
+      String logentry = "\n\n"+cursor.sql();
 
-      ArrayList<BindValue> bindvalues = cursor.bindvalues();
+      if (cursor.bindvalues().size() > 0)
+         logentry += "\n\nbindings:";
+
+      for (int i = 0; i < cursor.bindvalues().size(); i++)
+         logentry += "\n"+cursor.bindvalues().get(i).toString()+"\n";
+
+      Config.logger().fine(logentry);
+
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
-      for (int i = 0; i < bindvalues.size(); i++)
+      for (int i = 0; i < cursor.bindvalues().size(); i++)
       {
-         BindValue bv = bindvalues.get(i);
+         BindValue bv = cursor.bindvalues().get(i);
          if (bv.untyped()) stmt.setObject(i+1,bv.value());
          else stmt.setObject(i+1,bv.value(),bv.type());
       }
@@ -211,7 +218,7 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
-            Config.logger().severe("\n"+cursor.sql());
+            Config.logger().severe(logentry);
             releaseSavePoint(sp,true);
             throw new Exception(e);
          }
