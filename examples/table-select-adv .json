@@ -3,12 +3,12 @@
   {
     "invoke": "select()",
     "source": "LocationWithCountry",
-    "session": "4b5762b4-6cc3-4b15-aad4-f08073690b36",
+    "session": "453d867a-1436-4c37-afb2-9f296d1dfc58",
 
     "bindvalues":
     [
         {"name": "city", "value": "%"},
-        {"name": "country", "value": "DK"}
+        {"name": "country", "value": "SE"}
     ],
     
     "select()":
@@ -18,12 +18,9 @@
         "for-update": false,
         "order": "country_id, city",
 
-        "bindvalues":
-        [
-        ],
-
         "filters":
         [
+            {"column": "street_address", "filter": "like", "value": "K%"}
         ]
     }
   }
