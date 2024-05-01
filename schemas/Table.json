@@ -282,22 +282,37 @@
          ,
          "Filter":
          {
+            "anyOf":
+            [
+               {"$ref": "#/types/CustomFilter"},
+               {"$ref": "#/types/StandardFilter"}
+            ]
+         }
+         ,
+         "StandardFilter":
+         {
             "type": "object",
-            "additionalProperties": true,
+            "additionalProperties": false,
+            "required": ["filter","column","value"],
 
             "properties":
             {
                "filter"  : {"type": "string"},
                "column"  : {"type": "string"},
-               "columns" : {"type": "array", "items": {"type": "string"}},
                "value"   : {"type": ["string","number","integer","boolean"]}
             }
-            ,
-            "oneOf":
-            [
-               {"required": ["filter","column","value"]},
-               {"required": ["filter","custom","value"]}
-            ]
+         }
+         ,
+         "CustomFilter":
+         {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["custom"],
+
+            "properties":
+            {
+               "custom"  : {"type": "string"}
+            }
          }
          ,
          "Method":
