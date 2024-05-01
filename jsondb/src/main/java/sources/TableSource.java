@@ -225,8 +225,10 @@ public class TableSource extends Source
 
    public static class VPDFilter
    {
-      public SQLPart filter;
-      public final String[] apply;
+      public final SQLPart filter;
+      public final String[] applies;
+      public final HashMap<String,DataType> types;
+
 
       private static VPDFilter parse(JSONObject def) throws Exception
       {
@@ -235,22 +237,31 @@ public class TableSource extends Source
          def = def.getJSONObject(VPD);
 
          String filter = getString(def,WHCLAUSE,true);
+         HashMap<String,DataType> types = DataType.parse(def);
          String[] applies = getStringArray(def,APPLY,true,true);
 
-         return(new VPDFilter(filter,applies));
+         return(new VPDFilter(filter,types,applies));
       }
 
-      private VPDFilter(String filter, String[] apply)
+      private VPDFilter(String filter, HashMap<String,DataType> types, String[] apply)
       {
+         this.types = types;
          this.filter = Parser.parse(filter);
-         this.apply = apply;
+
+         for (BindValue bv : this.filter.bindValues())
+         {
+            DataType def = types.get(bv.name());
+            if (def != null) bv.type(def.sqlid);
+         }
+
+         this.applies = apply;
       }
 
       public boolean appliesTo(String operation)
       {
-         for (int i = 0; i < apply.length; i++)
+         for (int i = 0; i < applies.length; i++)
          {
-            if (apply[i].equals(operation))
+            if (applies[i].equals(operation))
                return(true);
          }
 
