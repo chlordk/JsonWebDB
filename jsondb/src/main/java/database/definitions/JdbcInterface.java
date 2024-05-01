@@ -186,15 +186,7 @@ public abstract class JdbcInterface
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
-      String logentry = "\n\n"+cursor.sql();
-
-      if (cursor.bindvalues().size() > 0)
-         logentry += "\n\nbindings:";
-
-      for (int i = 0; i < cursor.bindvalues().size(); i++)
-         logentry += "\n"+cursor.bindvalues().get(i).toString()+"\n";
-
-      Config.logger().fine(logentry);
+      Config.logger().info(logentry(cursor));
 
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
@@ -218,7 +210,7 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
-            Config.logger().severe(logentry);
+            Config.logger().severe(logentry(cursor));
             releaseSavePoint(sp,true);
             throw new Exception(e);
          }
@@ -235,6 +227,25 @@ public abstract class JdbcInterface
             throw new Exception(e);
          }
       }
+   }
+
+
+   private String logentry(Cursor cursor)
+   {
+      String del = "\n---------------------------------------------------------------------\n";
+
+      String logentry = del;
+      logentry += cursor.sql();
+
+      if (cursor.bindvalues().size() > 0)
+         logentry += "\n\nbindings:";
+
+      for (int i = 0; i < cursor.bindvalues().size(); i++)
+         logentry += "\n"+cursor.bindvalues().get(i).toString();
+
+      logentry += del;
+
+      return(logentry);
    }
 
    public abstract void releaseProxyUser(Connection conn) throws Exception;

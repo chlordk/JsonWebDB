@@ -63,7 +63,7 @@ public class WhereClause
 
    public boolean exists()
    {
-      return(!clause.empty);
+      return(clause != null && !clause.empty);
    }
 
    public SQLPart asSQL()

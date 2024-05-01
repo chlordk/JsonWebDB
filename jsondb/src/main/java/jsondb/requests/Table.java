@@ -32,6 +32,7 @@ import jsondb.Response;
 import database.Column;
 import database.SQLPart;
 import utils.JSONOObject;
+import java.util.HashMap;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
@@ -86,7 +87,7 @@ public class Table
          {
             if (!source.described())
             {
-               ArrayList<BindValue> bindvalues =
+               HashMap<String,BindValue> bindvalues =
                   Utils.getBindValues(definition);
 
                String stmt = "select *";
@@ -132,8 +133,8 @@ public class Table
       if (!source.described())
          this.describe();
 
-      ArrayList<BindValue> bindvalues =
-         Utils.getBindValues(definition);
+         HashMap<String,BindValue> bindvalues =
+            Utils.getBindValues(definition);
 
       JSONObject args = definition.getJSONObject(SELECT);
 
@@ -160,6 +161,13 @@ public class Table
          throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
 
       select.append(whcl.asSQL());
+
+      if (source.vpd != null && source.vpd.appliesTo("select"))
+      {
+         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         if (whcl.exists()) select.append("\nand",vpdflt);
+         else select.append("\nwhere",vpdflt);
+      }
 
       if (order != null) select.append("\norder by "+order);
       if (lock && session.isDedicated()) select.append("\nfor update");

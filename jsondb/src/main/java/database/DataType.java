@@ -53,12 +53,12 @@ public class DataType
          String name = tdef.getString(NAME);
 
          if (type instanceof String)
-            types.put(name,new DataType(name,(String) type));
+            types.put(name.toLowerCase(),new DataType(name,(String) type));
 
          else
 
          if (type instanceof Integer)
-            types.put(name,new DataType(name,(Integer) type));
+            types.put(name.toLowerCase(),new DataType(name,(Integer) type));
 
          else
             throw new Exception(Messages.get("WRONG_DATA_TYPE",Messages.flatten(ALLOWED)));

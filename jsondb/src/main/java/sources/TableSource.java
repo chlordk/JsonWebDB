@@ -122,7 +122,7 @@ public class TableSource extends Source
       this.columns = index;
    }
 
-   public SQLPart from(ArrayList<BindValue> bindvalues)
+   public SQLPart from(HashMap<String,BindValue> bindvalues)
    {
       SQLPart from;
 
@@ -162,17 +162,22 @@ public class TableSource extends Source
          this.types = types;
          this.object = object;
          this.query = Parser.parse(query);
-      }
 
-      private SQLPart from(ArrayList<BindValue> bindvalues)
-      {
-         SQLPart bound = query.clone();
-
-         for(BindValue bv : bindvalues)
+         for (BindValue bv : this.query.bindValues())
          {
             DataType def = this.types.get(bv.name());
             if (def != null) bv.type(def.sqlid);
-            bound.bind(bv);
+         }
+      }
+
+      private SQLPart from(HashMap<String,BindValue> values)
+      {
+         SQLPart bound = query.clone();
+
+         for(BindValue used : bound.bindValues())
+         {
+            BindValue bv = values.get(used.name());
+            if (bv != null) used.value(bv.value());
          }
 
          bound.bindByValue();
@@ -239,6 +244,31 @@ public class TableSource extends Source
       {
          this.filter = Parser.parse(filter);
          this.apply = apply;
+      }
+
+      public boolean appliesTo(String operation)
+      {
+         for (int i = 0; i < apply.length; i++)
+         {
+            if (apply[i].equals(operation))
+               return(true);
+         }
+
+         return(false);
+      }
+
+      public SQLPart bind(HashMap<String,BindValue> values)
+      {
+         SQLPart bound = filter.clone();
+
+         for(BindValue used : bound.bindValues())
+         {
+            BindValue bv = values.get(used.name());
+            if (bv != null) used.value(bv.value());
+         }
+
+         bound.bindByValue();
+         return(bound);
       }
    }
 

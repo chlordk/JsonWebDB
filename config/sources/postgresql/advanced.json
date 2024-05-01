@@ -15,11 +15,11 @@
                "select l.*, c.country_name",
                "from locations l, countries c",
                "where l.country_id = c.country_id",
-               "and l.city like :city"
+               "and l.city like :CITY"
             ],
             "datatypes":
             [
-               {"name": "city", "type": "string"}
+               {"name": "City", "type": "string"}
             ]
          },
 
@@ -30,7 +30,7 @@
             [
               {"name": "country", "type": "12"}
             ],
-            "apply": ["update","delete"]
+            "apply": ["select","update","delete"]
          },
 
          "derived": "country_name",

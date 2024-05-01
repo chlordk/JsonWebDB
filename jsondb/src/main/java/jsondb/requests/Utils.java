@@ -28,11 +28,11 @@ import sources.Source;
 import jsondb.Session;
 import sources.Sources;
 import database.Cursor;
+import java.util.HashMap;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.util.ArrayList;
 
 
 public class Utils
@@ -71,13 +71,13 @@ public class Utils
    }
 
 
-   public static ArrayList<BindValue> getBindValues(JSONObject def)
+   public static HashMap<String,BindValue> getBindValues(JSONObject def)
    {
       if (!def.has(SECTION))
          return(null);
 
-      ArrayList<BindValue> bindvalues =
-         new ArrayList<BindValue>();
+      HashMap<String,BindValue> bindvalues =
+         new HashMap<String,BindValue>();
 
       JSONArray arr = def.getJSONArray(SECTION);
 
@@ -88,7 +88,7 @@ public class Utils
          String name = bdef.getString(NAME);
          Object value = bdef.getString(VALUE);
 
-         bindvalues.add(new BindValue(name).value(value));
+         bindvalues.put(name.toLowerCase(),new BindValue(name).value(value));
       }
 
       return(bindvalues);

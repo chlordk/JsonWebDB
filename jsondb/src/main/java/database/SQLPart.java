@@ -92,6 +92,14 @@ public class SQLPart
    }
 
 
+   public SQLPart append(String leftpad, SQLPart next)
+   {
+      this.sql += " "+leftpad+" "+next.sql;
+      this.bindvalues.addAll(next.bindvalues);
+      return(this);
+   }
+
+
    public SQLPart bind(BindValue bv)
    {
       return(bind(bv.name(),bv.type(),bv.value()));
