@@ -5,7 +5,7 @@
          "id": "LocationWithCountry",
          "object": "locations",
 
-         "sorting": "loc_id",
+         "order": "loc_id",
          "primary-key": "loc_id",
 
          "query":
