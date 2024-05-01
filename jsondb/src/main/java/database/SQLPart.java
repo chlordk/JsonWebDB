@@ -110,7 +110,7 @@ public class SQLPart
    }
 
 
-   public SQLPart bind(String name, int type, Object value)
+   public SQLPart bind(String name, Integer type, Object value)
    {
       for(BindValue bv : this.bindvalues)
       {

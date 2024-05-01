@@ -1,0 +1,30 @@
+{
+  "Table":
+  {
+    "invoke": "select()",
+    "source": "LocationWithCountry",
+    "session": "4b5762b4-6cc3-4b15-aad4-f08073690b36",
+
+    "bindvalues":
+    [
+        {"name": "city", "value": "%"},
+        {"name": "country", "value": "DK"}
+    ],
+    
+    "select()":
+    {
+        "columns": "*",
+        "page-size": 2,
+        "for-update": false,
+        "order": "country_id, city",
+
+        "bindvalues":
+        [
+        ],
+
+        "filters":
+        [
+        ]
+    }
+  }
+}

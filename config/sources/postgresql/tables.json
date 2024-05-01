@@ -5,7 +5,7 @@
          "id": "Countries",
          "object": "countries",
 
-         "sorting": "country_id",
+         "order": "country_id",
          "primary-key": ["country_id"],
 
          "custom-filters":
@@ -26,7 +26,7 @@
          "id": "Locations",
          "object": "locations",
 
-         "sorting": "loc_id",
+         "order": "loc_id",
          "primary-key": "loc_id",
 
          "custom-filters":
@@ -47,7 +47,7 @@
          "id": "departments",
          "object": "departments",
 
-         "sorting": "department_id",
+         "order": "department_id",
          "primary-key": "department_id",
 
          "custom-filters":
@@ -68,7 +68,7 @@
          "id": "jobs",
          "object": "jobs",
 
-         "sorting": "job_id",
+         "order": "job_id",
          "primary-key": "job_id",
 
          "custom-filters":
@@ -89,7 +89,7 @@
          "id": "employees",
          "object": "employees",
 
-         "sorting": "employee_id",
+         "order": "employee_id",
          "primary-key": "employee_id",
 
          "vpd":

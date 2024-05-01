@@ -14,7 +14,12 @@
             [
                "select l.*, c.country_name",
                "from locations l, countries c",
-               "where l.country_id = c.country_id"
+               "where l.country_id = c.country_id",
+               "and l.city like :city"
+            ],
+            "datatypes":
+            [
+               {"name": "city", "type": "string"}
             ]
          },
 
@@ -23,7 +28,7 @@
             "where-clause": "country_id = :COUNTRY",
             "datatypes":
             [
-              {"name": "COUNTRY", "type": "string", "sqlid": 12}
+              {"name": "country", "type": "12"}
             ],
             "apply": ["update","delete"]
          },

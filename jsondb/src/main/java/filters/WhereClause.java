@@ -52,7 +52,7 @@ public class WhereClause
       {
          this.source = source;
          this.filters = definition.getJSONArray(FILTERS);
-         this.whcl = this.build();
+         if (this.filters.length() > 0) this.whcl = this.build();
       }
    }
 

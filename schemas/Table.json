@@ -51,7 +51,8 @@
                "bindvalues":
                {
                   "type": "array",
-                  "items": {"$ref": "#/types/NameValuePair"}
+                  "items": {"$ref": "#/types/NameValuePair"},
+                  "description": "All bindvalues to bind the source and VPD"
                }
                ,
                "describe()":

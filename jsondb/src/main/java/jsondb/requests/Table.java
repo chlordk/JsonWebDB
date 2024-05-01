@@ -104,6 +104,9 @@ public class Table
       JSONArray rows = new JSONArray();
       ArrayList<Column> columns = source.getColumns();
 
+      if (source.order != null)
+         response.put("order",source.order);
+
       for (int i = 0; i < columns.size(); i++)
          rows.put(columns.get(i).toJSONObject());
 

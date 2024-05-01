@@ -44,18 +44,18 @@ public class TableSource extends Source
    private static final String NAME = "name";
    private static final String APPLY = "apply";
    private static final String QUERY = "query";
+   private static final String ORDER = "order";
    private static final String OBJECT = "object";
-   private static final String SORTING = "sorting";
    private static final String DERIVED = "derived";
    private static final String PRIMARY = "primary-key";
    private static final String WHCLAUSE = "where-clause";
    private static final String CUSTOMFLTS = "custom-filters";
 
    public final String id;
+   public final String order;
    public final String object;
    public final Access access;
    public final VPDFilter vpd;
-   public final String sorting;
    public final String[] derived;
    public final QuerySource query;
    public final String[] primarykey;
@@ -67,8 +67,8 @@ public class TableSource extends Source
    public TableSource(JSONObject definition) throws Exception
    {
       String id = getString(definition,ID,true,true);
+      String order = getString(definition,ORDER,false);
       String object = getString(definition,OBJECT,false);
-      String sorting = getString(definition,SORTING,false);
       String[] derived = getStringArray(definition,DERIVED,false);
       String[] primarykey = getStringArray(definition,PRIMARY,false);
 
@@ -86,7 +86,7 @@ public class TableSource extends Source
       this.query = query;
       this.object = object;
       this.access = access;
-      this.sorting = sorting;
+      this.order = order;
       this.derived = derived;
       this.filters = filters;
       this.primarykey = primarykey;
