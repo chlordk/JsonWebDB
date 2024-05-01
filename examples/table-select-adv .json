@@ -3,7 +3,7 @@
   {
     "invoke": "select()",
     "source": "LocationWithCountry",
-    "session": "453d867a-1436-4c37-afb2-9f296d1dfc58",
+    "session": "daedf52b-8bfe-44be-94d4-44b1fce7648d",
 
     "bindvalues":
     [
@@ -20,7 +20,8 @@
 
         "filters":
         [
-            {"column": "street_address", "filter": "like", "value": "K%"}
+            {"filter": "like", "column": "street_address", "value": "K%"},
+            {"filter": "custom", "custom": "country_name", "value": "Swe%"}
         ]
     }
   }

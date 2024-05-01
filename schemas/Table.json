@@ -296,7 +296,7 @@
             "oneOf":
             [
                {"required": ["filter","column","value"]},
-               {"required": ["filter","columns","value"]}
+               {"required": ["filter","custom","value"]}
             ]
          }
          ,
