@@ -28,7 +28,7 @@
             "where-clause": "country_id = :COUNTRY",
             "datatypes":
             [
-              {"name": "country", "type": "12"}
+              {"name": "country", "type": "string"}
             ],
             "apply": ["select","update","delete"]
          },
@@ -39,12 +39,17 @@
 			[
             {
                "name": "country_name",
-               "where-clause": [
+               "where-clause":
+               [
                   "country_id in",
                   "(",
                   "  select country_id from countries",
-                  "  where &column like :value",
+                  "  where country_name like :country",
                   ")"
+               ],
+               "datatypes":
+               [
+                  {"name": "country", "type": "12"}
                ]
             }
          ],

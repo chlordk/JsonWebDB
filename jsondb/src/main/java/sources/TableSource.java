@@ -192,6 +192,7 @@ public class TableSource extends Source
    {
       public final String name;
       public final SQLPart filter;
+      public final HashMap<String,DataType> types;
 
       private static HashMap<String,CustomFilter> parse(JSONObject def) throws Exception
       {
@@ -208,17 +209,25 @@ public class TableSource extends Source
             JSONObject flt = arr.getJSONObject(i);
             String name = getString(flt,NAME,true,true);
             String whcl = getString(flt,WHCLAUSE,true,false);
-            filters.put(name.toLowerCase(),new CustomFilter(name,whcl));
+            HashMap<String,DataType> types = DataType.parse(flt);
+            filters.put(name.toLowerCase(),new CustomFilter(name,whcl,types));
          }
 
          return(filters);
       }
 
 
-      private CustomFilter(String name, String whcl)
+      private CustomFilter(String name, String whcl, HashMap<String,DataType> types)
       {
          this.name = name;
+         this.types = types;
          this.filter = Parser.parse(whcl);
+
+         for (BindValue bv : this.filter.bindValues())
+         {
+            DataType def = types.get(bv.name());
+            if (def != null) bv.type(def.sqlid);
+         }
       }
    }
 
