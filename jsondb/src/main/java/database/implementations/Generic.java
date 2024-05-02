@@ -22,8 +22,8 @@
 package database.implementations;
 
 import java.sql.Connection;
+import database.JdbcInterface;
 import database.definitions.AdvancedPool;
-import database.definitions.JdbcInterface;
 
 
 public class Generic extends JdbcInterface

@@ -22,8 +22,8 @@
 package database.implementations;
 
 import jsondb.Config;
+import database.JdbcInterface;
 import database.definitions.AdvancedPool;
-import database.definitions.JdbcInterface;
 
 
 public enum DatabaseType

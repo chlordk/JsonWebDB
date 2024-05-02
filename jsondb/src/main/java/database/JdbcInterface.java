@@ -19,16 +19,15 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package database.definitions;
+package database;
 
 import jsondb.Config;
-import database.Cursor;
 import messages.Messages;
 import java.sql.Statement;
-import database.BindValue;
 import java.sql.Savepoint;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import database.definitions.AdvancedPool;
 
 
 public abstract class JdbcInterface

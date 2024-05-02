@@ -21,11 +21,11 @@
 
 package database.implementations;
 
-import java.sql.Connection;
 import java.sql.Savepoint;
+import java.sql.Connection;
 import java.util.Properties;
+import database.JdbcInterface;
 import database.definitions.AdvancedPool;
-import database.definitions.JdbcInterface;
 import oracle.jdbc.driver.OracleConnection;
 
 

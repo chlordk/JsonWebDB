@@ -29,9 +29,9 @@ import database.Cursor;
 import state.StateHandler;
 import database.BindValue;
 import java.util.ArrayList;
+import database.JdbcInterface;
 import state.StateHandler.SessionInfo;
 import database.definitions.AdvancedPool;
-import database.definitions.JdbcInterface;
 import state.StateHandler.TransactionInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
