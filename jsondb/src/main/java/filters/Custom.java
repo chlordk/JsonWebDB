@@ -71,7 +71,7 @@ public class Custom extends Filter
    public String sql()
    {
       if (parsed == null)
-         return("NoSuchFilter_"+custom+"_");
+         return("\"NoSuchFilter@"+custom+"\"");
 
       return(parsed.snippet());
    }
