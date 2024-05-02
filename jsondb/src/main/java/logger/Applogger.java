@@ -34,7 +34,7 @@ import java.util.logging.FileHandler;
 
 public class Applogger
 {
-   private static final boolean REDIRECT = true;
+   private static final boolean REDIRECT = false;
 
    private static final String SIZE = "size";
    private static final String LEVEL = "level";
