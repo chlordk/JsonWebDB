@@ -186,7 +186,7 @@ public abstract class JdbcInterface
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
-      Config.logger().info(logentry(cursor));
+      Config.logger().fine(logentry(cursor));
 
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
