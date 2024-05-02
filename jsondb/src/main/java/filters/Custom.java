@@ -45,34 +45,41 @@ public class Custom extends Filter
    {
       super(source,definition);
 
-      if (source instanceof TableSource)
+      try
       {
-         TableSource ts = (TableSource) source;
-         CustomFilter f = ts.filters.get(custom);
-
-         HashMap<String,BindValue> bindings =
-            new HashMap<String,BindValue>();
-
-         for(DataType type : f.types.values())
+         if (source instanceof TableSource)
          {
-            Object value = definition.get(type.name);
-            bindings.put(type.name.toLowerCase(),new BindValue(type.name).value(value));
-         }
+            TableSource ts = (TableSource) source;
+            CustomFilter f = ts.filters.get(custom);
 
-         this.parsed = f.bind(bindings);
+            HashMap<String,BindValue> bindings =
+               new HashMap<String,BindValue>();
+
+            for(DataType type : f.types.values())
+            {
+               Object value = definition.get(type.name);
+               bindings.put(type.name.toLowerCase(),new BindValue(type.name).value(value));
+            }
+
+            this.parsed = f.bind(bindings);
+         }
       }
+      catch (Throwable t) {}
    }
 
    @Override
    public String sql()
    {
+      if (parsed == null)
+         return("NoSuchFilter_"+custom+"_");
+
       return(parsed.snippet());
    }
 
    @Override
    public ArrayList<BindValue> bindvalues()
    {
-      if (bindvalues.size() == 0)
+      if (bindvalues.size() == 0 && parsed != null)
          bindvalues.addAll(parsed.bindValues());
 
       return(bindvalues);
