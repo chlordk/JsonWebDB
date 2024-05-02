@@ -139,6 +139,11 @@ public class BindValue
       return(this);
    }
 
+   public String desc()
+   {
+      return("sqltype: "+type+", value: "+value);
+   }
+
    public String toString()
    {
       String t = ampersand ? "?" : ":";

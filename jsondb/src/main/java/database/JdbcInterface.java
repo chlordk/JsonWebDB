@@ -247,7 +247,7 @@ public abstract class JdbcInterface
          logentry += "\n\nbindings:";
 
       for (int i = 0; i < cursor.bindvalues().size(); i++)
-         logentry += "\n"+cursor.bindvalues().get(i).toString();
+         logentry += "\n"+cursor.bindvalues().get(i).desc();
 
       if (e != null)
       {
