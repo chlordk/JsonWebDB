@@ -27,7 +27,6 @@ import messages.Messages;
 import java.sql.Statement;
 import database.BindValue;
 import java.sql.Savepoint;
-import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
