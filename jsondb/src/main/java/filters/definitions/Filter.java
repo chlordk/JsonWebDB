@@ -36,6 +36,7 @@ public abstract class Filter
 {
    private final static String VALUE = "value";
    private final static String COLUMN = "column";
+   private final static String CUSTOM = "custom";
    private final static String COLUMNS = "columns";
 
    private static final String location = location();
@@ -46,6 +47,7 @@ public abstract class Filter
 
    protected Object value = null;
    protected String column = null;
+   protected String custom = null;
    protected Source source = null;
    protected String[] columns = null;
    protected JSONObject definition = null;
@@ -68,6 +70,9 @@ public abstract class Filter
 
       if (definition.has(COLUMN))
          column = definition.getString(COLUMN);
+
+      if (definition.has(CUSTOM))
+         custom = definition.getString(CUSTOM);
 
       if (definition.has(COLUMNS))
       {

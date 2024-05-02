@@ -254,9 +254,12 @@ public class WhereClause
 
       private static Filter getFilter(Source source, JSONObject def) throws Exception
       {
-         String name = def.getString("filter");
-         Filter filter = Filter.getInstance(name,source,def);
-         return(filter);
+         String name = "custom";
+
+         if (def.has("filter"))
+            name = def.getString("filter");
+
+         return(Filter.getInstance(name,source,def));
       }
    }
 }

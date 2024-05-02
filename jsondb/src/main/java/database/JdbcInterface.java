@@ -25,8 +25,10 @@ import jsondb.Config;
 import messages.Messages;
 import java.sql.Statement;
 import java.sql.Savepoint;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.io.ByteArrayOutputStream;
 import database.definitions.AdvancedPool;
 
 
@@ -208,7 +210,7 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
-            Config.logger().severe(logentry(cursor));
+            Config.logger().severe(logentry(cursor,e));
             releaseSavePoint(sp,true);
             throw new Exception(e);
          }
@@ -230,6 +232,12 @@ public abstract class JdbcInterface
 
    private String logentry(Cursor cursor)
    {
+      return(logentry(cursor,null));
+   }
+
+
+   private String logentry(Cursor cursor, Exception e)
+   {
       String del = "\n---------------------------------------------------------------------\n";
 
       String logentry = del;
@@ -240,6 +248,14 @@ public abstract class JdbcInterface
 
       for (int i = 0; i < cursor.bindvalues().size(); i++)
          logentry += "\n"+cursor.bindvalues().get(i).toString();
+
+      if (e != null)
+      {
+         ByteArrayOutputStream out = new ByteArrayOutputStream();
+         e.printStackTrace(new PrintStream(out));
+         try {out.close();} catch (Exception ex) {}
+         logentry += "\n" + new String(out.toByteArray());
+      }
 
       logentry += del;
 

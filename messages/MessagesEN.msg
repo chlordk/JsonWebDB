@@ -21,3 +21,4 @@ ACCESS_DENIED              = Access Denied
 NO_WHERE_CLAUSE            = Where clause is missing, but required
 WHERE_PRIMARY_KEY          = Where clause requires restrictions on primary key '{%1}'
 WRONG_DATA_TYPE            = Wrong datatype, expected '{%1}'
+BAD_FILTER_DEFINITION      = Bad filter definition '{%1}'
