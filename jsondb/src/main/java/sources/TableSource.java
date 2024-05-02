@@ -229,6 +229,20 @@ public class TableSource extends Source
             if (def != null) bv.type(def.sqlid);
          }
       }
+
+      public SQLPart bind(HashMap<String,BindValue> values)
+      {
+         SQLPart bound = filter.clone();
+
+         for(BindValue used : bound.bindValues())
+         {
+            BindValue bv = values.get(used.name());
+            if (bv != null) used.value(bv.value());
+         }
+
+         bound.bindByValue();
+         return(bound);
+      }
    }
 
 

@@ -26,10 +26,10 @@ package filters.definitions;
 
 import sources.Source;
 import database.BindValue;
-import messages.Messages;
-
 import java.util.ArrayList;
 import org.json.JSONObject;
+import sources.TableSource;
+import sources.TableSource.CustomFilter;
 
 
 public class Custom extends Filter
@@ -38,10 +38,11 @@ public class Custom extends Filter
    {
       super(source,definition);
 
-      /*
-         if (name == null)
-            throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));
-      */
+      if (source instanceof TableSource)
+      {
+         TableSource ts = (TableSource) source;
+         CustomFilter f = ts.filters.get(custom);
+      }
    }
 
    @Override

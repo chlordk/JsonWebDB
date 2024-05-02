@@ -254,12 +254,16 @@ public class WhereClause
 
       private static Filter getFilter(Source source, JSONObject def) throws Exception
       {
-         String name = "custom";
+         String name = null;
 
-         if (def.has("filter"))
-            name = def.getString("filter");
+         if (def.has("custom")) name = "custom";
+         else if (def.has("filter")) name = def.getString("filter");
 
-         return(Filter.getInstance(name,source,def));
+         if (name == null)
+            throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));
+
+         Filter filter = Filter.getInstance(name,source,def);
+         return(filter);
       }
    }
 }

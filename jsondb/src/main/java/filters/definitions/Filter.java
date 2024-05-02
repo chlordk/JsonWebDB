@@ -25,6 +25,7 @@ SOFTWARE.
 package filters.definitions;
 
 import sources.Source;
+import messages.Messages;
 import org.json.JSONArray;
 import database.BindValue;
 import org.json.JSONObject;
@@ -100,7 +101,14 @@ public abstract class Filter
          classes.put(cname,clazz);
       }
 
-      return((T) clazz.getConstructor(Source.class,JSONObject.class).newInstance(source,definition));
+      try
+      {
+         return((T) clazz.getConstructor(Source.class,JSONObject.class).newInstance(source,definition));
+      }
+      catch (Exception e)
+      {
+         throw new Exception(Messages.get("UNKNOWN_FILTER",name));
+      }
    }
 
 
