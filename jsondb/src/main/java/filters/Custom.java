@@ -22,18 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package filters.definitions;
+package filters;
 
 import sources.Source;
+import database.SQLPart;
+import database.DataType;
+import java.util.HashMap;
 import database.BindValue;
-import java.util.ArrayList;
 import org.json.JSONObject;
 import sources.TableSource;
+import java.util.ArrayList;
+import filters.definitions.Filter;
 import sources.TableSource.CustomFilter;
 
 
 public class Custom extends Filter
 {
+   private SQLPart parsed = null;
+
+
    public Custom(Source source, JSONObject definition)
    {
       super(source,definition);
@@ -42,18 +49,32 @@ public class Custom extends Filter
       {
          TableSource ts = (TableSource) source;
          CustomFilter f = ts.filters.get(custom);
+
+         HashMap<String,BindValue> bindings =
+            new HashMap<String,BindValue>();
+
+         for(DataType type : f.types.values())
+         {
+            Object value = definition.get(type.name);
+            bindings.put(type.name.toLowerCase(),new BindValue(type.name).value(value));
+         }
+
+         this.parsed = f.bind(bindings);
       }
    }
 
    @Override
    public String sql()
    {
-      return("1 = x");
+      return(parsed.snippet());
    }
 
    @Override
    public ArrayList<BindValue> bindvalues()
    {
+      if (bindvalues.size() == 0)
+         bindvalues.addAll(parsed.bindValues());
+
       return(bindvalues);
    }
 }
