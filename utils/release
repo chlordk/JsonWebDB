@@ -1,0 +1,5 @@
+VERSION=4.0.0
+LOCATION=$(dirname "$0")
+
+cd $LOCATION/..
+zip -r releases/JsonWebDB-$VERSION.zip documentation bin libraries config examples messages -x */.DS_Store */*/.DS_Store
