@@ -24,13 +24,24 @@ SOFTWARE.
 
 package filters.definitions;
 
+import filters.Like;
+import filters.Equals;
+import filters.LessThan;
 import sources.Source;
+import filters.NotLike;
+import filters.Between;
+import filters.Custom;
+import filters.NotEquals;
+import java.util.HashMap;
 import messages.Messages;
+import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
+import filters.GreaterThan;
+import filters.LessThanEquals;
+import filters.GreaterThanEquals;
 
 
 public abstract class Filter
@@ -41,10 +52,26 @@ public abstract class Filter
    private final static String VALUES = "values";
    private final static String COLUMNS = "columns";
 
-   private static final String location = location();
+   private static final HashMap<String,Class<?>> classes =
+      new HashMap<String,Class<?>>()
+      {{
+         put("like",Like.class);
+         put("notlike",NotLike.class);
 
-   private static final ConcurrentHashMap<String,Class<?>> classes =
-      new ConcurrentHashMap<String,Class<?>>();
+         put("=",Equals.class);
+         put("!=",NotEquals.class);
+
+         put("<",LessThan.class);
+         put("<=",LessThanEquals.class);
+
+         put(">",GreaterThan.class);
+         put(">=",GreaterThanEquals.class);
+
+         put("between",Between.class);
+         put("notbetween",NotBetween.class);
+
+         put("custom",Custom.class);
+      }};
 
 
    protected Object value = null;
@@ -100,17 +127,7 @@ public abstract class Filter
    @SuppressWarnings("unchecked")
    public static <T extends Filter> T getInstance(String name, Source source, JSONObject definition) throws Exception
    {
-      name = Character.toUpperCase(name.charAt(0)) +
-               name.substring(1).toLowerCase();
-
-      String cname = location+"."+name;
-      Class<?> clazz = classes.get(cname);
-
-      if (clazz == null)
-      {
-         clazz = (Class<?>) Class.forName(cname);
-         classes.put(cname,clazz);
-      }
+      Class<?> clazz = classes.get(name.toLowerCase().replaceAll(" ",""));
 
       try
       {
@@ -120,13 +137,5 @@ public abstract class Filter
       {
          throw new Exception(Messages.get("UNKNOWN_FILTER",name));
       }
-   }
-
-
-   public static String location()
-   {
-      String loc = Filter.class.getPackage().getName();
-      int pos = loc.lastIndexOf('.');
-      return(loc.substring(0,pos));
    }
 }

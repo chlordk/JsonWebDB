@@ -257,7 +257,8 @@ public class WhereClause
          String name = null;
 
          if (def.has("custom")) name = "custom";
-         else if (def.has("filter")) name = def.getString("filter");
+         else if (def.has("op")) name = def.getString("op");
+         else if (def.has("operator")) name = def.getString("operator");
 
          if (name == null)
             throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));

@@ -14,12 +14,12 @@
 
         "filters":
         [
-            {"filter": "Equals", "column": "first_name", "value": "Mia"},
-            { "or": {"filter": "Like", "column": "last_name", "value": "Jensen"}},
+            {"column": "first_name", "operator": "Equals", "value": "Mia"},
+            { "or": {"column": "last_name", "operator": "=", "value": "Jensen"}},
             { "or": 
                 [
-                    {"filter": "Like", "column": "first_name", "value": "Mia%"},
-                    {"filter": "Like", "column": "last_name" , "value": "Jens%"}
+                    {"column": "first_name", "operator": "Like", "value": "Mia%"},
+                    {"column": "last_name" , "operator": "Like", "value": "Jens%"}
                 ]
             }
         ]

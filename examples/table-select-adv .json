@@ -20,8 +20,8 @@
 
         "filters":
         [
-            {"filter": "like", "column": "street_address", "value": "K%"},
-            {"filter": "custom", "custom": "country_name", "value": "Swe%"}
+            {"column": "street_address", "operator": "like", "value": "K%"},
+            {"custom": "country_name", "value": "Swe%"}
         ]
     }
   }
