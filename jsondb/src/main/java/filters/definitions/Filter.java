@@ -38,6 +38,7 @@ public abstract class Filter
    private final static String VALUE = "value";
    private final static String COLUMN = "column";
    private final static String CUSTOM = "custom";
+   private final static String VALUES = "values";
    private final static String COLUMNS = "columns";
 
    private static final String location = location();
@@ -50,6 +51,7 @@ public abstract class Filter
    protected String column = null;
    protected String custom = null;
    protected Source source = null;
+   protected Object[] values = null;
    protected String[] columns = null;
    protected JSONObject definition = null;
 
@@ -82,6 +84,15 @@ public abstract class Filter
          columns = new String[cols.length()];
          for (int i = 0; i < columns.length; i++)
             columns[i] = cols.getString(i);
+      }
+
+      if (definition.has(VALUES))
+      {
+         JSONArray vals = definition.getJSONArray(VALUES);
+
+         values = new Object[vals.length()];
+         for (int i = 0; i < values.length; i++)
+            values[i] = vals.get(i);
       }
    }
 
