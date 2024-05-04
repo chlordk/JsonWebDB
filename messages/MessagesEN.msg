@@ -23,3 +23,5 @@ WHERE_PRIMARY_KEY          = Where clause requires restrictions on primary key '
 WRONG_DATA_TYPE            = Wrong datatype, expected '{%1}'
 BAD_FILTER_DEFINITION      = Bad filter definition '{%1}'
 UNKNOWN_FILTER             = Unknown filter '{%1}'
+CANNOT_CONVERT_DATE        = Cannot convert '{%1}' to date
+NO_DATATYPE_SPECIFIED      = No type has been set for bindvalue '{%1}'

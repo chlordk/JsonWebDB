@@ -25,7 +25,9 @@ SOFTWARE.
 package utils;
 
 import java.util.Date;
+import messages.Messages;
 import java.time.Instant;
+import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.text.SimpleDateFormat;
@@ -49,37 +51,63 @@ public class Dates
    }
 
 
-   public static Date convert(String dstr) throws Exception
+   public static String convert(Timestamp sqldate)
+   {
+      Date date = new Date(sqldate.getTime());
+      Instant time = date.toInstant();
+      ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
+      return(utc.format(formatter));
+   }
+
+
+   public static String convert(java.sql.Date sqldate)
+   {
+      Date date = new Date(sqldate.getTime());
+      Instant time = date.toInstant();
+      ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
+      return(utc.format(formatter));
+   }
+
+
+   public static Date convert(Object value) throws Exception
    {
       SimpleDateFormat fmt = null;
 
-      if (dstr.length() > 20)
+      if (value == null)
+         return(null);
+
+      if (!(value instanceof String))
+         throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
+
+      String date = value.toString();
+
+      if (date.length() > 20)
       {
-         ZonedDateTime zdt = ZonedDateTime.parse(dstr);
+         ZonedDateTime zdt = ZonedDateTime.parse(date);
          return(Date.from(zdt.toInstant()));
       }
 
-      dstr = guess(dstr);
+      date = guess(date);
 
       // Assume datetime
       fmt = new SimpleDateFormat(DTM);
 
-      // Only date
-      if (dstr.length() == 10)
+      // Only date no time
+      if (date.length() == 10)
          fmt = new SimpleDateFormat(DAY);
 
-      return(fmt.parse(dstr));
+      return(fmt.parse(date));
    }
 
 
-   private static String guess(String dstr)
+   private static String guess(String date)
    {
       int pos = 0;
 
-      dstr = dstr.trim();
-      dstr = dstr.replaceAll("  ","");
+      date = date.trim();
+      date = date.replaceAll("  ","");
 
-      byte[] bstr = dstr.getBytes();
+      byte[] bstr = date.getBytes();
 
       String t1 = token(pos,bstr);
       pos += t1.length() + 1;
@@ -92,8 +120,11 @@ public class Dates
 
       String format = null;
 
-      if (t1.length() == 4) format = t1+"-"+t2+"-"+t3+dstr.substring(pos);
-      else if (t3.length() == 4) format = t3+"-"+t2+"-"+t1+dstr.substring(pos);
+      if (pos < date.length() && date.charAt(pos) == 'T')
+         date = date.substring(0,pos)+" "+date.substring(pos+1);
+
+      if (t1.length() == 4) format = t1+"-"+t2+"-"+t3+date.substring(pos);
+      else if (t3.length() == 4) format = t3+"-"+t2+"-"+t1+date.substring(pos);
 
       return(format);
    }

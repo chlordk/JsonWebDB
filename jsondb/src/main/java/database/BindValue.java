@@ -24,6 +24,9 @@ SOFTWARE.
 
 package database;
 
+import utils.Dates;
+import jsondb.Config;
+import messages.Messages;
 import utils.JSONOObject;
 import org.json.JSONObject;
 
@@ -137,6 +140,15 @@ public class BindValue
    {
       this.ampersand = ampersand;
       return(this);
+   }
+
+   public void validate() throws Exception
+   {
+      if (type == null)
+         Config.logger().warning(Messages.get("NO_DATATYPE_SPECIFIED",this.name));
+
+      if (SQLTypes.isDateType(type))
+         this.value = Dates.convert(value);
    }
 
    public String desc()

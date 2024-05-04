@@ -302,6 +302,10 @@ public class Session
    public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
    {
       JdbcInterface read = ensure(false);
+
+      for(BindValue bv : bindvalues)
+         bv.validate();
+
       Cursor cursor = new Cursor(this,sql,bindvalues);
 
       read.executeQuery(cursor,savepoint);

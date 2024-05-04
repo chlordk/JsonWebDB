@@ -24,8 +24,9 @@ SOFTWARE.
 
 package database;
 
-import utils.Bytes;
 import utils.Guid;
+import utils.Bytes;
+import utils.Dates;
 import java.sql.Date;
 import jsondb.Session;
 import utils.JSONOObject;
@@ -199,12 +200,12 @@ public class Cursor
             if (columns.get(c).isDateType())
             {
                if (value instanceof Date)
-                  value = ((Date) value).getTime();
+                  value = Dates.convert((Date) value);
 
                else
 
                if (value instanceof Timestamp)
-                  value = ((Timestamp) value).getTime();
+                  value = Dates.convert((Timestamp) value);
             }
 
             row[c] = value;
