@@ -27,6 +27,11 @@ package utils;
 import java.util.Date;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 public class Dates
@@ -34,6 +39,45 @@ public class Dates
    public static String DAY = "yyyy-MM-dd";
    public static String DTM = "yyyy-MM-dd HH:mm:ss";
    public static String UTC = "EEE, dd MMM yyyy HH:mm:ss z";
+
+   public static void main(String[] args)
+   {
+      Date date = new Date();
+      System.out.println(date);
+      System.out.println();
+
+      ZoneId dk = ZoneId.systemDefault();
+      ZoneId uk = ZoneId.of("Europe/London");
+
+      DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+      LocalDateTime ldt = LocalDateTime.ofInstant(date.toInstant(),dk);
+      ZonedDateTime utc1 = ldt.atZone(ZoneOffset.UTC);
+      String rep1 = utc1.format(formatter);
+
+      //LocalDateTime bdt = LocalDateTime.ofInstant(date.toInstant(),uk);
+      //ZonedDateTime utc2 = bdt.atZone(ZoneOffset.UTC);
+      //String rep2 = utc2.format(formatter);
+
+      System.out.println(rep1);
+      //System.out.println(rep2);
+      System.out.println();
+
+      // And back again
+
+      ZonedDateTime plc = ZonedDateTime.parse(rep1,formatter);
+      //ZonedDateTime puk = ZonedDateTime.parse(rep2,formatter);
+
+      System.out.println(plc);
+      //System.out.println(puk);
+      System.out.println();
+
+      //plc = plc.withZoneSameInstant(dk);
+      //puk = puk.withZoneSameInstant(uk);
+
+      date = Date.from(plc.toInstant());
+      System.out.println(date);
+   }
 
 
    public static Date convert(String dstr) throws Exception
@@ -57,6 +101,18 @@ public class Dates
       fmt = new SimpleDateFormat(DTM);
       return(fmt.parse(dstr));
    }
+
+   public static String toUTCString(LocalDateTime localDateTime, ZoneId zoneId)
+   {
+      ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+      return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+   }
+
+  // Method to convert UTC string to LocalDateTime
+  public static LocalDateTime fromUTCString(String utcString)
+  {
+      return LocalDateTime.parse(utcString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+  }
 
    private static String format(String dstr)
    {
@@ -117,8 +173,6 @@ public class Dates
 
       if (t1.length() == 4) format = t1+"-"+t2+"-"+t3+dstr.substring(pos);
       else if (t3.length() == 4) format = t3+"-"+t2+"-"+t1+dstr.substring(pos);
-
-      System.out.println(format);
 
       return(format);
    }
