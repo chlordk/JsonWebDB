@@ -74,7 +74,6 @@ public class Dates
 
    private static String guess(String dstr)
    {
-      int ts = 0;
       int pos = 0;
 
       dstr = dstr.trim();
@@ -82,50 +81,14 @@ public class Dates
 
       byte[] bstr = dstr.getBytes();
 
-      while(bstr[pos] < '0' || bstr[pos] > '9')
-         pos++;
+      String t1 = token(pos,bstr);
+      pos += t1.length() + 1;
 
-      ts = pos;
+      String t2 = token(pos,bstr);
+      pos += t2.length() + 1;
 
-      while(pos < bstr.length)
-      {
-         if(bstr[pos] < '0' || bstr[pos] > '9')
-            break;
-
-         pos++;
-      }
-
-      String t1 = new String(bstr,ts,pos-ts);
-
-      while(bstr[pos] < '0' || bstr[pos] > '9')
-         pos++;
-
-      ts = pos;
-
-      while(pos < bstr.length)
-      {
-         if(bstr[pos] < '0' || bstr[pos] > '9')
-            break;
-
-         pos++;
-      }
-
-      String t2 = new String(bstr,ts,pos-ts);
-
-      while(bstr[pos] < '0' || bstr[pos] > '9')
-         pos++;
-
-      ts = pos;
-
-      while(pos < bstr.length)
-      {
-         if(bstr[pos] < '0' || bstr[pos] > '9')
-            break;
-
-         pos++;
-      }
-
-      String t3 = new String(bstr,ts,pos-ts);
+      String t3 = token(pos,bstr);
+      pos += t3.length();
 
       String format = null;
 
@@ -133,5 +96,21 @@ public class Dates
       else if (t3.length() == 4) format = t3+"-"+t2+"-"+t1+dstr.substring(pos);
 
       return(format);
+   }
+
+
+   private static String token(int pos, byte[] bstr)
+   {
+      int ts = pos;
+
+      while(pos < bstr.length)
+      {
+         if(bstr[pos] < '0' || bstr[pos] > '9')
+            break;
+
+         pos++;
+      }
+
+      return(new String(bstr,ts,pos-ts));
    }
 }
