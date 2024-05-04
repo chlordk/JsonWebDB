@@ -25,39 +25,21 @@ SOFTWARE.
 package utils;
 
 import java.util.Date;
-import java.util.Locale;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 
 public class Dates
 {
-   public static String DAY = "yyyy-MM-dd";
-   public static String DTM = "yyyy-MM-dd HH:mm:ss";
-   public static String JSF = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+   private static String DAY = "yyyy-MM-dd";
+   private static String DTM = "yyyy-MM-dd HH:mm:ss";
 
    private static ZoneOffset UTC = ZoneOffset.UTC;
    private static DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-
-   public static String shouldbe = "2024-05-04T08:45:31.254Z";
-
-   public static void main(String[] args) throws Exception
-   {
-      Date date = new Date();
-      System.out.println(date.toInstant());
-
-      String conv = convert(date);
-      System.out.println(conv);
-
-      date = convert(conv);
-      System.out.println(date);
-   }
 
    public static String convert(Date date)
    {
@@ -73,24 +55,24 @@ public class Dates
 
       if (dstr.length() > 20)
       {
-         LocalDateTime ldt = LocalDateTime.parse(dstr,formatter);
-         ZonedDateTime utc = ldt.atZone(ZoneId.systemDefault());
-         return(Date.from(utc.toInstant()));
+         ZonedDateTime zdt = ZonedDateTime.parse(dstr);
+         return(Date.from(zdt.toInstant()));
       }
 
-      dstr = format(dstr);
+      dstr = guess(dstr);
 
-      if (dstr.length() == 10)
-      {
-         fmt = new SimpleDateFormat(DAY);
-         return(fmt.parse(dstr));
-      }
-
+      // Assume datetime
       fmt = new SimpleDateFormat(DTM);
+
+      // Only date
+      if (dstr.length() == 10)
+         fmt = new SimpleDateFormat(DAY);
+
       return(fmt.parse(dstr));
    }
 
-   private static String format(String dstr)
+
+   private static String guess(String dstr)
    {
       int ts = 0;
       int pos = 0;
