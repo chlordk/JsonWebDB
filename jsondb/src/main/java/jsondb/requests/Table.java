@@ -170,7 +170,7 @@ public class Table
       }
 
       if (order != null) select.append("\norder by "+order);
-      if (lock && session.isDedicated()) select.append("\nfor update");
+      if (lock && session.isStateful()) select.append("\nfor update");
 
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);

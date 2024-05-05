@@ -41,7 +41,7 @@ public class Session
    private final int idle;
    private final String guid;
    private final String user;
-   private final boolean dedicated;
+   private final boolean stateful;
    private final AdvancedPool pool;
 
    private final ConcurrentHashMap<String,Cursor> cursors =
@@ -73,18 +73,18 @@ public class Session
 
       if (info != null && session == null)
       {
-         session = new Session(info.guid,info.user,info.dedicated);
+         session = new Session(info.guid,info.user,info.stateful);
          Config.logger().info("Move "+guid+" from "+info.inst+" to "+Config.inst());
       }
 
       return(session);
    }
 
-   public static Session create(String user, boolean dedicated) throws Exception
+   public static Session create(String user, boolean stateful) throws Exception
    {
-      String guid = StateHandler.createSession(user,dedicated);
+      String guid = StateHandler.createSession(user,stateful);
 
-      Session session = new Session(guid,user,dedicated);
+      Session session = new Session(guid,user,stateful);
       sessions.put(guid,session);
 
       return(session);
@@ -100,13 +100,14 @@ public class Session
       return(sessions.remove(guid) != null);
    }
 
-   private Session(String guid, String user, boolean dedicated) throws Exception
+   private Session(String guid, String user, boolean stateful) throws Exception
    {
       this.guid = guid;
       this.user = user;
+      this.stateful = stateful;
+
       this.used = new Date();
       this.pool = Config.pool();
-      this.dedicated = dedicated;
       this.idle = Config.conTimeout();
    }
 
@@ -120,9 +121,9 @@ public class Session
       return(user);
    }
 
-   public boolean isDedicated()
+   public boolean isStateful()
    {
-      return(dedicated);
+      return(stateful);
    }
 
    public synchronized Date lastUsed()
@@ -333,8 +334,8 @@ public class Session
       if (!write && rconn.isConnected())
          return(rconn);
 
-      if (write)  return(wconn.connect(this.user,write,dedicated));
-      else        return(rconn.connect(this.user,write,dedicated));
+      if (write)  return(wconn.connect(this.user,write,stateful));
+      else        return(rconn.connect(this.user,write,stateful));
    }
 
    public String toString()

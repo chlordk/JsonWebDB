@@ -142,7 +142,7 @@ public class StateHandler
    }
 
 
-   public static String createSession(String username, boolean dedicated) throws Exception
+   public static String createSession(String username, boolean stateful) throws Exception
    {
       boolean done = false;
       String session = null;
@@ -159,7 +159,7 @@ public class StateHandler
             done = true;
             sesPath(session).mkdirs();
             out = new FileOutputStream(file);
-            out.write((username+" "+inst+" "+dedicated).getBytes()); out.close();
+            out.write((username+" "+inst+" "+stateful).getBytes()); out.close();
          }
       }
 
@@ -300,7 +300,7 @@ public class StateHandler
 
       RandomAccessFile raf = new RandomAccessFile(file,"rw");
       raf.write(bytes); raf.close();
-      
+
       return(true);
    }
 
@@ -375,7 +375,7 @@ public class StateHandler
       public final String guid;
       public final String user;
       public final String inst;
-      public final boolean dedicated;
+      public final boolean stateful;
 
       private SessionInfo(File file) throws Exception
       {
@@ -394,7 +394,7 @@ public class StateHandler
          this.user = args[0];
          this.inst = args[1];
 
-         this.dedicated = Boolean.parseBoolean(args[2]);
+         this.stateful = Boolean.parseBoolean(args[2]);
       }
    }
 

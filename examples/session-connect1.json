@@ -7,7 +7,7 @@
       {
          "username": "hr",
          "password": "hr",
-         "dedicated": true
+         "stateful": true
       }
    }
 }

@@ -47,8 +47,8 @@
                {
                   "username": {"type": "string"},
                   "password": {"type": "string"},
-                  "signature": {"type": "string"},
-                  "dedicated": {"type": "boolean"}
+                  "stateful": {"type": "boolean"},
+                  "signature": {"type": "string"}
                   ,
                   "client-info":
                   {

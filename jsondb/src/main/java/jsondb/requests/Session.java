@@ -39,8 +39,8 @@ public class Session
    private static final String SESSION = "session";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
+   private static final String STATEFUL = "stateful";
    private static final String SIGNATURE = "signature";
-   private static final String DEDICATED = "dedicated";
    private static final String PARAMETERS = "connect()";
 
 
@@ -54,7 +54,7 @@ public class Session
    {
       String password = null;
       String signature = null;
-      boolean dedicated = false;
+      boolean stateful = false;
 
       JSONObject response = new JSONOObject();
 
@@ -67,8 +67,8 @@ public class Session
       if (data.has(PASSWORD))
          password = data.getString(PASSWORD);
 
-      if (data.has(DEDICATED))
-         dedicated = data.getBoolean(DEDICATED);
+      if (data.has(STATEFUL))
+         stateful = data.getBoolean(STATEFUL);
 
       if (data.has(SIGNATURE))
          signature = data.getString(SIGNATURE);
@@ -77,7 +77,7 @@ public class Session
       if (signature != null) data.put(SIGNATURE,"********");
 
       boolean authenticated = false;
-      jsondb.Session session = jsondb.Session.create(username,dedicated);
+      jsondb.Session session = jsondb.Session.create(username,stateful);
 
       response.put("success",true);
       response.put("method","connect()");
@@ -178,10 +178,10 @@ public class Session
          return(new Response(response));
       }
 
-      if (!session.isDedicated())
+      if (!session.isStateful())
       {
          response.put("success",false);
-         response.put("message",Messages.get("SESSION_NOT_DEDICATED","commit",sessid));
+         response.put("message",Messages.get("SESSION_NOT_STATEFUL","commit",sessid));
          return(new Response(response));
       }
 
@@ -207,10 +207,10 @@ public class Session
          return(new Response(response));
       }
 
-      if (!session.isDedicated())
+      if (!session.isStateful())
       {
          response.put("success",false);
-         response.put("message",Messages.get("SESSION_NOT_DEDICATED","rollback",sessid));
+         response.put("message",Messages.get("SESSION_NOT_STATEFUL","rollback",sessid));
          return(new Response(response));
       }
 
