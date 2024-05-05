@@ -73,8 +73,13 @@ public class Session
 
       if (info != null && session == null)
       {
+         boolean moved = !info.inst.equals(Config.inst());
          session = new Session(info.guid,info.user,info.stateful);
-         Config.logger().info("Move "+guid+" from "+info.inst+" to "+Config.inst());
+
+         String msg = "Resume session "+guid;
+         if (moved) msg += ", previous running @"+info.inst;
+
+         Config.logger().info(msg);
       }
 
       return(session);
