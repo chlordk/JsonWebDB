@@ -26,13 +26,13 @@ package jsondb;
 
 import java.util.Date;
 import database.Cursor;
-import state.StateHandler;
 import database.BindValue;
 import java.util.ArrayList;
 import database.JdbcInterface;
-import state.StateHandler.SessionInfo;
+import state.StatePersistency;
 import database.definitions.AdvancedPool;
-import state.StateHandler.TransactionInfo;
+import state.StatePersistency.SessionInfo;
+import state.StatePersistency.TransactionInfo;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -69,7 +69,7 @@ public class Session
    public static Session get(String guid) throws Exception
    {
       Session session = sessions.get(guid);
-      SessionInfo info = StateHandler.getSession(guid);
+      SessionInfo info = StatePersistency.getSession(guid);
 
       if (info != null && session == null)
       {
@@ -87,7 +87,7 @@ public class Session
 
    public static Session create(String user, boolean stateful) throws Exception
    {
-      String guid = StateHandler.createSession(user,stateful);
+      String guid = StatePersistency.createSession(user,stateful);
 
       Session session = new Session(guid,user,stateful);
       sessions.put(guid,session);
@@ -159,7 +159,7 @@ public class Session
    public synchronized boolean touch() throws Exception
    {
       this.used = new Date();
-      boolean success = StateHandler.touchSession(guid);
+      boolean success = StatePersistency.touchSession(guid);
       return(success);
    }
 
@@ -172,7 +172,7 @@ public class Session
    public synchronized TransactionInfo touchTrx() throws Exception
    {
       this.trxused = new Date();
-      TransactionInfo info = StateHandler.touchTransaction(guid,trxused);
+      TransactionInfo info = StatePersistency.touchTransaction(guid,trxused);
       return(info);
    }
 
@@ -265,7 +265,7 @@ public class Session
          rconn = null;
       }
 
-      boolean success = StateHandler.removeSession(guid);
+      boolean success = StatePersistency.removeSession(guid);
 
       cursors.clear();
       sessions.remove(guid);
@@ -285,8 +285,8 @@ public class Session
 
    public boolean commit() throws Exception
    {
-      StateHandler.removeTransaction(this.guid);
-      boolean success = StateHandler.touchSession(guid);
+      StatePersistency.removeTransaction(this.guid);
+      boolean success = StatePersistency.touchSession(guid);
 
       trxused = null;
 
@@ -301,8 +301,8 @@ public class Session
 
    public boolean rollback() throws Exception
    {
-      StateHandler.removeTransaction(this.guid);
-      boolean success = StateHandler.touchSession(guid);
+      StatePersistency.removeTransaction(this.guid);
+      boolean success = StatePersistency.touchSession(guid);
 
       trxused = null;
 

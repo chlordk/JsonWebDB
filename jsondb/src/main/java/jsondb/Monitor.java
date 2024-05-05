@@ -22,7 +22,7 @@
 package jsondb;
 
 import java.util.Date;
-import state.StateHandler;
+import state.StatePersistency;
 import java.util.logging.Level;
 
 
@@ -68,7 +68,7 @@ public class Monitor extends Thread
             if ((now - last) > sestmout)
             {
                last = (new Date()).getTime();
-               StateHandler.cleanout(now,sestmout);
+               StatePersistency.cleanout(now,sestmout);
             }
 
             Thread.sleep(interval);

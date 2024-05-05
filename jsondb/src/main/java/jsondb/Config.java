@@ -32,9 +32,9 @@ import files.FileConfig;
 import logger.Applogger;
 import database.SQLTypes;
 import messages.Messages;
-import state.StateHandler;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import state.StatePersistency;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import database.definitions.AdvancedPool;
@@ -135,7 +135,7 @@ public class Config
       Sources.initialize();
       FileConfig.initialize();
       HTTPConfig.initialize();
-      StateHandler.initialize();
+      StatePersistency.initialize();
 
       if (Cluster.getServer(inst) == null)
          throw new Exception(Messages.get("INSTANCE_NOT_REGISTERED",inst));

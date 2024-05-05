@@ -37,7 +37,7 @@ import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 
 
-public class StateHandler
+public class StatePersistency
 {
    private static long pid;
 
@@ -55,17 +55,17 @@ public class StateHandler
    {
       FileOutputStream pf = null;
 
-      StateHandler.inst = Config.inst();
-      StateHandler.path = Config.path(STATE);
+      StatePersistency.inst = Config.inst();
+      StatePersistency.path = Config.path(STATE);
 
       (new File(path)).mkdirs();
 
-      StateHandler.pid = ProcessHandle.current().pid();
+      StatePersistency.pid = ProcessHandle.current().pid();
 
       pf = new FileOutputStream(pidFile(inst));
       pf.write((pid+"").getBytes()); pf.close();
 
-      Thread shutdown = new Thread(() -> StateHandler.pidFile(inst).delete());
+      Thread shutdown = new Thread(() -> StatePersistency.pidFile(inst).delete());
       Runtime.getRuntime().addShutdownHook(shutdown);
    }
 
@@ -131,15 +131,6 @@ public class StateHandler
       return(response);
    }
 
-   public static SessionInfo getSession(String session) throws Exception
-   {
-      File file = sesFile(session);
-      if (!file.exists()) return(null);
-      SessionInfo info = new SessionInfo(file);
-      file.setLastModified(System.currentTimeMillis());
-      return(info);
-   }
-
 
    public static String createSession(String username, boolean stateful) throws Exception
    {
@@ -165,6 +156,26 @@ public class StateHandler
    }
 
 
+   public static SessionInfo getSession(String session) throws Exception
+   {
+      File file = sesFile(session);
+      if (!file.exists()) return(null);
+      SessionInfo info = new SessionInfo(file);
+      file.setLastModified(System.currentTimeMillis());
+      return(info);
+   }
+
+
+   public static boolean touchSession(String session)
+   {
+      File file = sesFile(session);
+      if (!file.exists()) return(false);
+
+      file.setLastModified((new Date()).getTime());
+      return(true);
+   }
+
+
    public static boolean removeSession(String session)
    {
       File file = sesFile(session);
@@ -180,25 +191,27 @@ public class StateHandler
    }
 
 
-   public static boolean touchSession(String session)
-   {
-      File file = sesFile(session);
-      if (!file.exists()) return(false);
-
-      file.setLastModified((new Date()).getTime());
-      return(true);
-   }
-
-
    public static boolean createTransaction(String session, String inst) throws Exception
    {
       File file = trxFile(session);
       if (file.exists()) return(false);
 
       FileOutputStream out = new FileOutputStream(file);
-      out.write((inst+" "+StateHandler.pid).getBytes()); out.close();
+      out.write((inst+" "+StatePersistency.pid).getBytes()); out.close();
 
       return(true);
+   }
+
+
+   public static TransactionInfo getTransaction(String session) throws Exception
+   {
+      TransactionInfo info = null;
+      File file = trxFile(session);
+
+      if (file.exists())
+         info = new TransactionInfo(file);
+
+      return(info);
    }
 
 
@@ -212,18 +225,6 @@ public class StateHandler
          info = new TransactionInfo(file);
          file.setLastModified(start.getTime());
       }
-
-      return(info);
-   }
-
-
-   public static TransactionInfo getTransaction(String session) throws Exception
-   {
-      TransactionInfo info = null;
-      File file = trxFile(session);
-
-      if (file.exists())
-         info = new TransactionInfo(file);
 
       return(info);
    }
@@ -353,7 +354,7 @@ public class StateHandler
 
    public static void cleanout(long now, int timeout)
    {
-      File root = new File(StateHandler.path);
+      File root = new File(StatePersistency.path);
 
       if (root.exists())
       {

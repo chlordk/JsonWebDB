@@ -24,7 +24,6 @@ SOFTWARE.
 
 package database;
 
-import utils.Guid;
 import utils.Bytes;
 import utils.Dates;
 import java.sql.Date;
@@ -34,9 +33,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import org.json.JSONArray;
-import state.StateHandler;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import state.StatePersistency;
 import java.sql.ResultSetMetaData;
 
 
@@ -60,7 +59,7 @@ public class Cursor
    {
       String guid = session.guid();
 
-      byte[] bytes = StateHandler.getCursor(guid,cursid);
+      byte[] bytes = StatePersistency.getCursor(guid,cursid);
       if (bytes == null) return(null);
 
       String str = new String(bytes,12,bytes.length-12);
@@ -242,13 +241,13 @@ public class Cursor
       String guid = session.guid();
 
       session.removeCursor(this);
-      StateHandler.removeCursor(guid,guid);
+      StatePersistency.removeCursor(guid,guid);
    }
 
    public void loadState() throws Exception
    {
       String guid = session.guid();
-      byte[] header = StateHandler.peekCursor(guid,guid,12);
+      byte[] header = StatePersistency.peekCursor(guid,guid,12);
       this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 
@@ -276,7 +275,7 @@ public class Cursor
       System.arraycopy(psz,0,bytes,8,psz.length);
       System.arraycopy(def,0,bytes,12,def.length);
 
-      return(StateHandler.createCursor(session.guid(),bytes));
+      return(StatePersistency.createCursor(session.guid(),bytes));
    }
 
    private void saveState() throws Exception
@@ -284,6 +283,6 @@ public class Cursor
       String guid = session.guid();
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
-      StateHandler.updateCursor(guid,guid,pos,psz);
+      StatePersistency.updateCursor(guid,guid,pos,psz);
    }
 }

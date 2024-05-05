@@ -45,7 +45,7 @@ public class State
    public static void main(String[] args) throws Exception
    {
       String root = Misc.url(Server.findAppHome(),"state");
-      JSONObject list = StateHandler.list(root);
+      JSONObject list = StatePersistency.list(root);
       System.out.println(list.toString(2));
    }
 
