@@ -176,7 +176,7 @@ public class Session
       }
       else
       {
-         cursor = Cursor.create(this,cursid);
+         cursor = Cursor.reload(this,cursid);
          if (cursor == null) return(null);
 
          JdbcInterface read = ensure(false);

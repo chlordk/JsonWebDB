@@ -55,7 +55,7 @@ public class Cursor
    private final ArrayList<BindValue> bindvalues;
 
 
-   public static Cursor create(Session session, String cursid) throws Exception
+   public static Cursor reload(Session session, String cursid) throws Exception
    {
       String guid = session.getGuid();
 
@@ -91,7 +91,7 @@ public class Cursor
    }
 
 
-   public Cursor(String name, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   private Cursor(String name, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
       boolean save = false;
 

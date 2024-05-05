@@ -26,15 +26,38 @@ package state;
 
 import utils.Misc;
 import http.Server;
+import jsondb.Session;
 import org.json.JSONObject;
+import java.util.LinkedHashMap;
 
 
 public class State
 {
+   private static LinkedHashMap<String,Session> sessions =
+      new LinkedHashMap<String,Session>();
+
+
    public static void main(String[] args) throws Exception
    {
       String root = Misc.url(Server.findAppHome(),"state");
       JSONObject list = StateHandler.list(root);
       System.out.println(list.toString(2));
+   }
+
+
+   public static Session getSession(String guid)
+   {
+      synchronized(sessions)
+      {
+         return(sessions.get(guid));
+      }
+   }
+
+
+   public static void removeSession(String guid)
+   {
+      synchronized(sessions)
+      {
+      }
    }
 }
