@@ -33,7 +33,7 @@ public class TextFinder
 
    public static void main(String[] args) throws Exception
    {
-     next(new File("/Users/alhof/Repository/JsonWebDB/jsondb/src"));
+      next(new File("/Users/alhof/Repository/JsonWebDB/jsondb/src"));
    }
 
 
