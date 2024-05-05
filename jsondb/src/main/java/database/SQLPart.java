@@ -170,4 +170,3 @@ public class SQLPart
       return(new SQLPart(sql,bindvalues));
    }
 }
-

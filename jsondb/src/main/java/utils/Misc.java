@@ -25,11 +25,9 @@ SOFTWARE.
 package utils;
 
 import messages.Messages;
-
-import java.lang.reflect.Array;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.lang.reflect.Array;
 
 
 public class Misc

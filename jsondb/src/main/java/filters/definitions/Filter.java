@@ -26,11 +26,11 @@ package filters.definitions;
 
 import filters.Like;
 import filters.Equals;
-import filters.LessThan;
 import sources.Source;
+import filters.Custom;
 import filters.NotLike;
 import filters.Between;
-import filters.Custom;
+import filters.LessThan;
 import filters.NotEquals;
 import java.util.HashMap;
 import messages.Messages;
