@@ -57,7 +57,7 @@ public class Cursor
 
    public static Cursor reload(Session session, String cursid) throws Exception
    {
-      String guid = session.getGuid();
+      String guid = session.guid();
 
       byte[] bytes = StateHandler.getCursor(guid,cursid);
       if (bytes == null) return(null);
@@ -233,7 +233,7 @@ public class Cursor
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
 
-      String guid = session.getGuid();
+      String guid = session.guid();
 
       session.removeCursor(this);
       StateHandler.removeCursor(guid,name);
@@ -241,14 +241,14 @@ public class Cursor
 
    public void loadState() throws Exception
    {
-      String guid = session.getGuid();
+      String guid = session.guid();
       byte[] header = StateHandler.peekCursor(guid,name,12);
       this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 
    private void save() throws Exception
    {
-      String guid = session.getGuid();
+      String guid = session.guid();
 
       JSONArray bind = new JSONArray();
       JSONOObject data = new JSONOObject();
@@ -277,7 +277,7 @@ public class Cursor
 
    private void saveState() throws Exception
    {
-      String guid = session.getGuid();
+      String guid = session.guid();
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
       StateHandler.updateCursor(guid,name,pos,psz);

@@ -81,7 +81,7 @@ public class Session
 
       response.put("success",true);
       response.put("method","connect()");
-      response.put("session",session.getGuid());
+      response.put("session",session.guid());
 
       if (signature != null)
       {

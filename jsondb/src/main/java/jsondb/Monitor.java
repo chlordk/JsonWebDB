@@ -95,19 +95,19 @@ public class Monitor extends Thread
 
          if (trx && (now - lastTrxUsed.getTime() > trxtmout))
          {
-            Config.logger().info("rollback "+session.getGuid());
+            Config.logger().info("rollback "+session.guid());
             session.rollback();
          }
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
-            Config.logger().info("freeconn "+session.getGuid());
+            Config.logger().info("freeconn "+session.guid());
             session.release();
          }
 
          if (ses && (now - lastUsed.getTime() > sestmout))
          {
-            Config.logger().info("disconnect "+session.getGuid());
+            Config.logger().info("disconnect "+session.guid());
             session.disconnect();
          }
       }

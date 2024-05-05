@@ -51,6 +51,8 @@ public class Session
    private Date trxused = null;
    private Date connused = null;
 
+   private boolean inuse = false;
+
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
@@ -116,7 +118,7 @@ public class Session
       this.idle = Config.conTimeout();
    }
 
-   public String getGuid()
+   public String guid()
    {
       return(guid);
    }
@@ -129,6 +131,16 @@ public class Session
    public boolean isStateful()
    {
       return(stateful);
+   }
+
+   public boolean inUse()
+   {
+      return(inuse);
+   }
+
+   public void inUse(boolean inuse)
+   {
+      this.inuse = inuse;
    }
 
    public synchronized Date lastUsed()

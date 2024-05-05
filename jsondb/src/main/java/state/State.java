@@ -28,6 +28,7 @@ import utils.Misc;
 import http.Server;
 import jsondb.Session;
 import org.json.JSONObject;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 
@@ -45,11 +46,23 @@ public class State
    }
 
 
+   public static void addSession(Session session)
+   {
+      synchronized(sessions)
+      {
+         session.inUse(true);
+         sessions.put(session.guid(),session);
+      }
+   }
+
+
    public static Session getSession(String guid)
    {
       synchronized(sessions)
       {
-         return(sessions.get(guid));
+         Session ses = sessions.get(guid);
+         if (ses != null) ses.inUse(true);
+         return(ses);
       }
    }
 
@@ -58,6 +71,17 @@ public class State
    {
       synchronized(sessions)
       {
+         Session ses = sessions.get(guid);
+         if (!ses.inUse()) sessions.remove(ses);
+      }
+   }
+
+
+   public static Collection<Session> oldest()
+   {
+      synchronized(sessions)
+      {
+        return(sessions.values());
       }
    }
 }
