@@ -186,7 +186,7 @@ public class Session
       }
       else
       {
-         cursor = Cursor.reload(this,cursid);
+         cursor = Cursor.get(this,cursid);
          if (cursor == null) return(null);
 
          JdbcInterface read = ensure(false);
@@ -322,7 +322,7 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      Cursor cursor = new Cursor(this,sql,bindvalues);
+      Cursor cursor = Cursor.create(this,sql,bindvalues);
 
       read.executeQuery(cursor,savepoint);
       cursors.put(cursor.guid(),cursor);

@@ -55,7 +55,13 @@ public class Cursor
    private final ArrayList<BindValue> bindvalues;
 
 
-   public static Cursor reload(Session session, String cursid) throws Exception
+   public static Cursor create(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   {
+      return(new Cursor(session,sql,bindvalues));
+   }
+
+
+   public static Cursor get(Session session, String cursid) throws Exception
    {
       String guid = session.guid();
 
@@ -85,24 +91,22 @@ public class Cursor
    }
 
 
-   public Cursor(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   private Cursor(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
-      this(null,session,sql,bindvalues);
+      this.pos = 0;
+      this.sql = sql;
+      this.guid = this.save();
+      this.session = session;
+      this.bindvalues = bindvalues;
    }
-
 
    private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
       this.pos = 0;
       this.sql = sql;
+      this.guid = guid;
       this.session = session;
       this.bindvalues = bindvalues;
-      System.out.println(sql);
-
-      boolean save = (guid == null);
-
-      if (!save) this.guid = guid;
-      else this.guid = this.save();
    }
 
    public long pos()
@@ -235,13 +239,12 @@ public class Cursor
    public void close() throws Exception
    {
       eof = true;
+
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
 
-      String guid = session.guid();
-
       session.removeCursor(this);
-      StatePersistency.removeCursor(guid,guid);
+      StatePersistency.removeCursor(session.guid(),guid);
    }
 
    public void loadState() throws Exception
