@@ -143,26 +143,25 @@ public class StateHandler
 
    public static String createSession(String username, boolean stateful) throws Exception
    {
+      String guid = null;
       boolean done = false;
-      String session = null;
+      FileOutputStream out = null;
 
       while (!done)
       {
-         session = Guid.generate();
-         FileOutputStream out = null;
-
-         File file = sesFile(session);
+         guid = Guid.generate();
+         File file = sesFile(guid);
 
          if (!file.exists())
          {
             done = true;
-            sesPath(session).mkdirs();
+            sesPath(guid).mkdirs();
             out = new FileOutputStream(file);
             out.write((username+" "+inst+" "+stateful).getBytes()); out.close();
          }
       }
 
-      return(session);
+      return(guid);
    }
 
 
@@ -239,15 +238,26 @@ public class StateHandler
    }
 
 
-   public static boolean createCursor(String sessid, String cursid, byte[] bytes) throws Exception
+   public static String createCursor(String sessid, byte[] bytes) throws Exception
    {
-      File file = curFile(sessid,cursid);
-      if (file.exists()) return(false);
+      String guid = null;
+      boolean done = false;
+      FileOutputStream out = null;
 
-      FileOutputStream out = new FileOutputStream(file);
-      out.write(bytes); out.close();
+      while (!done)
+      {
+         guid = Guid.generate();
+         File file = curFile(sessid,guid);
 
-      return(true);
+         if (!file.exists())
+         {
+            done = true;
+            out = new FileOutputStream(file);
+            out.write(bytes); out.close();
+         }
+      }
+
+      return(guid);
    }
 
 

@@ -45,12 +45,13 @@ public class Cursor
    private long pos = 0;
    private int pagesize = 0;
    private boolean eof = false;
+   private boolean inuse = false;
    private ResultSet rset = null;
    private Statement stmt = null;
    private ArrayList<Column> columns = null;
 
    private final String sql;
-   private final String name;
+   private final String guid;
    private final Session session;
    private final ArrayList<BindValue> bindvalues;
 
@@ -91,23 +92,18 @@ public class Cursor
    }
 
 
-   private Cursor(String name, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
    {
-      boolean save = false;
-
-      if (name == null)
-      {
-         save = true;
-         name = Guid.generate();
-      }
-
       this.pos = 0;
       this.sql = sql;
-      this.name = name;
       this.session = session;
       this.bindvalues = bindvalues;
+      System.out.println(sql);
 
-      if (save) this.save();
+      boolean save = (guid == null);
+
+      if (!save) this.guid = guid;
+      else this.guid = this.save();
    }
 
    public long pos()
@@ -120,14 +116,24 @@ public class Cursor
       return(sql);
    }
 
-   public String name()
+   public String guid()
    {
-      return(name);
+      return(guid);
    }
 
    public boolean next()
    {
       return(!eof);
+   }
+
+   public boolean inUse()
+   {
+      return(inuse);
+   }
+
+   public void inUse(boolean inuse)
+   {
+      this.inuse = inuse;
    }
 
    public Cursor pagesize(Integer pagesize)
@@ -236,20 +242,18 @@ public class Cursor
       String guid = session.guid();
 
       session.removeCursor(this);
-      StateHandler.removeCursor(guid,name);
+      StateHandler.removeCursor(guid,guid);
    }
 
    public void loadState() throws Exception
    {
       String guid = session.guid();
-      byte[] header = StateHandler.peekCursor(guid,name,12);
+      byte[] header = StateHandler.peekCursor(guid,guid,12);
       this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 
-   private void save() throws Exception
+   private String save() throws Exception
    {
-      String guid = session.guid();
-
       JSONArray bind = new JSONArray();
       JSONOObject data = new JSONOObject();
 
@@ -272,7 +276,7 @@ public class Cursor
       System.arraycopy(psz,0,bytes,8,psz.length);
       System.arraycopy(def,0,bytes,12,def.length);
 
-      StateHandler.createCursor(guid,name,bytes);
+      return(StateHandler.createCursor(session.guid(),bytes));
    }
 
    private void saveState() throws Exception
@@ -280,6 +284,6 @@ public class Cursor
       String guid = session.guid();
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
-      StateHandler.updateCursor(guid,name,pos,psz);
+      StateHandler.updateCursor(guid,guid,pos,psz);
    }
 }

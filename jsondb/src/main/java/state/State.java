@@ -27,6 +27,7 @@ package state;
 import utils.Misc;
 import http.Server;
 import jsondb.Session;
+import database.Cursor;
 import org.json.JSONObject;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -34,6 +35,9 @@ import java.util.LinkedHashMap;
 
 public class State
 {
+   private static LinkedHashMap<String,Cursor> cursors =
+      new LinkedHashMap<String,Cursor>();
+
    private static LinkedHashMap<String,Session> sessions =
       new LinkedHashMap<String,Session>();
 
@@ -60,9 +64,14 @@ public class State
    {
       synchronized(sessions)
       {
-         Session ses = sessions.get(guid);
-         if (ses != null) ses.inUse(true);
-         return(ses);
+         Session session = sessions.remove(guid);
+
+         if (session != null)
+         {
+            session.inUse(true);
+            sessions.put(guid,session);
+         }
+         return(session);
       }
    }
 
@@ -72,12 +81,21 @@ public class State
       synchronized(sessions)
       {
          Session ses = sessions.get(guid);
-         if (!ses.inUse()) sessions.remove(ses);
+         if (!ses.inUse()) sessions.remove(ses.guid());
       }
    }
 
 
-   public static Collection<Session> oldest()
+   public static void addCursor(Cursor cursor)
+   {
+      synchronized(cursors)
+      {
+         cursor.inUse(true);
+      }
+   }
+
+
+   public static Collection<Session> sessions()
    {
       synchronized(sessions)
       {

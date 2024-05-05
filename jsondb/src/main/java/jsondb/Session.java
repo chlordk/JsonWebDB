@@ -50,9 +50,7 @@ public class Session
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
-
    private boolean inuse = false;
-
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
@@ -123,7 +121,7 @@ public class Session
       return(guid);
    }
 
-   public String getUser()
+   public String user()
    {
       return(user);
    }
@@ -203,7 +201,7 @@ public class Session
 
   public void removeCursor(Cursor cursor) throws Exception
   {
-     cursors.remove(cursor.name());
+     cursors.remove(cursor.guid());
   }
 
    public synchronized boolean isConnected()
@@ -327,7 +325,7 @@ public class Session
       Cursor cursor = new Cursor(this,sql,bindvalues);
 
       read.executeQuery(cursor,savepoint);
-      cursors.put(cursor.name(),cursor);
+      cursors.put(cursor.guid(),cursor);
 
       return(cursor);
    }

@@ -187,7 +187,7 @@ public class Table
       if (cursor.next())
       {
          response.put("more",true);
-         response.put("cursor",cursor.name());
+         response.put("cursor",cursor.guid());
       }
 
       response.put("rows",rows);
