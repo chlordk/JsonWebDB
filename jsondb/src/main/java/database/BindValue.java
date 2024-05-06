@@ -55,7 +55,7 @@ public class BindValue
       bv.name        = json.getString("name");
       bv.ampersand   = json.getBoolean("ampersand");
 
-      if (SQLTypes.isDateType(bv.type))
+      if (SQLTypes.getType(bv.type).equals("DATE"))
          bv.value = new Date((long) bv.value);
 
       return(bv);
@@ -170,9 +170,8 @@ public class BindValue
    {
       Object value = this.value;
 
-      if (value instanceof java.sql.Date) value = ((java.sql.Date) value).getTime();
-      if (value instanceof java.util.Date) value = ((java.util.Date) value).getTime();
-      if (value instanceof java.sql.Timestamp) value = ((java.sql.Timestamp) value).getTime();
+      if (value instanceof Date)
+         value = ((Date) value).getTime();
 
       JSONOObject json = new JSONOObject();
       json.put("name",name);
