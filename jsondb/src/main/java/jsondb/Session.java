@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
+import state.State;
 import java.util.Date;
 import database.Cursor;
 import database.BindValue;
@@ -33,7 +34,6 @@ import state.StatePersistency;
 import database.definitions.AdvancedPool;
 import state.StatePersistency.SessionInfo;
 import state.StatePersistency.TransactionInfo;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Session
@@ -44,9 +44,6 @@ public class Session
    private final boolean stateful;
    private final AdvancedPool pool;
 
-   private final ConcurrentHashMap<String,Cursor> cursors =
-      new ConcurrentHashMap<String,Cursor>();
-
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
@@ -54,21 +51,9 @@ public class Session
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
-
-   private final static ConcurrentHashMap<String,Session> sessions =
-      new ConcurrentHashMap<String,Session>();
-
-
-   public static ArrayList<Session> getAll()
-   {
-      ArrayList<Session> sessions = new ArrayList<Session>();
-      sessions.addAll(Session.sessions.values());
-      return(sessions);
-   }
-
    public static Session get(String guid) throws Exception
    {
-      Session session = sessions.get(guid);
+      Session session = State.getSession(guid);
       SessionInfo info = StatePersistency.getSession(guid);
 
       if (info != null && session == null)
@@ -76,7 +61,7 @@ public class Session
          boolean moved = !info.inst.equals(Config.inst());
 
          session = new Session(info.guid,info.user,info.stateful);
-         sessions.put(guid,session);
+         State.addSession(session);
 
          String msg = "Resume session "+guid;
          if (moved) msg += ", previous running @"+info.inst;
@@ -87,25 +72,29 @@ public class Session
       return(session);
    }
 
+
    public static Session create(String user, boolean stateful) throws Exception
    {
       String guid = StatePersistency.createSession(user,stateful);
 
       Session session = new Session(guid,user,stateful);
-      sessions.put(guid,session);
+      State.addSession(session);
 
       return(session);
    }
+
 
    public static boolean remove(Session session)
    {
       return(remove(session.guid));
    }
 
+
    public static boolean remove(String guid)
    {
-      return(sessions.remove(guid) != null);
+      return(State.removeSession(guid));
    }
+
 
    private Session(String guid, String user, boolean stateful) throws Exception
    {
@@ -158,6 +147,7 @@ public class Session
       return(connused);
    }
 
+
    public synchronized boolean touch() throws Exception
    {
       this.used = new Date();
@@ -165,11 +155,6 @@ public class Session
       return(success);
    }
 
-   public synchronized boolean touchConn() throws Exception
-   {
-      this.connused = new Date();
-      return(true);
-   }
 
    public synchronized TransactionInfo touchTrx() throws Exception
    {
@@ -178,29 +163,26 @@ public class Session
       return(info);
    }
 
+
    public Cursor getCursor(String cursid) throws Exception
    {
-      Cursor cursor = cursors.get(cursid);
+      Cursor cursor = State.getCursor(cursid);
 
       if (cursor == null)
       {
-         cursor = Cursor.get(this,cursid);
+         cursor = Cursor.load(this,cursid);
          if (cursor == null) return(null);
 
          JdbcInterface read = ensure(false);
          read.executeQuery(cursor,false);
 
-         cursors.put(cursid,cursor);
+         State.addCursor(cursor);
          cursor.position();
       }
 
       return(cursor);
-  }
+   }
 
-  public void removeCursor(Cursor cursor) throws Exception
-  {
-     cursors.remove(cursor.guid());
-  }
 
    public synchronized boolean isConnected()
    {
@@ -208,6 +190,7 @@ public class Session
       if (rconn != null && rconn.isConnected()) return(true);
       return(false);
    }
+
 
    public synchronized boolean release() throws Exception
    {
@@ -223,14 +206,14 @@ public class Session
       if (rconn != null && rconn.isConnected())
          rconn.disconnect();
 
-      for(Cursor cursor : cursors.values())
-         cursor.close();
+      State.closeAllCursors(guid);
 
       trxused = null;
       connused = null;
 
       return(true);
    }
+
 
    public Session connect() throws Exception
    {
@@ -263,10 +246,8 @@ public class Session
          rconn = null;
       }
 
+      State.removeSession(guid);
       boolean success = StatePersistency.removeSession(guid);
-
-      cursors.clear();
-      sessions.remove(guid);
 
       trxused = null;
       connused = null;
@@ -274,12 +255,14 @@ public class Session
       return(success);
    }
 
+
    public boolean authenticate(String username, String password) throws Exception
    {
       if (username == null) return(false);
       if (password == null) return(false);
       return(pool.authenticate(username,password));
    }
+
 
    public boolean commit() throws Exception
    {
@@ -297,6 +280,7 @@ public class Session
       return(true);
    }
 
+
    public boolean rollback() throws Exception
    {
       StatePersistency.removeTransaction(this.guid);
@@ -313,6 +297,7 @@ public class Session
       return(true);
    }
 
+
    public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
    {
       JdbcInterface read = ensure(false);
@@ -323,10 +308,11 @@ public class Session
       Cursor cursor = Cursor.create(this,sql,bindvalues,pagesize);
 
       read.executeQuery(cursor,savepoint);
-      cursors.put(cursor.guid(),cursor);
+      State.addCursor(cursor);
 
       return(cursor);
    }
+
 
    private synchronized JdbcInterface ensure(boolean write) throws Exception
    {
@@ -351,6 +337,7 @@ public class Session
       else        return(rconn.connect(this.user,write,stateful));
    }
 
+   
    public String toString()
    {
       boolean connected = false;

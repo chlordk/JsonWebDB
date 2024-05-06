@@ -26,11 +26,14 @@ package state;
 
 import utils.Misc;
 import http.Server;
+import jsondb.Config;
 import jsondb.Session;
 import database.Cursor;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.json.JSONObject;
 import java.util.Collection;
+import java.util.logging.Level;
 
 
 public class State
@@ -40,6 +43,9 @@ public class State
 
    private static HashMap<String,Session> sessions =
       new HashMap<String,Session>();
+
+   private static HashMap<String,HashSet<String>> cursesmap =
+      new HashMap<String,HashSet<String>>();
 
 
    public static void main(String[] args) throws Exception
@@ -59,7 +65,6 @@ public class State
       }
    }
 
-
    public static Session getSession(String guid)
    {
       synchronized(sessions)
@@ -70,18 +75,21 @@ public class State
       }
    }
 
-
-   public static void removeSession(String guid)
+   public static boolean removeSession(String guid)
    {
       synchronized(sessions)
       {
          Session session = sessions.get(guid);
 
-         if (session != null && !session.inUse())
-            sessions.remove(guid);
+         if (session == null || session.inUse())
+            return(false);
+
+         sessions.remove(guid);
+         closeAllCursors(guid);
+
+         return(true);
       }
    }
-
 
    public static void addCursor(Cursor cursor)
    {
@@ -89,9 +97,19 @@ public class State
       {
          cursor.inUse(true);
          cursors.put(cursor.guid(),cursor);
+
+         String sessid = cursor.session().guid();
+         HashSet<String> sescurs = cursesmap.get(sessid);
+
+         if (sescurs == null)
+         {
+            sescurs = new HashSet<String>();
+            cursesmap.put(cursor.session().guid(),sescurs);
+         }
+
+         sescurs.add(cursor.guid());
       }
    }
-
 
    public static Cursor getCursor(String guid)
    {
@@ -103,18 +121,40 @@ public class State
       }
    }
 
-
-   public static void removeCursor(String guid)
+   public static boolean removeCursor(String guid)
    {
       synchronized(cursors)
       {
          Cursor cursor = cursors.get(guid);
 
-         if (cursor != null && !cursor.inUse())
-            cursors.remove(guid);
+         if (cursor == null || cursor.inUse())
+            return(false);
+
+         cursors.remove(guid);
+
+         String sessid = cursor.session().guid();
+         HashSet<String> sescurs = cursesmap.get(sessid);
+         if (sescurs != null) sescurs.remove(guid);
+
+         return(true);
       }
    }
 
+   public static void closeAllCursors(String sessid)
+   {
+      HashSet<String> sescurs = cursesmap.get(sessid);
+
+      if (sescurs != null)
+      {
+         for(String cursid : sescurs.toArray(new String[0]))
+         {
+            try{cursors.get(cursid).close();}
+            catch (Exception e) {Config.logger().log(Level.WARNING,e.toString(),e);}
+         }
+      }
+
+      cursesmap.remove(sessid);
+   }
 
    public static Collection<Session> sessions()
    {

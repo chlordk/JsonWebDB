@@ -27,6 +27,7 @@ package database;
 import utils.Guid;
 import utils.Bytes;
 import utils.Dates;
+import state.State;
 import java.sql.Date;
 import jsondb.Session;
 import utils.JSONOObject;
@@ -62,7 +63,7 @@ public class Cursor
    }
 
 
-   public static Cursor get(Session session, String cursid) throws Exception
+   public static Cursor load(Session session, String cursid) throws Exception
    {
       String guid = session.guid();
 
@@ -245,11 +246,11 @@ public class Cursor
    public void close() throws Exception
    {
       eof = true;
+      State.removeCursor(guid);
 
       if (rset != null) rset.close();
       if (stmt != null) stmt.close();
 
-      session.removeCursor(this);
       StatePersistency.removeCursor(session.guid(),guid);
    }
 

@@ -35,12 +35,14 @@ public class Monitor extends Thread
    {
       (new Monitor()).start();
    }
+   
 
    private Monitor()
    {
       this.setDaemon(true);
       this.setName(this.getClass().getName());
    }
+
 
    public void run()
    {
@@ -81,9 +83,10 @@ public class Monitor extends Thread
       }
    }
 
+
    private void cleanout(long now, int sestmout, int contmout, int trxtmout) throws Exception
    {
-      for(Session session : Session.getAll())
+      for(Session session : state.State.sessions())
       {
          Date lastUsed = session.lastUsed();
          Date lastTrxUsed = session.lastUsedTrx();
