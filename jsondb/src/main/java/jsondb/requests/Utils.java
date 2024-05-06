@@ -118,6 +118,13 @@ public class Utils
          response.put("success",false);
          response.put("message",Messages.get("NO_SUCH_CURSOR",cursid));
       }
+      else if (!cursor.session().guid().equals(session.guid()))
+      {
+         cursor = null;
+
+         response.put("success",false);
+         response.put("message",Messages.get("WRONG_CURSOR_SESSION",cursid,session.guid()));
+      }
 
       return(cursor);
    }

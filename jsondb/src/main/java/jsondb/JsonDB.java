@@ -187,8 +187,7 @@ public class JsonDB
 
    private void log(JSONObject request, Response response)
    {
-      if (response.exception() != null)
-      Config.logger().log(Level.WARNING,response.get("message")+"",response.exception());
+      if (response.exception() != null) Config.logger().warning(response.get("message")+"");
       Config.logger().info("/jsondb\n\n"+request.toString(2)+"\n\n"+response.toString(2)+"\n");
    }
 }

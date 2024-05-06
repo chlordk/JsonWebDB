@@ -24,6 +24,7 @@ SOFTWARE.
 
 package database;
 
+import utils.Guid;
 import utils.Bytes;
 import utils.Dates;
 import java.sql.Date;
@@ -55,9 +56,9 @@ public class Cursor
    private final ArrayList<BindValue> bindvalues;
 
 
-   public static Cursor create(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   public static Cursor create(Session session, String sql, ArrayList<BindValue> bindvalues, int pagesize) throws Exception
    {
-      return(new Cursor(session,sql,bindvalues));
+      return(new Cursor(session,sql,bindvalues,pagesize));
    }
 
 
@@ -82,30 +83,30 @@ public class Cursor
       int pgsz = Bytes.getInt(bytes,8);
       long pos = Bytes.getLong(bytes,0);
 
-      Cursor cursor = new Cursor(cursid,session,sql,bindvalues);
-
+      Cursor cursor = new Cursor(cursid,session,sql,bindvalues,pgsz);
       cursor.pos = pos;
-      cursor.pagesize = pgsz;
 
       return(cursor);
    }
 
 
-   private Cursor(Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   private Cursor(Session session, String sql, ArrayList<BindValue> bindvalues, int pagesize) throws Exception
    {
       this.pos = 0;
       this.sql = sql;
-      this.guid = this.save();
       this.session = session;
+      this.pagesize = pagesize;
       this.bindvalues = bindvalues;
+      this.guid = pagesize <= 0 ? Guid.generate() : this.save();
    }
 
-   private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues) throws Exception
+   private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues, int pagesize) throws Exception
    {
       this.pos = 0;
       this.sql = sql;
       this.guid = guid;
       this.session = session;
+      this.pagesize = pagesize;
       this.bindvalues = bindvalues;
    }
 
@@ -137,6 +138,11 @@ public class Cursor
    public void inUse(boolean inuse)
    {
       this.inuse = inuse;
+   }
+
+   public Session session()
+   {
+      return(session);
    }
 
    public Cursor pagesize(Integer pagesize)
@@ -247,13 +253,6 @@ public class Cursor
       StatePersistency.removeCursor(session.guid(),guid);
    }
 
-   public void loadState() throws Exception
-   {
-      String guid = session.guid();
-      byte[] header = StatePersistency.peekCursor(guid,guid,12);
-      this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
-   }
-
    private String save() throws Exception
    {
       JSONArray bind = new JSONArray();
@@ -287,5 +286,12 @@ public class Cursor
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
       StatePersistency.updateCursor(guid,guid,pos,psz);
+   }
+
+   public void loadState() throws Exception
+   {
+      String guid = session.guid();
+      byte[] header = StatePersistency.peekCursor(guid,guid,12);
+      this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 }

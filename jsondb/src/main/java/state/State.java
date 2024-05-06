@@ -28,18 +28,18 @@ import utils.Misc;
 import http.Server;
 import jsondb.Session;
 import database.Cursor;
+import java.util.HashMap;
 import org.json.JSONObject;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 
 
 public class State
 {
-   private static LinkedHashMap<String,Cursor> cursors =
-      new LinkedHashMap<String,Cursor>();
+   private static HashMap<String,Cursor> cursors =
+      new HashMap<String,Cursor>();
 
-   private static LinkedHashMap<String,Session> sessions =
-      new LinkedHashMap<String,Session>();
+   private static HashMap<String,Session> sessions =
+      new HashMap<String,Session>();
 
 
    public static void main(String[] args) throws Exception
@@ -64,13 +64,8 @@ public class State
    {
       synchronized(sessions)
       {
-         Session session = sessions.remove(guid);
-
-         if (session != null)
-         {
-            session.inUse(true);
-            sessions.put(guid,session);
-         }
+         Session session = sessions.get(guid);
+         if (session != null) session.inUse(true);
          return(session);
       }
    }
@@ -80,8 +75,10 @@ public class State
    {
       synchronized(sessions)
       {
-         Session ses = sessions.get(guid);
-         if (!ses.inUse()) sessions.remove(ses.guid());
+         Session session = sessions.get(guid);
+
+         if (session != null && !session.inUse())
+            sessions.remove(guid);
       }
    }
 
@@ -91,6 +88,30 @@ public class State
       synchronized(cursors)
       {
          cursor.inUse(true);
+         cursors.put(cursor.guid(),cursor);
+      }
+   }
+
+
+   public static Cursor getCursor(String guid)
+   {
+      synchronized(cursors)
+      {
+         Cursor cursor = cursors.get(guid);
+         if (cursor != null) cursor.inUse(true);
+         return(cursor);
+      }
+   }
+
+
+   public static void removeCursor(String guid)
+   {
+      synchronized(cursors)
+      {
+         Cursor cursor = cursors.get(guid);
+
+         if (cursor != null && !cursor.inUse())
+            cursors.remove(guid);
       }
    }
 

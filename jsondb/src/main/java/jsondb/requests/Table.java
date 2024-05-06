@@ -95,7 +95,7 @@ public class Table
                select.append(source.from(bindvalues));
                select.snippet(select.snippet()+" where 1 = 2");
 
-               Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false);
+               Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
                source.setColumns(cursor.describe());
                cursor.close();
             }
@@ -175,8 +175,8 @@ public class Table
       boolean savepoint = Config.pool().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
-      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint);
-      cursor.pagesize(Misc.get(args,PAGESIZE));
+      Integer pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint,pagesize);
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();

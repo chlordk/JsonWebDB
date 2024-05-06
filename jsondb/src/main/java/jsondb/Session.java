@@ -180,11 +180,7 @@ public class Session
    {
       Cursor cursor = cursors.get(cursid);
 
-      if (cursor != null)
-      {
-         cursor.loadState();
-      }
-      else
+      if (cursor == null)
       {
          cursor = Cursor.get(this,cursid);
          if (cursor == null) return(null);
@@ -315,14 +311,14 @@ public class Session
       return(true);
    }
 
-   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
    {
       JdbcInterface read = ensure(false);
 
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      Cursor cursor = Cursor.create(this,sql,bindvalues);
+      Cursor cursor = Cursor.create(this,sql,bindvalues,pagesize);
 
       read.executeQuery(cursor,savepoint);
       cursors.put(cursor.guid(),cursor);

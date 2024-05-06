@@ -54,6 +54,8 @@ public class BindValue
       bv.name        = json.getString("name");
       bv.ampersand   = json.getBoolean("ampersand");
 
+      System.out.println(bv.name+" "+bv.type+" "+bv.value.getClass());
+
       return(bv);
    }
 
