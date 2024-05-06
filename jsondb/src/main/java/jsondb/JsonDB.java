@@ -28,7 +28,6 @@ import java.util.Date;
 import files.FileHandler;
 import files.FileResponse;
 import org.json.JSONObject;
-import java.util.logging.Level;
 import static jsondb.Version.*;
 import jsondb.requests.RequestHandler;
 import database.definitions.AdvancedPool;

@@ -26,14 +26,12 @@ package state;
 
 import utils.Misc;
 import http.Server;
-import jsondb.Config;
 import jsondb.Session;
 import database.Cursor;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.json.JSONObject;
 import java.util.Collection;
-import java.util.logging.Level;
 
 
 public class State
