@@ -93,7 +93,7 @@ public class Cursor
       database.Cursor cursor = Utils.getCursor(response,session,cursid);
       if (cursor == null) return(new Response(response));
 
-      cursor.close();
+      cursor.close(true);
       response.put("success",true);
 
       return(new Response(response));

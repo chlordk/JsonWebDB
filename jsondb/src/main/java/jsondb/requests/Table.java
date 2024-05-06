@@ -97,7 +97,7 @@ public class Table
 
                Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
                source.setColumns(cursor.describe());
-               cursor.close();
+               cursor.close(true);
             }
          }
       }
@@ -181,7 +181,7 @@ public class Table
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
 
-      if (!usecurs) cursor.close();
+      if (!usecurs) cursor.close(true);
       response.put("success",true);
 
       if (cursor.next())

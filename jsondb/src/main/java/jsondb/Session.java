@@ -26,13 +26,12 @@ package jsondb;
 
 import state.State;
 import java.util.Date;
-import java.util.logging.Level;
-
 import database.Cursor;
 import database.BindValue;
 import java.util.ArrayList;
 import database.JdbcInterface;
 import state.StatePersistency;
+import java.util.logging.Level;
 import database.definitions.AdvancedPool;
 import state.StatePersistency.SessionInfo;
 import state.StatePersistency.TransactionInfo;
@@ -65,7 +64,7 @@ public class Session
          session = new Session(info.guid,info.user,info.stateful);
          State.addSession(session);
 
-         String msg = "Resume session "+guid;
+         String msg = "Reinstate session "+guid;
          if (moved) msg += ", previous running @"+info.inst;
 
          Config.logger().info(msg);
@@ -188,7 +187,7 @@ public class Session
    }
 
 
-   public synchronized boolean release() throws Exception
+   public synchronized boolean release()
    {
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
@@ -197,17 +196,23 @@ public class Session
       if (curr - used < idle*1000) return(false);
 
       if (wconn != null && wconn.isConnected())
-         wconn.disconnect();
+      {
+         try {wconn.disconnect();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
 
       if (rconn != null && rconn.isConnected())
-         rconn.disconnect();
+      {
+         try {rconn.disconnect();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
 
       Cursor[] cursors = State.removeAllCursors(guid);
 
       for (int i = 0; i < cursors.length; i++)
       {
-         try {if (cursors[i] != null) cursors[i].close();}
-         catch (Exception e) {Config.logger().log(Level.SEVERE,e.toString(),e);}
+         if (cursors[i] != null)
+            cursors[i].close(false);
       }
 
       trxused = null;
@@ -234,17 +239,19 @@ public class Session
    }
 
 
-   public boolean disconnect() throws Exception
+   public boolean disconnect()
    {
       if (wconn != null)
       {
-         wconn.disconnect();
+         try {wconn.disconnect();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
          wconn = null;
       }
 
       if (rconn != null)
       {
-         rconn.disconnect();
+         try {rconn.disconnect();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
          rconn = null;
       }
 

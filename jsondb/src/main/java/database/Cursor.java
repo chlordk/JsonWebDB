@@ -29,6 +29,7 @@ import utils.Bytes;
 import utils.Dates;
 import state.State;
 import java.sql.Date;
+import jsondb.Config;
 import jsondb.Session;
 import utils.JSONOObject;
 import java.sql.ResultSet;
@@ -38,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import state.StatePersistency;
+import java.util.logging.Level;
 import java.sql.ResultSetMetaData;
 
 
@@ -62,13 +64,14 @@ public class Cursor
       return(new Cursor(session,sql,bindvalues,pagesize));
    }
 
-
    public static Cursor load(Session session, String cursid) throws Exception
    {
       String guid = session.guid();
 
       byte[] bytes = StatePersistency.getCursor(guid,cursid);
       if (bytes == null) return(null);
+
+      Config.logger().info("Reinstate cursor "+cursid);
 
       String str = new String(bytes,12,bytes.length-12);
       JSONObject json = new JSONObject(str);
@@ -171,6 +174,7 @@ public class Cursor
       return(this);
    }
 
+
    public ArrayList<Column> describe() throws Exception
    {
       if (columns != null) return(columns);
@@ -195,6 +199,7 @@ public class Cursor
       return(columns);
    }
 
+
    public synchronized ArrayList<Object[]> fetch() throws Exception
    {
       columns = describe();
@@ -204,7 +209,7 @@ public class Cursor
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
       {
          if (!rset.next())
-         {close();break;}
+         {close(true);break;}
 
          this.pos++;
          Object[] row = new Object[cols];
@@ -234,27 +239,43 @@ public class Cursor
       return(rows);
    }
 
+
    public synchronized void position() throws Exception
    {
       for (int i = 0; i < this.pos; i++)
       {
          if (!rset.next())
-         {close();break;}
+         {close(true);break;}
       }
    }
 
-   public void close() throws Exception
+
+   public void close(boolean delete)
    {
       eof = true;
       inuse = false;
 
       State.removeCursor(guid);
 
-      if (rset != null) rset.close();
-      if (stmt != null) stmt.close();
+      if (rset != null)
+      {
+         try {rset.close();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
 
-      StatePersistency.removeCursor(session.guid(),guid);
+      if (stmt != null)
+      {
+         try {stmt.close();} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
+
+      if (delete)
+      {
+         try {StatePersistency.removeCursor(session.guid(),guid);}
+         catch (Exception e) {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
    }
+
 
    private String save() throws Exception
    {
@@ -283,12 +304,14 @@ public class Cursor
       return(StatePersistency.createCursor(session.guid(),bytes));
    }
 
+
    private void saveState() throws Exception
    {
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
       StatePersistency.updateCursor(session.guid(),guid,pos,psz);
    }
+
 
    public void loadState() throws Exception
    {
