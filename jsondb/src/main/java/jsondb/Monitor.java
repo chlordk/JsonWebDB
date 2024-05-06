@@ -28,14 +28,24 @@ import java.util.logging.Level;
 
 public class Monitor extends Thread
 {
+   private static int contmout = 0;
+   private static int trxtmout = 0;
+   private static int sestmout = 0;
+
    private static final int MAXINT = 60000;
+
 
 
    public static void monitor() throws Exception
    {
+      contmout = Config.conTimeout() * 1000;
+      trxtmout = Config.trxTimeout() * 1000;
+      sestmout = Config.sesTimeout() * 1000;
+
       (new Monitor()).start();
+      StatePersistency.cleanout(sestmout);
    }
-   
+
 
    private Monitor()
    {
@@ -46,13 +56,6 @@ public class Monitor extends Thread
 
    public void run()
    {
-      long now = 0;
-      long last = 0;
-
-      int contmout = Config.conTimeout() * 1000;
-      int trxtmout = Config.trxTimeout() * 1000;
-      int sestmout = Config.sesTimeout() * 1000;
-
       int interval = sestmout;
       if (contmout > 0 && contmout < interval) interval = contmout;
       if (trxtmout > 0 && trxtmout < interval) interval = trxtmout;
@@ -65,16 +68,8 @@ public class Monitor extends Thread
       {
          try
          {
-            now = (new Date()).getTime();
-
-            if ((now - last) > sestmout)
-            {
-               last = (new Date()).getTime();
-               StatePersistency.cleanout(now,sestmout);
-            }
-
             Thread.sleep(interval);
-            cleanout(now,sestmout,contmout,trxtmout);
+            cleanout(sestmout,contmout,trxtmout);
          }
          catch (Throwable t)
          {
@@ -84,8 +79,10 @@ public class Monitor extends Thread
    }
 
 
-   private void cleanout(long now, int sestmout, int contmout, int trxtmout) throws Exception
+   private void cleanout(int sestmout, int contmout, int trxtmout) throws Exception
    {
+      long now = (new Date()).getTime();
+
       for(Session session : state.State.sessions())
       {
          Date lastUsed = session.lastUsed();

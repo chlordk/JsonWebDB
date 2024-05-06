@@ -26,6 +26,8 @@ package jsondb;
 
 import state.State;
 import java.util.Date;
+import java.util.logging.Level;
+
 import database.Cursor;
 import database.BindValue;
 import java.util.ArrayList;
@@ -86,13 +88,7 @@ public class Session
 
    public static boolean remove(Session session)
    {
-      return(remove(session.guid));
-   }
-
-
-   public static boolean remove(String guid)
-   {
-      return(State.removeSession(guid));
+      return(State.removeSession(session.guid));
    }
 
 
@@ -206,7 +202,13 @@ public class Session
       if (rconn != null && rconn.isConnected())
          rconn.disconnect();
 
-      State.closeAllCursors(guid);
+      Cursor[] cursors = State.removeAllCursors(guid);
+
+      for (int i = 0; i < cursors.length; i++)
+      {
+         try {if (cursors[i] != null) cursors[i].close();}
+         catch (Exception e) {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
 
       trxused = null;
       connused = null;
@@ -337,7 +339,7 @@ public class Session
       else        return(rconn.connect(this.user,write,stateful));
    }
 
-   
+
    public String toString()
    {
       boolean connected = false;

@@ -204,7 +204,7 @@ public class Cursor
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
       {
          if (!rset.next())
-          {close();break;}
+         {close();break;}
 
          this.pos++;
          Object[] row = new Object[cols];
@@ -239,7 +239,7 @@ public class Cursor
       for (int i = 0; i < this.pos; i++)
       {
          if (!rset.next())
-          {close();break;}
+         {close();break;}
       }
    }
 
@@ -247,7 +247,7 @@ public class Cursor
    {
       eof = true;
       inuse = false;
-      
+
       State.removeCursor(guid);
 
       if (rset != null) rset.close();

@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 
 LOCATION=$(dirname "$0")
 java -cp "$LOCATION/../libraries/*" sources.Sources $*
