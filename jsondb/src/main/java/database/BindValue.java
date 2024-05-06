@@ -26,6 +26,7 @@ package database;
 
 import utils.Dates;
 import jsondb.Config;
+import java.util.Date;
 import messages.Messages;
 import utils.JSONOObject;
 import org.json.JSONObject;
@@ -54,7 +55,8 @@ public class BindValue
       bv.name        = json.getString("name");
       bv.ampersand   = json.getBoolean("ampersand");
 
-      System.out.println(bv.name+" "+bv.type+" "+bv.value.getClass());
+      if (SQLTypes.isDateType(bv.type))
+         bv.value = new Date((long) bv.value);
 
       return(bv);
    }
@@ -166,6 +168,12 @@ public class BindValue
 
    public JSONObject toJSON()
    {
+      Object value = this.value;
+
+      if (value instanceof java.sql.Date) value = ((java.sql.Date) value).getTime();
+      if (value instanceof java.util.Date) value = ((java.util.Date) value).getTime();
+      if (value instanceof java.sql.Timestamp) value = ((java.sql.Timestamp) value).getTime();
+
       JSONOObject json = new JSONOObject();
       json.put("name",name);
       json.put("type",type);

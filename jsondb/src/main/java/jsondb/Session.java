@@ -74,7 +74,9 @@ public class Session
       if (info != null && session == null)
       {
          boolean moved = !info.inst.equals(Config.inst());
+
          session = new Session(info.guid,info.user,info.stateful);
+         sessions.put(guid,session);
 
          String msg = "Resume session "+guid;
          if (moved) msg += ", previous running @"+info.inst;

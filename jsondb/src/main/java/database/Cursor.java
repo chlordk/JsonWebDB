@@ -282,16 +282,14 @@ public class Cursor
 
    private void saveState() throws Exception
    {
-      String guid = session.guid();
       byte[] pos = Bytes.getBytes(this.pos);
       byte[] psz = Bytes.getBytes(this.pagesize);
-      StatePersistency.updateCursor(guid,guid,pos,psz);
+      StatePersistency.updateCursor(session.guid(),guid,pos,psz);
    }
 
    public void loadState() throws Exception
    {
-      String guid = session.guid();
-      byte[] header = StatePersistency.peekCursor(guid,guid,12);
+      byte[] header = StatePersistency.peekCursor(session.guid(),guid,12);
       this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
    }
 }
