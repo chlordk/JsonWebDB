@@ -246,6 +246,8 @@ public class Cursor
    public void close() throws Exception
    {
       eof = true;
+      inuse = false;
+      
       State.removeCursor(guid);
 
       if (rset != null) rset.close();
