@@ -62,7 +62,6 @@ public class State
       {
          session.inUse(true);
          sessions.put(session.guid(),session);
-         System.out.println("addSession "+session.guid());
       }
    }
 
@@ -72,7 +71,6 @@ public class State
       {
          Session session = sessions.get(guid);
          if (session != null) session.inUse(true);
-         System.out.println("getSession "+session.guid());
          return(session);
       }
    }
@@ -82,7 +80,6 @@ public class State
       synchronized(sessions)
       {
          Session session = sessions.get(guid);
-         System.out.println("removeSession inuse: "+session.inUse()+" "+session.guid());
 
          if (session == null || session.inUse())
             return(false);
@@ -100,8 +97,6 @@ public class State
       {
          cursor.inUse(true);
          cursors.put(cursor.guid(),cursor);
-
-         System.out.println("addCursor "+cursor.guid());
 
          String sessid = cursor.session().guid();
          HashSet<String> sescurs = cursesmap.get(sessid);
@@ -122,7 +117,6 @@ public class State
       {
          Cursor cursor = cursors.get(guid);
          if (cursor != null) cursor.inUse(true);
-         System.out.println("getCursor "+cursor.guid());
          return(cursor);
       }
    }
@@ -137,7 +131,6 @@ public class State
             return(false);
 
          cursors.remove(guid);
-         System.out.println("removeCursor "+cursor.guid());
 
          String sessid = cursor.session().guid();
          HashSet<String> sescurs = cursesmap.get(sessid);
@@ -150,7 +143,6 @@ public class State
    public static Cursor[] removeAllCursors(String sessid)
    {
       String[] type = new String[0];
-      System.out.println("removeAllCursors "+sessid);
 
       HashSet<String> sescurs = cursesmap.remove(sessid);
       if (sescurs == null) return(new Cursor[0]);
@@ -166,7 +158,6 @@ public class State
 
    public static Collection<Session> sessions()
    {
-      System.out.println("getAllSessions");
       synchronized(sessions)
       {
         return(sessions.values());
