@@ -1,6 +1,8 @@
-# Best performance
+# Resource Management
 
-The best performance is achieved when reusing cursors. However this requires that a session holds on to it's connection and cursors.
+Most applications allows clients to query databases, and subsequently scroll through the results.
+
+The best performance is achieved when using database cursors. However this requires that a session holds on to it's connection and cursors.
 
 This approach uses a lot of resources and limits the number of sessions considerable.
 
