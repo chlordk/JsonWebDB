@@ -195,6 +195,14 @@ public class Session
       if (this.trxused != null) return(false);
       if (curr - used < idle*1000) return(false);
 
+      Cursor[] cursors = State.removeAllCursors(guid);
+
+      for (int i = 0; i < cursors.length; i++)
+      {
+         if (cursors[i] != null)
+            cursors[i].close(false);
+      }
+
       if (wconn != null && wconn.isConnected())
       {
          try {wconn.disconnect();} catch (Exception e)
@@ -207,17 +215,10 @@ public class Session
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
 
-      Cursor[] cursors = State.removeAllCursors(guid);
-
-      for (int i = 0; i < cursors.length; i++)
-      {
-         if (cursors[i] != null)
-            cursors[i].close(false);
-      }
-
       trxused = null;
       connused = null;
 
+      State.removeSession(guid);
       return(true);
    }
 

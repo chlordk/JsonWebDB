@@ -35,28 +35,25 @@ public class Monitor extends Thread
    private static final int MAXINT = 60000;
 
 
-
    public static void monitor() throws Exception
+   {
+      (new Monitor()).start();
+   }
+
+   private Monitor()
    {
       contmout = Config.conTimeout() * 1000;
       trxtmout = Config.trxTimeout() * 1000;
       sestmout = Config.sesTimeout() * 1000;
 
-      (new Monitor()).start();
-      StatePersistency.cleanout(sestmout);
-   }
-
-
-   private Monitor()
-   {
       this.setDaemon(true);
       this.setName(this.getClass().getName());
    }
 
-
    public void run()
    {
       int interval = sestmout;
+
       if (contmout > 0 && contmout < interval) interval = contmout;
       if (trxtmout > 0 && trxtmout < interval) interval = trxtmout;
 
@@ -68,8 +65,12 @@ public class Monitor extends Thread
       {
          try
          {
+            System.out.println("Runs too often");
+            long now = (new Date()).getTime();
+            StatePersistency.cleanout(now,sestmout);
+
             Thread.sleep(interval);
-            cleanout(sestmout,contmout,trxtmout);
+            cleanout(now,sestmout,contmout,trxtmout);
          }
          catch (Throwable t)
          {
@@ -78,18 +79,13 @@ public class Monitor extends Thread
       }
    }
 
-
-   private void cleanout(int sestmout, int contmout, int trxtmout) throws Exception
+   private void cleanout(long now, int sestmout, int contmout, int trxtmout) throws Exception
    {
-      long now = (new Date()).getTime();
-
       for(Session session : state.State.sessions())
       {
-         Date lastUsed = session.lastUsed();
          Date lastTrxUsed = session.lastUsedTrx();
          Date lastConnUsed = session.lastUsedConn();
 
-         boolean ses = sestmout > 0;
          boolean trx = lastTrxUsed != null && trxtmout > 0;
          boolean con = session.isConnected() && contmout > 0;
 
@@ -103,12 +99,6 @@ public class Monitor extends Thread
          {
             Config.logger().info("freeconn "+session.guid());
             session.release();
-         }
-
-         if (ses && (now - lastUsed.getTime() > sestmout))
-         {
-            Config.logger().info("disconnect "+session.guid());
-            session.disconnect();
          }
       }
    }

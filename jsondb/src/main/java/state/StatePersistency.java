@@ -352,9 +352,8 @@ public class StatePersistency
    }
 
 
-   public static void cleanout(int timeout)
+   public static void cleanout(long now, int timeout)
    {
-      long now = (new Date()).getTime();
       File root = new File(StatePersistency.path);
 
       if (root.exists())
