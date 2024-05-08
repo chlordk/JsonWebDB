@@ -65,7 +65,6 @@ public class Monitor extends Thread
       {
          try
          {
-            System.out.println("Runs too often");
             long now = (new Date()).getTime();
             StatePersistency.cleanout(now,sestmout);
 
@@ -97,7 +96,7 @@ public class Monitor extends Thread
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
-            Config.logger().info("freeconn "+session.guid());
+            Config.logger().info("release "+session.guid());
             session.release();
          }
       }

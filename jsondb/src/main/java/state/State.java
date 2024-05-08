@@ -63,6 +63,15 @@ public class State
       }
    }
 
+   public static boolean hasSession(String guid)
+   {
+      synchronized(sessions)
+      {
+         Session session = sessions.get(guid);
+         return(session != null);
+      }
+   }
+
    public static Session getSession(String guid)
    {
       synchronized(sessions)

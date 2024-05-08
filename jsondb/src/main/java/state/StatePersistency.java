@@ -49,6 +49,7 @@ public class StatePersistency
    private static final String TRX = "trx";
    private static final String CUR = "cur";
    private static final String STATE = "state";
+   private static final String INSTANCES = "instances";
 
 
    public static void initialize() throws Exception
@@ -57,10 +58,10 @@ public class StatePersistency
 
       StatePersistency.inst = Config.inst();
       StatePersistency.path = Config.path(STATE);
-
-      (new File(path)).mkdirs();
-
       StatePersistency.pid = ProcessHandle.current().pid();
+
+      File folders = new File(Config.path(STATE,INSTANCES));
+      if (!folders.exists()) folders.mkdirs();
 
       pf = new FileOutputStream(pidFile(inst));
       pf.write((pid+"").getBytes()); pf.close();
@@ -317,7 +318,7 @@ public class StatePersistency
 
    private static File pidFile(String inst)
    {
-      return(new File(Config.path(STATE,inst+"."+PID)));
+      return(new File(Config.path(STATE,INSTANCES,inst+"."+PID)));
    }
 
 
@@ -361,6 +362,12 @@ public class StatePersistency
          for(File file : root.listFiles())
          {
             if (!file.isDirectory())
+               continue;
+
+            if (file.getName().equals(INSTANCES))
+               continue;
+
+            if (State.hasSession(file.getName()))
                continue;
 
             File session = sesFile(file.getName());
