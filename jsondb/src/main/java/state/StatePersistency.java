@@ -359,7 +359,6 @@ public class StatePersistency
 
             if (now - session.lastModified() > timeout)
             {
-               System.out.println(session+" "+(now - session.lastModified())+" > "+timeout);
                File folder = session.getParentFile();
 
                File[] content = folder.listFiles();
