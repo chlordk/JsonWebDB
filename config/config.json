@@ -15,8 +15,8 @@
 		,
 		"cluster":
 		[
-			{"inst": "local01" , "addr": "https://localhost:6002"},
-			{"inst": "docker01", "addr": "https://localhost:8002"}
+			{"instance": "local01" , "url": "https://localhost:6002"},
+			{"instance": "docker01", "url": "https://localhost:8002"}
 		]
    }
    ,
@@ -29,8 +29,12 @@
 	,
 	"embedded":
 	{
-		"port": 6001,
-		"ssl-port": 6002,
+		"cluster":
+		[
+			{"instance": "local01" , "port": 6001, "ssl": 6002},			
+			{"instance": "local02" , "port": 6003, "ssl": 6004}			
+		]
+		,
 		"queue-length": 16,
 		"worker-threads": 16,
 

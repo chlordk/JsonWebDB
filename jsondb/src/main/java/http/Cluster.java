@@ -32,9 +32,9 @@ import org.json.JSONObject;
 
 public class Cluster
 {
-   private static final String INST = "inst";
-   private static final String ADDR = "addr";
+   private static final String URL = "url";
    private static final String CLUS = "cluster";
+   private static final String INST = "instance";
    private static final String APPL = "application";
 
 
@@ -51,8 +51,8 @@ public class Cluster
       {
          JSONObject def = arr.getJSONObject(i);
 
+         String addr = def.getString(URL);
          String inst = def.getString(INST);
-         String addr = def.getString(ADDR);
 
          addresses.put(inst.toLowerCase(),addr);
       }

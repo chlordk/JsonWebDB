@@ -29,6 +29,7 @@ import java.net.URL;
 import java.io.File;
 import jsondb.Config;
 import jsondb.JsonDB;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;
@@ -50,8 +51,11 @@ public class Server
    private static final String SECURITY = "security";
    private static final String KEYSTORE = "keystore";
 
+   private static final String CLUSTER = "cluster";
+   private static final String INSTANCE = "instance";
+
    private static final String PORT = "port";
-   private static final String SSLPORT = "ssl-port";
+   private static final String SSLPORT = "ssl";
 
    private static final String QUEUE = "queue-length";
    private static final String THREADS = "worker-threads";
@@ -229,9 +233,19 @@ public class Server
    private static String loadServerConfig()
    {
       JSONObject conf = Config.get(SECTION);
+      JSONArray instances = Config.get(conf,CLUSTER);
 
-      port = Config.get(conf,PORT);
-      sslport = Config.get(conf,SSLPORT);
+      for (int i = 0; i < instances.length(); i++)
+      {
+         JSONObject instance = instances.getJSONObject(i);
+
+         if (instance.getString(INSTANCE).equals(Config.inst()))
+         {
+            port = Config.get(instance,PORT);
+            sslport = Config.get(instance,SSLPORT);
+            break;
+         }
+      }
 
       queue = Config.get(conf,QUEUE);
       threads = Config.get(conf,THREADS);
