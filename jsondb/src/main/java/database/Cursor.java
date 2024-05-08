@@ -25,7 +25,6 @@ SOFTWARE.
 package database;
 
 import utils.Guid;
-import utils.Bytes;
 import utils.Dates;
 import state.State;
 import java.sql.Date;
@@ -36,11 +35,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import java.util.ArrayList;
 import state.StatePersistency;
 import java.util.logging.Level;
 import java.sql.ResultSetMetaData;
+import state.StatePersistency.CursorInfo;
 
 
 public class Cursor
@@ -68,27 +67,21 @@ public class Cursor
    {
       String guid = session.guid();
 
-      byte[] bytes = StatePersistency.getCursor(guid,cursid);
-      if (bytes == null) return(null);
+      CursorInfo info = StatePersistency.getCursor(guid,cursid);
+      if (info == null) return(null);
 
       Config.logger().info("Reinstate cursor "+cursid);
 
-      String str = new String(bytes,12,bytes.length-12);
-      JSONObject json = new JSONObject(str);
+      String sql = info.json.getString("query");
 
-      String sql = json.getString("query");
-
-      JSONArray bind = json.getJSONArray("bindvalues");
+      JSONArray bind = info.json.getJSONArray("bindvalues");
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
 
       for (int i = 0; i < bind.length(); i++)
          bindvalues.add(BindValue.from(bind.getJSONObject(i)));
 
-      int pgsz = Bytes.getInt(bytes,8);
-      long pos = Bytes.getLong(bytes,0);
-
-      Cursor cursor = new Cursor(cursid,session,sql,bindvalues,pgsz);
-      cursor.pos = pos;
+      Cursor cursor = new Cursor(cursid,session,sql,bindvalues,info.pgz);
+      cursor.pos = info.pos;
 
       return(cursor);
    }
@@ -291,31 +284,12 @@ public class Cursor
             bind.put(bv.toJSON());
       }
 
-      byte[] def = data.toString(0).getBytes();
-      byte[] bytes = new byte[4 + 8 + def.length];
-
-      byte[] pos = Bytes.getBytes(this.pos);
-      byte[] psz = Bytes.getBytes(this.pagesize);
-
-      System.arraycopy(pos,0,bytes,0,pos.length);
-      System.arraycopy(psz,0,bytes,8,psz.length);
-      System.arraycopy(def,0,bytes,12,def.length);
-
-      return(StatePersistency.createCursor(session.guid(),bytes));
+      return(StatePersistency.createCursor(session.guid(),this.pos,this.pagesize,data));
    }
 
 
    private void saveState() throws Exception
    {
-      byte[] pos = Bytes.getBytes(this.pos);
-      byte[] psz = Bytes.getBytes(this.pagesize);
-      StatePersistency.updateCursor(session.guid(),guid,pos,psz);
-   }
-
-
-   public void loadState() throws Exception
-   {
-      byte[] header = StatePersistency.peekCursor(session.guid(),guid,12);
-      this.pos = Bytes.getLong(header,0); this.pagesize = Bytes.getInt(header,8);
+      StatePersistency.updateCursor(session.guid(),guid,this.pos,this.pagesize);
    }
 }
