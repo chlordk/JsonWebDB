@@ -108,6 +108,9 @@ public class StatePersistency
             if (!file.isDirectory())
                continue;
 
+            if (file.getName().equals(INSTANCES))
+               continue;
+
             JSONOObject entry = new JSONOObject();
             sessions.put(entry);
 
@@ -184,9 +187,10 @@ public class StatePersistency
    }
 
 
-   public static void releaseSession(String session)
+   public static void releaseSession(String session) throws Exception
    {
-
+      SessionInfo info = new SessionInfo(-1,session,"","",false);
+      info.save(sesFile(session));
    }
 
 

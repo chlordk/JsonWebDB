@@ -187,7 +187,7 @@ public class Session
    }
 
 
-   public synchronized boolean release()
+   public synchronized boolean release() throws Exception
    {
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
@@ -219,6 +219,8 @@ public class Session
       connused = null;
 
       State.removeSession(guid);
+      StatePersistency.releaseSession(guid);
+
       return(true);
    }
 
