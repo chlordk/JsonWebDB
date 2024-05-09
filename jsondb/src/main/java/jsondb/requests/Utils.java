@@ -95,13 +95,15 @@ public class Utils
    }
 
 
-   public static Session getSession(JSONObject response, String sessid) throws Exception
+   public static Session getSession(JSONObject response, String sessid, String method) throws Exception
    {
       Session session = Session.get(sessid);
 
       if (session == null)
       {
          response.put("success",false);
+         response.put("method",method);
+         response.put("session",sessid);
          response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
       }
 
@@ -109,13 +111,15 @@ public class Utils
    }
 
 
-   public static Cursor getCursor(JSONObject response, Session session, String cursid) throws Exception
+   public static Cursor getCursor(JSONObject response, Session session, String cursid, String method) throws Exception
    {
       Cursor cursor = session.getCursor(cursid);
 
       if (cursor == null)
       {
          response.put("success",false);
+         response.put("method",method);
+         response.put("cursor",cursid);
          response.put("message",Messages.get("NO_SUCH_CURSOR",cursid));
       }
       else if (!cursor.session().guid().equals(session.guid()))
@@ -123,6 +127,8 @@ public class Utils
          cursor = null;
 
          response.put("success",false);
+         response.put("method",method);
+         response.put("cursor",cursid);
          response.put("message",Messages.get("WRONG_CURSOR_SESSION",cursid,session.guid()));
       }
 

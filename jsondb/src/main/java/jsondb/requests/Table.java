@@ -72,7 +72,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid);
+      Session session = Utils.getSession(response,sessid,"describe()");
       if (session == null) return(new Response(response));
 
       TableSource source = Utils.getSource(response,this.source);
@@ -112,20 +112,30 @@ public class Table
          rows.put(columns.get(i).toJSONObject());
 
       response.put("rows",rows);
-
       return(new Response(response));
    }
-
 
    public Response select() throws Exception
    {
       JSONObject response = new JSONOObject();
-
-      Session session = Utils.getSession(response,sessid);
+      Session session = Utils.getSession(response,sessid,"select()");
       if (session == null) return(new Response(response));
+      return(select(session));
 
+   }
+
+   public Response select(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
+      return(select(session,source));
+   }
+
+
+   public Response select(Session session, TableSource source) throws Exception
+   {
+      JSONObject response = new JSONOObject();
 
       AccessType limit = source.getAccessLimit("select");
       if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));

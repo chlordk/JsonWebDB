@@ -55,12 +55,24 @@ public class Cursor
    public Response fetch() throws Exception
    {
       JSONObject response = new JSONOObject();
-
-      Session session = Utils.getSession(response,sessid);
+      Session session = Utils.getSession(response,sessid,"fetch()");
       if (session == null) return(new Response(response));
+      return(fetch(session));
+   }
 
-      database.Cursor cursor = Utils.getCursor(response,session,cursid);
+
+   public Response fetch(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+      database.Cursor cursor = Utils.getCursor(response,session,cursid,"fetch()");
       if (cursor == null) return(new Response(response));
+      return(fetch(session,cursor));
+   }
+
+
+   public Response fetch(Session session, database.Cursor cursor) throws Exception
+   {
+      JSONObject response = new JSONOObject();
 
       if (definition.has(FETCH))
       {
@@ -72,6 +84,7 @@ public class Cursor
       ArrayList<Object[]> table = cursor.fetch();
 
       response.put("success",true);
+      response.put("method","fetch()");
 
       if (cursor.next())
          response.put("more",true);
@@ -86,15 +99,29 @@ public class Cursor
    public Response close() throws Exception
    {
       JSONObject response = new JSONOObject();
-
-      Session session = Utils.getSession(response,sessid);
+      Session session = Utils.getSession(response,sessid,"fetch()");
       if (session == null) return(new Response(response));
+      return(close(session));
+   }
 
-      database.Cursor cursor = Utils.getCursor(response,session,cursid);
+
+   public Response close(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+      database.Cursor cursor = Utils.getCursor(response,session,cursid,"fetch()");
       if (cursor == null) return(new Response(response));
+      return(close(session,cursor));
+   }
+
+
+   public Response close(Session session, database.Cursor cursor) throws Exception
+   {
+      JSONObject response = new JSONOObject();
 
       cursor.close(true);
+
       response.put("success",true);
+      response.put("method","close()");
 
       return(new Response(response));
    }

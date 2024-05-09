@@ -116,17 +116,18 @@ public class Session
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
-      jsondb.Session session = jsondb.Session.get(sessid);
+      jsondb.Session session = Utils.getSession(response,sessid,"disconnect()");
+      if (session == null) return(new Response(response));
+      return(disconnect(session));
+   }
+
+   public Response disconnect(jsondb.Session session) throws Exception
+   {
+      String sessid = session.guid();
+      JSONObject response = new JSONOObject();
 
       response.put("session",sessid);
       response.put("method","disconnect()");
-
-      if (session == null)
-      {
-         response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
-         return(new Response(response));
-      }
 
       if (!session.disconnect())
       {
@@ -140,42 +141,12 @@ public class Session
    }
 
 
-   public Response keepalive() throws Exception
-   {
-      JSONObject response = new JSONOObject();
-
-      String sessid = definition.optString(SESSION);
-      jsondb.Session session = jsondb.Session.get(sessid);
-
-      response.put("success",true);
-      response.put("session",sessid);
-      response.put("method","keepalive()");
-
-      if (session == null || !session.touch())
-      {
-         response.put("success",false);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
-      }
-
-      return(new Response(response));
-   }
-
-
    public Response commit() throws Exception
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
-      jsondb.Session session = jsondb.Session.get(sessid);
-
-      if (session == null)
-      {
-         response.put("success",false);
-         response.put("session",sessid);
-         response.put("method","commit()");
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
-         return(new Response(response));
-      }
-
+      jsondb.Session session = Utils.getSession(response,sessid,"commit()");
+      if (session == null) return(new Response(response));
       return(commit(session));
    }
 
@@ -205,17 +176,8 @@ public class Session
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
-      jsondb.Session session = jsondb.Session.get(sessid);
-
-      if (session == null)
-      {
-         response.put("success",false);
-         response.put("session",sessid);
-         response.put("method","rollback()");
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
-         return(new Response(response));
-      }
-
+      jsondb.Session session = Utils.getSession(response,sessid,"rollback()");
+      if (session == null) return(new Response(response));
       return(rollback(session));
    }
 
@@ -237,6 +199,27 @@ public class Session
       }
 
       session.rollback();
+      return(new Response(response));
+   }
+
+
+   public Response keepalive() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      String sessid = definition.optString(SESSION);
+      jsondb.Session session = jsondb.Session.get(sessid);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","keepalive()");
+
+      if (session == null || !session.touch())
+      {
+         response.put("success",false);
+         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+      }
+
       return(new Response(response));
    }
 }
