@@ -137,6 +137,18 @@ public class StatePersistency
    }
 
 
+   public static long getPid(String inst) throws Exception
+   {
+      File file = pidFile(inst);
+      if (!file.exists()) return(-1);
+
+      FileInputStream in = new FileInputStream(file);
+      String pid = new String(in.readAllBytes()); in.close();
+
+      return(Long.parseLong(pid));
+   }
+
+
    public static String createSession(String user, boolean stateful) throws Exception
    {
       String guid = null;

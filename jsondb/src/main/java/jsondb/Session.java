@@ -59,6 +59,12 @@ public class Session
 
       if (info != null && session == null)
       {
+         if (info.pid >= 0)
+         {
+            long curr = StatePersistency.getPid(info.inst);
+         }
+
+         System.out.println("Check p");
          boolean moved = !info.inst.equals(Config.inst());
 
          session = new Session(info.guid,info.user,info.stateful);
