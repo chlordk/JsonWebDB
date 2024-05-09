@@ -27,6 +27,7 @@ package jsondb;
 import state.State;
 import java.util.Date;
 import database.Cursor;
+import messages.Messages;
 import database.BindValue;
 import java.util.ArrayList;
 import database.JdbcInterface;
@@ -42,6 +43,8 @@ public class Session
    private final int idle;
    private final String guid;
    private final String user;
+   private final boolean owner;
+   private final boolean online;
    private final boolean stateful;
    private final AdvancedPool pool;
 
@@ -49,8 +52,10 @@ public class Session
    private Date trxused = null;
    private Date connused = null;
    private boolean inuse = false;
+
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
+
 
    public static Session get(String guid) throws Exception
    {
@@ -59,21 +64,19 @@ public class Session
 
       if (info != null && session == null)
       {
-         if (info.pid >= 0)
+         session = new Session(info);
+
+         if (!info.owner)
          {
-            long curr = StatePersistency.getPid(info.inst);
+            // Session must be validated before accepted
+            Config.logger().info(Messages.get("NOT_SESSION_OWNER",guid,info.inst));
+            return(session);
          }
 
-         System.out.println("Check p");
-         boolean moved = !info.inst.equals(Config.inst());
+         if (!info.online)
+            Config.logger().info(Messages.get("SESSION_REINSTATED",guid));
 
-         session = new Session(info.guid,info.user,info.stateful);
          State.addSession(session);
-
-         String msg = "Reinstate session "+guid;
-         if (moved) msg += ", previous running @"+info.inst;
-
-         Config.logger().info(msg);
       }
 
       return(session);
@@ -97,10 +100,28 @@ public class Session
    }
 
 
+   private Session(SessionInfo info) throws Exception
+   {
+      this.guid = info.guid;
+      this.user = info.user;
+
+      this.owner = info.owner;
+      this.online = info.online;
+      this.stateful = info.stateful;
+
+      this.used = new Date();
+      this.pool = Config.pool();
+      this.idle = Config.conTimeout();
+   }
+
+
    private Session(String guid, String user, boolean stateful) throws Exception
    {
       this.guid = guid;
       this.user = user;
+
+      this.owner = true;
+      this.online = true;
       this.stateful = stateful;
 
       this.used = new Date();
@@ -116,6 +137,16 @@ public class Session
    public String user()
    {
       return(user);
+   }
+
+   public boolean owner()
+   {
+      return(owner);
+   }
+
+   public boolean online()
+   {
+      return(online);
    }
 
    public boolean isStateful()
@@ -148,6 +179,12 @@ public class Session
       return(connused);
    }
 
+   public synchronized void transfer() throws Exception
+   {
+      State.addSession(this);
+      Config.logger().info(Messages.get("TRANSFER_SESSION",guid));
+      StatePersistency.transferSession(guid,this.user,this.stateful);
+   }
 
    public synchronized boolean touch() throws Exception
    {

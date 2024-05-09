@@ -26,3 +26,6 @@ UNKNOWN_FILTER             = Unknown filter '{%1}'
 CANNOT_CONVERT_DATE        = Cannot convert '{%1}' to date
 NO_DATATYPE_SPECIFIED      = No type has been set for bindvalue '{%1}'
 WRONG_CURSOR_SESSION       = Cursor '{%1}' is not owned by '{%2}'
+TRANSFER_SESSION           = Transfer {%1} to this instance
+NOT_SESSION_OWNER          = {%1} is owned by '{%2}'
+SESSION_REINSTATED         = {%1} reinstated

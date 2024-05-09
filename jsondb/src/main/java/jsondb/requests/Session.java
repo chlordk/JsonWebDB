@@ -167,16 +167,27 @@ public class Session
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      response.put("success",true);
-      response.put("session",sessid);
-      response.put("method","commit()");
-
       if (session == null)
       {
          response.put("success",false);
+         response.put("session",sessid);
+         response.put("method","commit()");
          response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
          return(new Response(response));
       }
+
+      return(commit(session));
+   }
+
+
+   public Response commit(jsondb.Session session) throws Exception
+   {
+      String sessid = session.guid();
+      JSONObject response = new JSONOObject();
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","commit()");
 
       if (!session.isStateful())
       {
@@ -196,16 +207,27 @@ public class Session
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
 
-      response.put("success",true);
-      response.put("session",sessid);
-      response.put("method","rollback()");
-
       if (session == null)
       {
          response.put("success",false);
+         response.put("session",sessid);
+         response.put("method","rollback()");
          response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
          return(new Response(response));
       }
+
+      return(rollback(session));
+   }
+
+
+   public Response rollback(jsondb.Session session) throws Exception
+   {
+      String sessid = session.guid();
+      JSONObject response = new JSONOObject();
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","rollback()");
 
       if (!session.isStateful())
       {

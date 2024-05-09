@@ -115,7 +115,7 @@ public class StatePersistency
             sessions.put(entry);
 
             File session = sesFile(root,file.getName());
-            SessionInfo info = new SessionInfo(session);
+            SessionInfo info = new SessionInfo(session,inst);
 
             entry.put("pid",info.pid);
             entry.put("session",info.guid);
@@ -177,7 +177,7 @@ public class StatePersistency
    {
       File file = sesFile(session);
       if (!file.exists()) return(null);
-      SessionInfo info = new SessionInfo(file);
+      SessionInfo info = new SessionInfo(file,inst);
       file.setLastModified(System.currentTimeMillis());
       return(info);
    }
@@ -193,9 +193,10 @@ public class StatePersistency
    }
 
 
-   public static void transferSession(String session)
+   public static void transferSession(String session, String user, boolean stateful) throws Exception
    {
-
+      SessionInfo info = new SessionInfo(pid,session,inst,user,stateful);
+      info.save(sesFile(session));
    }
 
 
@@ -394,6 +395,8 @@ public class StatePersistency
       public final String guid;
       public final String inst;
       public final String user;
+      public final boolean owner;
+      public final boolean online;
       public final boolean stateful;
 
       private SessionInfo(long pid, String guid, String inst, String user, boolean stateful)
@@ -403,10 +406,12 @@ public class StatePersistency
          this.guid = guid;
          this.inst = inst;
          this.user = user;
+         this.owner = true;
+         this.online = true;
          this.stateful = stateful;
       }
 
-      private SessionInfo(File file) throws Exception
+      private SessionInfo(File file, String inst) throws Exception
       {
          String guid = file.getName();
          long now = (new Date()).getTime();
@@ -425,6 +430,11 @@ public class StatePersistency
          this.pid = Bytes.getLong(bytes,2);
          this.inst = new String(bytes,2+8,ilen);
          this.user = new String(bytes,2+8+ilen,ulen);
+
+         long pid = StatePersistency.getPid(this.inst);
+
+         this.owner = inst.equals(this.inst);
+         this.online = pid >= 0 && pid == this.pid;
       }
 
 
