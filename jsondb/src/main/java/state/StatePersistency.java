@@ -30,6 +30,7 @@ import java.io.File;
 import jsondb.Config;
 import java.util.Date;
 import utils.JSONOObject;
+import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.FilenameFilter;
@@ -140,6 +141,24 @@ public class StatePersistency
                {
                   CursorInfo cinfo = new CursorInfo(curs);
                   JSONOObject json = (JSONOObject) cinfo.json;
+
+                  JSONArray bind = new JSONArray();
+                  JSONArray rawv = json.getJSONArray("bindvalues");
+
+                  for (int i = 0; i < rawv.length(); i++)
+                  {
+                     JSONOObject bvo = new JSONOObject();
+                     BindValue bv = BindValue.from(rawv.getJSONObject(i));
+
+                     bvo.put("type",bv.type());
+                     bvo.put("name",bv.name());
+                     bvo.put("value",bv.value());
+
+                     bind.put(bvo);
+                  }
+
+                  json.put("bindvalues",bind);
+
                   json.put("position",cinfo.pos);
                   json.put("page-size",cinfo.pgz);
                   json.put("exec-cost",cinfo.exc+"ms");

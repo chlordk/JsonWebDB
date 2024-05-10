@@ -30,6 +30,7 @@ import jsondb.Session;
 import database.Cursor;
 import java.util.HashMap;
 import java.util.HashSet;
+import database.SQLTypes;
 import org.json.JSONObject;
 import java.util.Collection;
 
@@ -48,6 +49,7 @@ public class State
 
    public static void main(String[] args) throws Exception
    {
+      SQLTypes.initialize();
       Config.root(Server.findAppHome());
       JSONObject list = StatePersistency.list();
       System.out.println(list.toString(2));
