@@ -364,7 +364,7 @@ public class Session
 
       long time = System.nanoTime();
       read.executeQuery(cursor,savepoint);
-      cursor.exectime(System.nanoTime()-time);
+      cursor.excost(System.nanoTime()-time);
 
       State.addCursor(cursor);
       return(cursor);

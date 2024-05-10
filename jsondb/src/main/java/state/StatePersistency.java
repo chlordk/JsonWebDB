@@ -142,6 +142,8 @@ public class StatePersistency
                   JSONOObject json = (JSONOObject) cinfo.json;
                   json.put("position",cinfo.pos);
                   json.put("page-size",cinfo.pgz);
+                  json.put("exec-cost",cinfo.exc+"ms");
+                  json.put("fetch-cost",cinfo.ftc+"ms");
                   clist.put(json);
                }
             }
@@ -324,11 +326,11 @@ public class StatePersistency
    }
 
 
-   public static boolean updateCursor(String sessid, String cursid, long pos, int pgz) throws Exception
+   public static boolean updateCursor(String sessid, String cursid, long pos, int pgz, int exc, int ftc) throws Exception
    {
       File file = curFile(sessid,cursid);
       if (!file.exists()) return(false);
-      CursorInfo.update(file,pos,pgz);
+      CursorInfo.update(file,pos,pgz,exc,ftc);
       return(true);
    }
 
@@ -439,6 +441,8 @@ public class StatePersistency
          in.close();
 
          int ilen = bytes[0];
+         if (ilen < 0) ilen = 256 + ilen;
+
          this.stateful = bytes[1] == '1';
          int ulen = bytes.length - 2 - 8 - ilen;
 
@@ -482,19 +486,29 @@ public class StatePersistency
    public static class CursorInfo
    {
       public final int pgz;
+      public final int exc;
+      public final int ftc;
       public final long pos;
       public final String guid;
       public final JSONObject json;
 
-      private static void update(File file, long pos, int pgz) throws Exception
+      // 1 long + 3 int's
+      private static final int HEADER = 20;
+
+      private static void update(File file, long pos, int pgz, int exc, int ftc) throws Exception
       {
          byte[] bpos = Bytes.getBytes(pos);
          byte[] bpgz = Bytes.getBytes(pgz);
+         byte[] bexc = Bytes.getBytes(exc);
+         byte[] bftc = Bytes.getBytes(ftc);
 
-         byte[] bytes = new byte[bpos.length+bpgz.length];
+         int off = 0;
+         byte[] bytes = new byte[HEADER];
 
-         System.arraycopy(bpos,0,bytes,0,bpos.length);
-         System.arraycopy(bpgz,0,bytes,8,bpgz.length);
+         System.arraycopy(bpos,0,bytes,off,bpos.length); off += bpos.length;
+         System.arraycopy(bpgz,0,bytes,off,bpgz.length); off += bpgz.length;
+         System.arraycopy(bexc,0,bytes,off,bexc.length); off += bexc.length;
+         System.arraycopy(bftc,0,bytes,off,bftc.length); off += bftc.length;
 
          RandomAccessFile raf = new RandomAccessFile(file,"rw");
          raf.write(bytes); raf.close();
@@ -502,6 +516,8 @@ public class StatePersistency
 
       private CursorInfo(String guid, long pos, int pgz, JSONObject json)
       {
+         this.exc = 0;
+         this.ftc = 0;
          this.pos = pos;
          this.pgz = pgz;
          this.json = json;
@@ -519,22 +535,31 @@ public class StatePersistency
 
          this.pos = Bytes.getLong(bytes,0);
          this.pgz = Bytes.getInt(bytes,8);
+         this.exc = Bytes.getInt(bytes,12);
+         this.ftc = Bytes.getInt(bytes,16);
 
-         String json = new String(bytes,12,bytes.length-12);
+         String json = new String(bytes,HEADER,bytes.length-HEADER);
          this.json = new JSONOObject(json);
       }
 
       public void save(File file) throws Exception
       {
+         int off = 0;
+
+         byte[] exc = Bytes.getBytes((int) 0);
+         byte[] ftc = Bytes.getBytes((int) 0);
+
          byte[] pos = Bytes.getBytes(this.pos);
          byte[] pgz = Bytes.getBytes(this.pgz);
+
          byte[] def = this.json.toString().getBytes();
+         byte[] bytes = new byte[8+12+def.length];
 
-         byte[] bytes = new byte[8+4+def.length];
-
-         System.arraycopy(pos,0,bytes,0,pos.length);
-         System.arraycopy(pgz,0,bytes,pos.length,pgz.length);
-         System.arraycopy(def,0,bytes,pos.length+pgz.length,def.length);
+         System.arraycopy(pos,0,bytes,off,pos.length); off += pos.length;
+         System.arraycopy(pgz,0,bytes,off,pgz.length); off += pgz.length;
+         System.arraycopy(exc,0,bytes,off,exc.length); off += exc.length;
+         System.arraycopy(ftc,0,bytes,off,pgz.length); off += ftc.length;
+         System.arraycopy(def,0,bytes,off,def.length); off += def.length;
 
          FileOutputStream out = new FileOutputStream(file);
          out.write(bytes);

@@ -45,8 +45,9 @@ import state.StatePersistency.CursorInfo;
 public class Cursor
 {
    private long pos = 0;
+   private int excost = 0;
+   private int ftccost = 0;
    private int pagesize = 0;
-   private long exectime = 0;
    private boolean eof = false;
    private boolean inuse = false;
    private ResultSet rset = null;
@@ -92,7 +93,7 @@ public class Cursor
    {
       this.pos = 0;
       this.sql = sql;
-      this.exectime = 0;
+      this.excost = 0;
       this.session = session;
       this.pagesize = pagesize;
       this.bindvalues = bindvalues;
@@ -104,7 +105,7 @@ public class Cursor
       this.pos = 0;
       this.sql = sql;
       this.guid = guid;
-      this.exectime = 0;
+      this.excost = 0;
       this.session = session;
       this.pagesize = pagesize;
       this.bindvalues = bindvalues;
@@ -145,14 +146,24 @@ public class Cursor
       return(session);
    }
 
-   public long exectime()
+   public long excost()
    {
-      return(exectime);
+      return(excost);
    }
 
-   public void exectime(long nano)
+   public void excost(long nano)
    {
-      exectime += nano/1000000;
+      excost += nano/1000000;
+   }
+
+   public long ftccost()
+   {
+      return(ftccost);
+   }
+
+   public void ftccost(long nano)
+   {
+      ftccost += nano/1000000;
    }
 
    public Cursor pagesize(Integer pagesize)
@@ -242,7 +253,7 @@ public class Cursor
          rows.add(row);
       }
 
-      exectime(System.nanoTime()-nano);
+      ftccost(System.nanoTime()-nano);
       if (!eof) saveState();
 
       return(rows);
@@ -306,6 +317,6 @@ public class Cursor
 
    private void saveState() throws Exception
    {
-      StatePersistency.updateCursor(session.guid(),guid,this.pos,this.pagesize);
+      StatePersistency.updateCursor(session.guid(),guid,this.pos,this.pagesize,this.excost,this.ftccost);
    }
 }
