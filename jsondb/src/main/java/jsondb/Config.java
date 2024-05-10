@@ -143,6 +143,18 @@ public class Config
       Monitor.monitor();
    }
 
+   /** Installation root */
+   public static String root()
+   {
+      return(root);
+   }
+
+   /** Installation root */
+   public static void root(String root)
+   {
+      Config.root = root;
+   }
+
    /** The instance name */
    public static String inst()
    {

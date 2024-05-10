@@ -71,19 +71,22 @@ public class StatePersistency
    }
 
 
-   public static JSONObject list(String path) throws Exception
+   public static JSONObject list() throws Exception
    {
-      File root = new File(path);
       JSONOObject response = new JSONOObject();
+
+      File root = new File(Config.path(STATE));
+      File proc = new File(Config.path(STATE,INSTANCES));
 
       if (root.exists())
       {
+         File[] procs = proc.listFiles();
          File[] state = root.listFiles();
 
          JSONArray processes = new JSONArray();
          response.put("processes",processes);
 
-         for(File file : state)
+         for(File file : procs)
          {
             if (file.getName().endsWith("."+PID))
             {
@@ -122,6 +125,7 @@ public class StatePersistency
             entry.put("accessed",info.age+" secs");
             entry.put("instance",info.inst);
             entry.put("username",info.user);
+            entry.put("online",info.online);
 
             /* Add cursors and transcactions
             File[] content = session.getParentFile().listFiles();
@@ -433,7 +437,8 @@ public class StatePersistency
 
          long pid = StatePersistency.getPid(this.inst);
 
-         this.owner = inst.equals(this.inst);
+         if (inst == null) this.owner = true;
+         else this.owner = inst.equals(this.inst);
          this.online = pid >= 0 && pid == this.pid;
       }
 
