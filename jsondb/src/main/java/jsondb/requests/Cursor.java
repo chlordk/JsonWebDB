@@ -55,8 +55,13 @@ public class Cursor
    public Response fetch() throws Exception
    {
       JSONObject response = new JSONOObject();
+
       Session session = Utils.getSession(response,sessid,"fetch()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(fetch(session));
    }
 
@@ -99,8 +104,13 @@ public class Cursor
    public Response close() throws Exception
    {
       JSONObject response = new JSONOObject();
-      Session session = Utils.getSession(response,sessid,"fetch()");
+
+      Session session = Utils.getSession(response,sessid,"close()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(close(session));
    }
 

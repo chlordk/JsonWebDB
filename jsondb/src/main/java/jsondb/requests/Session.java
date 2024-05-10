@@ -116,8 +116,13 @@ public class Session
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
+
       jsondb.Session session = Utils.getSession(response,sessid,"disconnect()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(disconnect(session));
    }
 
@@ -145,8 +150,13 @@ public class Session
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
+
       jsondb.Session session = Utils.getSession(response,sessid,"commit()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(commit(session));
    }
 
@@ -176,8 +186,13 @@ public class Session
    {
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
+
       jsondb.Session session = Utils.getSession(response,sessid,"rollback()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(rollback(session));
    }
 

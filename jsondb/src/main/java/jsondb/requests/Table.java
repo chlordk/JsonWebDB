@@ -75,8 +75,24 @@ public class Table
       Session session = Utils.getSession(response,sessid,"describe()");
       if (session == null) return(new Response(response));
 
+      return(describe(session));
+   }
+
+
+   public Response describe(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
+
+      return(describe(session,source));
+   }
+
+
+   public Response describe(Session session, TableSource source) throws Exception
+   {
+      JSONObject response = new JSONOObject();
 
       response.put("success",true);
 
@@ -108,6 +124,9 @@ public class Table
       if (source.order != null)
          response.put("order",source.order);
 
+      if (source.primarykey != null)
+         response.put("primary-key",source.primarykey);
+
       for (int i = 0; i < columns.size(); i++)
          rows.put(columns.get(i).toJSONObject());
 
@@ -115,20 +134,32 @@ public class Table
       return(new Response(response));
    }
 
+
    public Response select() throws Exception
    {
       JSONObject response = new JSONOObject();
+
       Session session = Utils.getSession(response,sessid,"select()");
       if (session == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(select(session));
 
    }
 
+
    public Response select(Session session) throws Exception
    {
       JSONObject response = new JSONOObject();
+
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
+
+      Forward fw = Forward.redirect(session,definition);
+      if (fw != null) return(new Response(fw.response()));
+
       return(select(session,source));
    }
 
@@ -141,10 +172,10 @@ public class Table
       if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));
 
       if (!source.described())
-         this.describe();
+         this.describe(session,source);
 
-         HashMap<String,BindValue> bindvalues =
-            Utils.getBindValues(definition);
+      HashMap<String,BindValue> bindvalues =
+         Utils.getBindValues(definition);
 
       JSONObject args = definition.getJSONObject(SELECT);
 
