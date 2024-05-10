@@ -34,6 +34,16 @@ import java.util.LinkedHashMap;
 
 public class JSONOObject extends org.json.JSONObject
 {
+   public JSONOObject()
+   {
+      super();
+   }
+
+   public JSONOObject(String json)
+   {
+      super(json);
+   }
+
    @Override
    public JSONOObject put(String key, Object value) throws JSONException
    {
@@ -45,7 +55,7 @@ public class JSONOObject extends org.json.JSONObject
          Object mapval = map.get(this);
 
          if (!(mapval instanceof LinkedHashMap))
-            map.set(this, new LinkedHashMap<>());
+            map.set(this,new LinkedHashMap<>());
       }
       catch (NoSuchFieldException | IllegalAccessException e)
       {

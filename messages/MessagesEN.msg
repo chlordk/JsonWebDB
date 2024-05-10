@@ -10,6 +10,7 @@ SESSION_NOT_STATEFUL       = Cannot perform operation {%1} since {%2} is not sta
 INSTANCE_NOT_REGISTERED    = Instance {%1} must be configured in the cluster section
 MANDATORY_ATTR_MISSING     = Mandatory attribute {%1} is missing in {%2}
 UNKNOWN_SOURCE             = Unknown source '{%1}'
+INCOMPLETE_SOURCE          = Source '{%1}' neither defines a table/view or a query
 MISSING_COLUNM_SPEC        = Mising column specification
 BAD_COLUNM_SPEC            = Column specification is potentially dangerous
 NOT_CONNECTED              = There is no database connection

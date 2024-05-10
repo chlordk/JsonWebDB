@@ -46,6 +46,7 @@ public class Cursor
 {
    private long pos = 0;
    private int pagesize = 0;
+   private long exectime = 0;
    private boolean eof = false;
    private boolean inuse = false;
    private ResultSet rset = null;
@@ -91,6 +92,7 @@ public class Cursor
    {
       this.pos = 0;
       this.sql = sql;
+      this.exectime = 0;
       this.session = session;
       this.pagesize = pagesize;
       this.bindvalues = bindvalues;
@@ -102,6 +104,7 @@ public class Cursor
       this.pos = 0;
       this.sql = sql;
       this.guid = guid;
+      this.exectime = 0;
       this.session = session;
       this.pagesize = pagesize;
       this.bindvalues = bindvalues;
@@ -140,6 +143,16 @@ public class Cursor
    public Session session()
    {
       return(session);
+   }
+
+   public long exectime()
+   {
+      return(exectime);
+   }
+
+   public void exectime(long nano)
+   {
+      exectime += nano/1000000;
    }
 
    public Cursor pagesize(Integer pagesize)
@@ -197,6 +210,7 @@ public class Cursor
    {
       columns = describe();
       int cols = columns.size();
+      long nano = System.nanoTime();
       ArrayList<Object[]> rows = new ArrayList<Object[]>();
 
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
@@ -228,7 +242,9 @@ public class Cursor
          rows.add(row);
       }
 
+      exectime(System.nanoTime()-nano);
       if (!eof) saveState();
+
       return(rows);
    }
 

@@ -362,9 +362,11 @@ public class Session
 
       Cursor cursor = Cursor.create(this,sql,bindvalues,pagesize);
 
+      long time = System.nanoTime();
       read.executeQuery(cursor,savepoint);
-      State.addCursor(cursor);
+      cursor.exectime(System.nanoTime()-time);
 
+      State.addCursor(cursor);
       return(cursor);
    }
 

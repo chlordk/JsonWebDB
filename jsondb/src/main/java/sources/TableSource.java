@@ -27,6 +27,7 @@ package sources;
 import database.Parser;
 import database.Column;
 import database.SQLPart;
+import messages.Messages;
 import database.DataType;
 import java.util.HashMap;
 import database.BindValue;
@@ -90,6 +91,9 @@ public class TableSource extends Source
       this.derived = derived;
       this.filters = filters;
       this.primarykey = primarykey;
+
+      if (object == null && query == null)
+         throw new Exception(Messages.get("INCOMPLETE_SOURCE",id));
    }
 
    public AccessType getAccessLimit(String operation)

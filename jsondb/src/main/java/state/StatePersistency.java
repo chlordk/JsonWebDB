@@ -32,6 +32,7 @@ import java.util.Date;
 import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.io.FilenameFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
@@ -118,22 +119,32 @@ public class StatePersistency
             sessions.put(entry);
 
             File session = sesFile(root,file.getName());
-            SessionInfo info = new SessionInfo(session,inst);
+            SessionInfo sinfo = new SessionInfo(session,inst);
 
-            entry.put("pid",info.pid);
-            entry.put("session",info.guid);
-            entry.put("accessed",info.age+" secs");
-            entry.put("instance",info.inst);
-            entry.put("username",info.user);
-            entry.put("online",info.online);
+            entry.put("pid",sinfo.pid);
+            entry.put("session",sinfo.guid);
+            entry.put("accessed",sinfo.age+" secs");
+            entry.put("instance",sinfo.inst);
+            entry.put("username",sinfo.user);
+            entry.put("online",sinfo.online);
 
-            /* Add cursors and transcactions
-            File[] content = session.getParentFile().listFiles();
+            File[] cursors = file.listFiles(FileType.get(CUR));
 
-            for(File child : content)
+            if (cursors.length > 0)
             {
+               JSONArray clist = new JSONArray();
+
+               entry.put("cursors",clist);
+
+               for(File curs : cursors)
+               {
+                  CursorInfo cinfo = new CursorInfo(curs);
+                  JSONOObject json = (JSONOObject) cinfo.json;
+                  json.put("position",cinfo.pos);
+                  json.put("page-size",cinfo.pgz);
+                  clist.put(json);
+               }
             }
-            */
          }
       }
 
@@ -510,7 +521,7 @@ public class StatePersistency
          this.pgz = Bytes.getInt(bytes,8);
 
          String json = new String(bytes,12,bytes.length-12);
-         this.json = new JSONObject(json);
+         this.json = new JSONOObject(json);
       }
 
       public void save(File file) throws Exception
@@ -558,6 +569,28 @@ public class StatePersistency
          this.inst = args[1];
 
          this.pid = Long.parseLong(args[2]);
+      }
+   }
+
+
+   private static class FileType implements FilenameFilter
+   {
+      private final String pfix;
+
+      public static FileType get(String type)
+      {
+         return(new FileType(type));
+      }
+
+      private FileType(String type)
+      {
+         this.pfix = "."+type;
+      }
+
+      @Override
+      public boolean accept(File dir, String name)
+      {
+         return(name.endsWith(pfix));
       }
    }
 }
