@@ -262,7 +262,7 @@ public class Session
       connused = null;
 
       State.removeSession(guid);
-      StatePersistency.releaseSession(guid);
+      StatePersistency.releaseSession(this.guid,this.user,this.stateful);
 
       return(true);
    }

@@ -236,9 +236,9 @@ public class StatePersistency
    }
 
 
-   public static void releaseSession(String session) throws Exception
+   public static void releaseSession(String session, String user, boolean stateful) throws Exception
    {
-      SessionInfo info = new SessionInfo(-1,session,"","",false);
+      SessionInfo info = new SessionInfo(-1,session,inst,user,stateful);
       info.save(sesFile(session));
    }
 
