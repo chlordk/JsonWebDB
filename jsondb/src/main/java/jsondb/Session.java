@@ -51,7 +51,7 @@ public class Session
    private final AdvancedPool pool;
    private final Object SYNC = new Object();
 
-   private int clients = 1;
+   private int clients = 0;
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
@@ -140,6 +140,7 @@ public class Session
    {
       synchronized(SYNC)
       { clients--; }
+      System.out.println("down: "+guid+" "+clients);
       return(this);
    }
 
@@ -189,7 +190,6 @@ public class Session
 
    public synchronized void transfer() throws Exception
    {
-      State.addSession(this);
       Config.logger().info(Messages.get("TRANSFER_SESSION",guid));
       StatePersistency.transferSession(guid,this.user,this.stateful);
    }

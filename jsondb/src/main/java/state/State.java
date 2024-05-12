@@ -73,7 +73,7 @@ public class State
    public static void addSession(Session session)
    {
       synchronized(getLock(session))
-      {sessions.put(session.guid(),session);}
+      {sessions.put(session.guid(),session.up());}
    }
 
    public static boolean hasSession(String guid)
@@ -201,13 +201,12 @@ public class State
 
    private static Object getLock(Session session)
    {
-      return(getSession(session.guid()));
+      return(getLock(session.guid()));
    }
 
 
    private static Object getLock(String guid)
    {
-      System.out.println(guid.hashCode() % LOCKS.length);
-      return(LOCKS[guid.hashCode() % LOCKS.length]);
+      return(LOCKS[Math.abs(guid.hashCode() % LOCKS.length)]);
    }
 }
