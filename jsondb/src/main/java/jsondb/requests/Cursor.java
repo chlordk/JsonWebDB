@@ -128,7 +128,7 @@ public class Cursor
    {
       JSONObject response = new JSONOObject();
 
-      cursor.close(true);
+      cursor.close();
 
       response.put("success",true);
       response.put("method","close()");

@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
+import state.State;
 import http.Cluster;
 import java.io.File;
 import http.HTTPConfig;
@@ -130,6 +131,7 @@ public class Config
    {
       SQLTypes.initialize();
 
+      State.initialize();
       Admins.initialize();
       Cluster.initialize();
       Sources.initialize();

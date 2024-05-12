@@ -227,7 +227,7 @@ public class Cursor
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
       {
          if (!rset.next())
-         {close(true);break;}
+         {close();break;}
 
          this.pos++;
          Object[] row = new Object[cols];
@@ -265,17 +265,26 @@ public class Cursor
       for (int i = 0; i < this.pos; i++)
       {
          if (!rset.next())
-         {close(true);break;}
+         {close();break;}
       }
    }
 
 
-   public void close(boolean delete)
+   public void close()
+   {
+      close(true);
+   }
+
+
+   public void offline()
+   {
+      close(false);
+   }
+
+   private void close(boolean delete)
    {
       eof = true;
       inuse = false;
-
-      State.removeCursor(guid);
 
       if (rset != null)
       {
@@ -294,6 +303,9 @@ public class Cursor
          try {StatePersistency.removeCursor(session.guid(),guid);}
          catch (Exception e) {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
+
+      try {State.removeCursor(this);} catch (Exception e)
+      {Config.logger().log(Level.SEVERE,e.toString(),e);}
    }
 
 

@@ -28,23 +28,27 @@ import http.Server;
 import jsondb.Config;
 import jsondb.Session;
 import database.Cursor;
-import java.util.HashMap;
+import messages.Messages;
 import java.util.HashSet;
 import database.SQLTypes;
 import org.json.JSONObject;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class State
 {
-   private static HashMap<String,Cursor> cursors =
-      new HashMap<String,Cursor>();
+   private static Object[] LOCKS;
 
-   private static HashMap<String,Session> sessions =
-      new HashMap<String,Session>();
+   private static ConcurrentHashMap<String,Cursor> cursors =
+      new ConcurrentHashMap<String,Cursor>();
 
-   private static HashMap<String,HashSet<String>> cursesmap =
-      new HashMap<String,HashSet<String>>();
+   private static ConcurrentHashMap<String,Session> sessions =
+      new ConcurrentHashMap<String,Session>();
+
+   private static ConcurrentHashMap<String,HashSet<String>> cursesmap =
+      new ConcurrentHashMap<String,HashSet<String>>();
 
 
    public static void main(String[] args) throws Exception
@@ -56,55 +60,58 @@ public class State
    }
 
 
+   public static void initialize()
+   {
+      int locks = 1024;
+      LOCKS = new Object[locks];
+
+      for (int i = 0; i < LOCKS.length; i++)
+         LOCKS[i] = new Object();
+   }
+
+
    public static void addSession(Session session)
    {
-      synchronized(sessions)
-      {
-         session.inUse(true);
-         sessions.put(session.guid(),session);
-      }
+      synchronized(getLock(session))
+      {sessions.put(session.guid(),session);}
    }
 
    public static boolean hasSession(String guid)
    {
-      synchronized(sessions)
-      {
-         Session session = sessions.get(guid);
-         return(session != null);
-      }
+      synchronized(getLock(guid))
+      {return(sessions.get(guid) != null);}
    }
 
    public static Session getSession(String guid)
    {
-      synchronized(sessions)
-      {
-         Session session = sessions.get(guid);
-         if (session != null) session.inUse(true);
-         return(session);
-      }
+      synchronized(getLock(guid))
+      {return(sessions.get(guid));}
    }
 
+
+   // Cannot remove session if open-cursors
    public static boolean removeSession(String guid)
    {
-      synchronized(sessions)
+      synchronized(getLock(guid))
       {
          Session session = sessions.get(guid);
+         if (session == null) return(true);
 
-         if (session == null || session.inUse())
-            return(false);
-
-         sessions.remove(guid);
-         cursesmap.remove(guid);
-
-         return(true);
+         synchronized(session)
+         {
+            HashSet<String> sescurs = cursesmap.get(guid);
+            if (sescurs != null) return(false);
+            sessions.remove(guid);
+            return(true);
+         }
       }
    }
+
 
    public static void addCursor(Cursor cursor)
    {
-      synchronized(cursors)
+      synchronized(cursor.session())
       {
-         cursor.inUse(true);
          cursors.put(cursor.guid(),cursor);
 
          String sessid = cursor.session().guid();
@@ -120,56 +127,83 @@ public class State
       }
    }
 
-   public static Cursor getCursor(String guid)
+
+   public static Cursor getCursor(Session session, String guid)
    {
-      synchronized(cursors)
-      {
-         Cursor cursor = cursors.get(guid);
-         if (cursor != null) cursor.inUse(true);
-         return(cursor);
-      }
+      synchronized(session)
+      {return(cursors.get(guid));}
    }
 
-   public static boolean removeCursor(String guid)
+
+   public static boolean removeCursor(Cursor cursor) throws Exception
    {
-      synchronized(cursors)
+      synchronized(cursor.session())
       {
-         Cursor cursor = cursors.get(guid);
-
-         if (cursor == null || cursor.inUse())
-            return(false);
-
-         cursors.remove(guid);
+         cursors.remove(cursor.guid());
 
          String sessid = cursor.session().guid();
          HashSet<String> sescurs = cursesmap.get(sessid);
-         if (sescurs != null) sescurs.remove(guid);
+
+         if (sescurs == null)
+            throw new Exception(Messages.get("CANNOT_REMOVE_CURSOR",cursor.guid()));
+
+         sescurs.remove(cursor.guid());
+
+         if (sescurs.size() == 0)
+            cursesmap.remove(sessid);
 
          return(true);
       }
    }
 
-   public static Cursor[] removeAllCursors(String sessid)
+
+   public static ArrayList<Cursor> getAllCursors(String sessid)
    {
-      String[] type = new String[0];
+      Session session = null;
+      ArrayList<Cursor> cursors = new ArrayList<Cursor>();
 
-      HashSet<String> sescurs = cursesmap.remove(sessid);
-      if (sescurs == null) return(new Cursor[0]);
+      synchronized(getLock(sessid))
+      {
+         session = sessions.get(sessid);
+         if (session == null) return(cursors);
+      }
 
-      String[] cursids = sescurs.toArray(type);
-      Cursor[] cursors = new Cursor[cursids.length];
+      synchronized(session)
+      {
+         HashSet<String> sescurs = cursesmap.get(sessid);
 
-      for (int i = 0; i < cursors.length; i++)
-         cursors[i] = State.cursors.remove(cursids[i]);
+         for(String cursid : sescurs)
+         {
+            Cursor cursor = State.cursors.get(cursid);
+            cursors.add(cursor);
+         }
+      }
 
       return(cursors);
    }
 
+
+   public static Collection<Cursor> cursors()
+   {
+      return(cursors.values());
+   }
+
+
    public static Collection<Session> sessions()
    {
-      synchronized(sessions)
-      {
-        return(sessions.values());
-      }
+      return(sessions.values());
+   }
+
+
+   private static Object getLock(Session session)
+   {
+      return(getSession(session.guid()));
+   }
+
+
+   private static Object getLock(String guid)
+   {
+      System.out.println(guid.hashCode() % LOCKS.length);
+      return(LOCKS[guid.hashCode() % LOCKS.length]);
    }
 }

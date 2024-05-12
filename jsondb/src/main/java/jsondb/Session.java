@@ -43,15 +43,18 @@ public class Session
    private final int idle;
    private final String guid;
    private final String user;
+
    private final boolean owner;
    private final boolean online;
+
    private final boolean stateful;
+
    private final AdvancedPool pool;
+   private final Object SYNC = new Object();
 
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
-   private boolean inuse = false;
 
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
@@ -86,10 +89,7 @@ public class Session
    public static Session create(String user, boolean stateful) throws Exception
    {
       String guid = StatePersistency.createSession(user,stateful);
-
       Session session = new Session(guid,user,stateful);
-      State.addSession(session);
-
       return(session);
    }
 
@@ -154,29 +154,23 @@ public class Session
       return(stateful);
    }
 
-   public boolean inUse()
+
+   public Date lastUsed()
    {
-      return(inuse);
+      synchronized(SYNC)
+       {return(used);}
    }
 
-   public void inUse(boolean inuse)
+   public Date lastUsedTrx()
    {
-      this.inuse = inuse;
+      synchronized(SYNC)
+      {return(trxused);}
    }
 
-   public synchronized Date lastUsed()
+   public Date lastUsedConn()
    {
-      return(used);
-   }
-
-   public synchronized Date lastUsedTrx()
-   {
-      return(trxused);
-   }
-
-   public synchronized Date lastUsedConn()
-   {
-      return(connused);
+      synchronized(SYNC)
+      {return(connused);}
    }
 
    public synchronized void transfer() throws Exception
@@ -202,9 +196,9 @@ public class Session
    }
 
 
-   public Cursor getCursor(String cursid) throws Exception
+   public synchronized Cursor getCursor(String cursid) throws Exception
    {
-      Cursor cursor = State.getCursor(cursid);
+      Cursor cursor = State.getCursor(this,cursid);
 
       if (cursor == null)
       {
@@ -238,13 +232,8 @@ public class Session
       if (this.trxused != null) return(false);
       if (curr - used < idle*1000) return(false);
 
-      Cursor[] cursors = State.removeAllCursors(guid);
-
-      for (int i = 0; i < cursors.length; i++)
-      {
-         if (cursors[i] != null)
-            cursors[i].close(false);
-      }
+      ArrayList<Cursor> cursors = State.getAllCursors(guid);
+      for (Cursor cursor : cursors) cursor.offline();
 
       if (wconn != null && wconn.isConnected())
       {
@@ -261,9 +250,9 @@ public class Session
       trxused = null;
       connused = null;
 
-      State.removeSession(guid);
       StatePersistency.releaseSession(this.guid,this.user,this.stateful);
 
+      State.removeSession(guid);
       return(true);
    }
 
@@ -301,12 +290,12 @@ public class Session
          rconn = null;
       }
 
-      State.removeSession(guid);
       boolean success = StatePersistency.removeSession(guid);
 
       trxused = null;
       connused = null;
 
+      State.removeSession(guid);
       return(success);
    }
 
