@@ -88,19 +88,13 @@ public class Session
          if (signature != null)
          {
             if (Admins.getAdmin(signature) != null)
-            {
                authenticated = true;
-               session.connect();
-            }
          }
 
          else
 
          if (session.authenticate(username,password))
-         {
             authenticated = true;
-            session.connect();
-         }
 
          if (!authenticated)
          {

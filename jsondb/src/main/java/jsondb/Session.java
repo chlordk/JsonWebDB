@@ -144,6 +144,12 @@ public class Session
       return(this);
    }
 
+   public boolean hasClients()
+   {
+      synchronized(SYNC)
+      {return(clients > 0);}
+   }
+
    public String guid()
    {
       return(guid);
@@ -196,7 +202,7 @@ public class Session
 
    public synchronized boolean touch() throws Exception
    {
-      this.used = new Date();
+      synchronized(SYNC) {this.used = new Date();}
       boolean success = StatePersistency.touchSession(guid);
       return(success);
    }
@@ -226,20 +232,35 @@ public class Session
          cursor.position();
       }
 
+      synchronized(SYNC)
+      {
+         used = new Date();
+         connused = new Date();
+      }
+
       return(cursor);
    }
 
 
-   public synchronized boolean isConnected()
+   public boolean isConnected()
    {
-      if (wconn != null && wconn.isConnected()) return(true);
-      if (rconn != null && rconn.isConnected()) return(true);
-      return(false);
+      synchronized(SYNC)
+      {
+         if (wconn != null && wconn.isConnected()) return(true);
+         if (rconn != null && rconn.isConnected()) return(true);
+         return(false);
+      }
    }
 
 
    public synchronized boolean release() throws Exception
    {
+      synchronized(SYNC)
+      {System.out.println("release clients "+clients);}
+
+      synchronized(SYNC)
+      {if (clients > 0) return(false);}
+
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
 
@@ -261,35 +282,24 @@ public class Session
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
 
-      trxused = null;
-      connused = null;
-
       StatePersistency.releaseSession(this.guid,this.user,this.stateful);
-
       State.removeSession(guid);
+
       return(true);
    }
 
 
-   public Session connect() throws Exception
+   public synchronized boolean disconnect()
    {
-      touch();
-
-      if (wconn == null)
-         wconn = JdbcInterface.getInstance(true);
-
-      if (pool.secondary())
+      synchronized(SYNC)
       {
-         if (rconn == null)
-            rconn = JdbcInterface.getInstance(false);
+         if (clients != 1)
+            Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
       }
 
-      return(this);
-   }
+      ArrayList<Cursor> cursors = State.getAllCursors(guid);
+      for(Cursor curs : cursors) curs.close();
 
-
-   public boolean disconnect()
-   {
       if (wconn != null)
       {
          try {wconn.disconnect();} catch (Exception e)
@@ -305,29 +315,23 @@ public class Session
       }
 
       boolean success = StatePersistency.removeSession(guid);
-
-      trxused = null;
-      connused = null;
-
       State.removeSession(guid);
+
       return(success);
    }
 
 
-   public boolean authenticate(String username, String password) throws Exception
-   {
-      if (username == null) return(false);
-      if (password == null) return(false);
-      return(pool.authenticate(username,password));
-   }
-
-
-   public boolean commit() throws Exception
+   public synchronized boolean commit() throws Exception
    {
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
-      trxused = null;
+      synchronized(SYNC)
+      {
+         trxused = null;
+         used = new Date();
+         connused = new Date();
+      }
 
       if (wconn != null)
       {
@@ -339,12 +343,17 @@ public class Session
    }
 
 
-   public boolean rollback() throws Exception
+   public synchronized boolean rollback() throws Exception
    {
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
-      trxused = null;
+      synchronized(SYNC)
+      {
+         trxused = null;
+         used = new Date();
+         connused = new Date();
+      }
 
       if (wconn != null)
       {
@@ -356,7 +365,7 @@ public class Session
    }
 
 
-   public Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
+   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
    {
       JdbcInterface read = ensure(false);
 
@@ -369,8 +378,22 @@ public class Session
       read.executeQuery(cursor,savepoint);
       cursor.excost(System.nanoTime()-time);
 
+      synchronized(SYNC)
+      {
+         used = new Date();
+         connused = new Date();
+      }
+
       State.addCursor(cursor);
       return(cursor);
+   }
+
+
+   public boolean authenticate(String username, String password) throws Exception
+   {
+      if (username == null) return(false);
+      if (password == null) return(false);
+      return(pool.authenticate(username,password));
    }
 
 
