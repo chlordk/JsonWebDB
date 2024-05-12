@@ -46,12 +46,12 @@ public class Session
 
    private final boolean owner;
    private final boolean online;
-
    private final boolean stateful;
 
    private final AdvancedPool pool;
    private final Object SYNC = new Object();
 
+   private int clients = 1;
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
@@ -127,6 +127,20 @@ public class Session
       this.used = new Date();
       this.pool = Config.pool();
       this.idle = Config.conTimeout();
+   }
+
+   public Session up()
+   {
+      synchronized(SYNC)
+      { clients++; }
+      return(this);
+   }
+
+   public Session down()
+   {
+      synchronized(SYNC)
+      { clients--; }
+      return(this);
    }
 
    public String guid()

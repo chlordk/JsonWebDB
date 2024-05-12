@@ -79,36 +79,43 @@ public class Session
       boolean authenticated = false;
       jsondb.Session session = jsondb.Session.create(username,stateful);
 
-      response.put("success",true);
-      response.put("method","connect()");
-      response.put("session",session.guid());
-
-      if (signature != null)
+      try
       {
-         if (Admins.getAdmin(signature) != null)
+         response.put("success",true);
+         response.put("method","connect()");
+         response.put("session",session.guid());
+
+         if (signature != null)
+         {
+            if (Admins.getAdmin(signature) != null)
+            {
+               authenticated = true;
+               session.connect();
+            }
+         }
+
+         else
+
+         if (session.authenticate(username,password))
          {
             authenticated = true;
             session.connect();
          }
+
+         if (!authenticated)
+         {
+            jsondb.Session.remove(session);
+
+            response.put("success",false);
+            response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
+         }
+
+         return(new Response(response));
       }
-
-      else
-
-      if (session.authenticate(username,password))
+      finally
       {
-         authenticated = true;
-         session.connect();
+         session.down();
       }
-
-      if (!authenticated)
-      {
-         jsondb.Session.remove(session);
-
-         response.put("success",false);
-         response.put("message",Messages.get("AUTHENTICATION_FAILED",username));
-      }
-
-      return(new Response(response));
    }
 
 
@@ -120,10 +127,16 @@ public class Session
       jsondb.Session session = Utils.getSession(response,sessid,"disconnect()");
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
-      if (fw != null) return(new Response(fw.response()));
-
-      return(disconnect(session));
+      try
+      {
+         Forward fw = Forward.redirect(session,definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(disconnect(session));
+      }
+      finally
+      {
+         session.down();
+      }
    }
 
    public Response disconnect(jsondb.Session session) throws Exception
@@ -154,10 +167,16 @@ public class Session
       jsondb.Session session = Utils.getSession(response,sessid,"commit()");
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
-      if (fw != null) return(new Response(fw.response()));
-
-      return(commit(session));
+      try
+      {
+         Forward fw = Forward.redirect(session,definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(commit(session));
+      }
+      finally
+      {
+         session.down();
+      }
    }
 
 
@@ -190,10 +209,16 @@ public class Session
       jsondb.Session session = Utils.getSession(response,sessid,"rollback()");
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
-      if (fw != null) return(new Response(fw.response()));
-
-      return(rollback(session));
+      try
+      {
+         Forward fw = Forward.redirect(session,definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(rollback(session));
+      }
+      finally
+      {
+         session.down();
+      }
    }
 
 
@@ -224,6 +249,9 @@ public class Session
 
       String sessid = definition.optString(SESSION);
       jsondb.Session session = jsondb.Session.get(sessid);
+
+      if (session != null)
+         session.down();
 
       response.put("success",true);
       response.put("session",sessid);

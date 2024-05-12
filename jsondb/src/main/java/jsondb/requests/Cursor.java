@@ -62,7 +62,8 @@ public class Cursor
       Forward fw = Forward.redirect(session,definition);
       if (fw != null) return(new Response(fw.response()));
 
-      return(fetch(session));
+      try {return(fetch(session));}
+        finally {session.down();}
    }
 
 
@@ -108,10 +109,16 @@ public class Cursor
       Session session = Utils.getSession(response,sessid,"close()");
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
-      if (fw != null) return(new Response(fw.response()));
-
-      return(close(session));
+      try
+      {
+         Forward fw = Forward.redirect(session,definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(close(session));
+      }
+      finally
+      {
+         session.down();
+      }
    }
 
 

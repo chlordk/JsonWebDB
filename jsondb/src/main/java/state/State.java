@@ -85,7 +85,11 @@ public class State
    public static Session getSession(String guid)
    {
       synchronized(getLock(guid))
-      {return(sessions.get(guid));}
+      {
+         Session session = sessions.get(guid);
+         if (session != null) session.up();
+         return(session);
+      }
    }
 
 

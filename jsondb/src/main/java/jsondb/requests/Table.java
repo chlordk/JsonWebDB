@@ -75,7 +75,8 @@ public class Table
       Session session = Utils.getSession(response,sessid,"describe()");
       if (session == null) return(new Response(response));
 
-      return(describe(session));
+      try {return(describe(session));}
+      finally { session.down(); }
    }
 
 
@@ -142,11 +143,16 @@ public class Table
       Session session = Utils.getSession(response,sessid,"select()");
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
-      if (fw != null) return(new Response(fw.response()));
-
-      return(select(session));
-
+      try
+      {
+         Forward fw = Forward.redirect(session,definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(select(session));
+      }
+      finally
+      {
+         session.down();
+      }
    }
 
 
