@@ -169,7 +169,7 @@ public class Server
 
    private static void stop()
    {
-      String server = Cluster.getServer();
+      String server = Config.endp();
       String url = Misc.url(server,HTTPConfig.admin(),"stop");
 
       try
@@ -189,7 +189,7 @@ public class Server
 
    private static void status()
    {
-      String server = Cluster.getServer();
+      String server = Config.endp();
       String url = Misc.url(server,HTTPConfig.admin(),"status");
 
       try
@@ -233,22 +233,13 @@ public class Server
    private static String loadServerConfig()
    {
       JSONObject conf = Config.get(SECTION);
-      JSONArray instances = Config.get(conf,CLUSTER);
+      JSONObject instance = Config.instance();
 
-      for (int i = 0; i < instances.length(); i++)
-      {
-         JSONObject instance = instances.getJSONObject(i);
+      port = Config.get(instance,PORT);
+      sslport = Config.get(instance,SSLPORT);
 
-         if (instance.getString(INSTANCE).equals(Config.inst()))
-         {
-            port = Config.get(instance,PORT);
-            sslport = Config.get(instance,SSLPORT);
-            break;
-         }
-      }
-
-      queue = Config.get(conf,QUEUE);
-      threads = Config.get(conf,THREADS);
+      queue = Config.get(instance,QUEUE);
+      threads = Config.get(instance,THREADS);
 
       JSONObject ssl = Config.get(conf,KEYSTORE);
 

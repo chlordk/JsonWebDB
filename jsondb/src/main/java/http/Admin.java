@@ -104,7 +104,7 @@ public class Admin
       long hours = Duration.between(started,now).toHours();
 
       String inst = Config.inst();
-      String server = Cluster.getServer();
+      String server = Config.endp();
 
       JSONOObject stats = new JSONOObject();
 

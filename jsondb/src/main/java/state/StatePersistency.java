@@ -65,8 +65,8 @@ public class StatePersistency
       File folders = new File(Config.path(STATE,INSTANCES));
       if (!folders.exists()) folders.mkdirs();
 
-      pf = new FileOutputStream(pidFile(inst));
-      pf.write((pid+"").getBytes()); pf.close();
+      ServerInfo server = new ServerInfo(pid,Config.endp());
+      server.save(pidFile(inst));
 
       Thread shutdown = new Thread(() -> StatePersistency.pidFile(inst).delete());
       Runtime.getRuntime().addShutdownHook(shutdown);
@@ -173,15 +173,11 @@ public class StatePersistency
    }
 
 
-   public static long getPid(String inst) throws Exception
+   public static ServerInfo getServerInfo(String inst) throws Exception
    {
       File file = pidFile(inst);
-      if (!file.exists()) return(-1);
-
-      FileInputStream in = new FileInputStream(file);
-      String pid = new String(in.readAllBytes()); in.close();
-
-      return(Long.parseLong(pid));
+      if (!file.exists()) return(null);
+      return(new ServerInfo(file));
    }
 
 
@@ -425,6 +421,44 @@ public class StatePersistency
    }
 
 
+   public static class ServerInfo
+   {
+      public final long pid;
+      public final String endp;
+
+      private ServerInfo(long pid, String endp)
+      {
+         this.pid = pid;
+         this.endp = endp;
+      }
+
+      private ServerInfo(File file) throws Exception
+      {
+         FileInputStream in = new FileInputStream(file);
+         byte[] bytes = in.readAllBytes(); in.close();
+
+         this.pid = Bytes.getLong(bytes,0);
+         this.endp = new String(bytes,8,bytes.length-8);
+      }
+
+      public void save(File file) throws Exception
+      {
+         byte[] endp = this.endp.getBytes();
+         byte[] bpid = Bytes.getBytes(this.pid);
+
+         int off = 0;
+         byte[] bytes = new byte[bpid.length+endp.length];
+
+         System.arraycopy(bpid,0,bytes,off,bpid.length); off += bpid.length;
+         System.arraycopy(endp,0,bytes,off,endp.length); off += endp.length;
+
+         FileOutputStream out = new FileOutputStream(file);
+         out.write(bytes);
+         out.close();
+      }
+   }
+
+
    public static class SessionInfo
    {
       public final long age;
@@ -457,8 +491,7 @@ public class StatePersistency
          this.guid = guid.substring(0,guid.length()-SES.length()-1);
 
          FileInputStream in = new FileInputStream(file);
-         byte[] bytes = in.readAllBytes();
-         in.close();
+         byte[] bytes = in.readAllBytes(); in.close();
 
          int ilen = bytes[0];
          if (ilen < 0) ilen = 256 + ilen;
@@ -470,7 +503,8 @@ public class StatePersistency
          this.inst = new String(bytes,2+8,ilen);
          this.user = new String(bytes,2+8+ilen,ulen);
 
-         long pid = StatePersistency.getPid(this.inst);
+         ServerInfo info = getServerInfo(this.inst);
+         long pid = info == null ? -1 : info.pid;
 
          if (inst == null) this.owner = true;
          else this.owner = inst.equals(this.inst);
@@ -550,8 +584,7 @@ public class StatePersistency
          this.guid = guid.substring(0,guid.length()-CUR.length()-1);
 
          FileInputStream in = new FileInputStream(file);
-         byte[] bytes = in.readAllBytes();
-         in.close();
+         byte[] bytes = in.readAllBytes(); in.close();
 
          this.pos = Bytes.getLong(bytes,0);
          this.pgz = Bytes.getInt(bytes,8);
@@ -605,8 +638,7 @@ public class StatePersistency
          this.guid = guid.substring(0,guid.length()-SES.length()-1);
 
          FileInputStream in = new FileInputStream(file);
-         String content = new String(in.readAllBytes());
-         in.close();
+         String content = new String(in.readAllBytes()); in.close();
 
          String[] args = content.split(" ");
 

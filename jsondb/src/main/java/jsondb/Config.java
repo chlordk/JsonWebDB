@@ -25,14 +25,12 @@ SOFTWARE.
 package jsondb;
 
 import state.State;
-import http.Cluster;
 import java.io.File;
 import http.HTTPConfig;
 import sources.Sources;
 import files.FileConfig;
 import logger.Applogger;
 import database.SQLTypes;
-import messages.Messages;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -145,14 +143,10 @@ public class Config
 
       State.initialize();
       Admins.initialize();
-      Cluster.initialize();
       Sources.initialize();
       FileConfig.initialize();
       HTTPConfig.initialize();
       StatePersistency.initialize();
-
-      if (Cluster.getServer(inst) == null)
-         throw new Exception(Messages.get("INSTANCE_NOT_REGISTERED",inst));
 
       Monitor.monitor();
    }
@@ -173,6 +167,12 @@ public class Config
    public static String inst()
    {
       return(inst);
+   }
+
+   /** The endpoint */
+   public static String endp()
+   {
+      return(endp);
    }
 
    /** Path to application */
@@ -203,6 +203,12 @@ public class Config
    public static Logger logger()
    {
       return(logger);
+   }
+
+   /** The instance config */
+   public static JSONObject instance()
+   {
+      return(instance);
    }
 
    /** The config json */
