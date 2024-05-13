@@ -44,8 +44,7 @@ public class Session
    private final String guid;
    private final String user;
 
-   private final boolean owner;
-   private final boolean online;
+   private final boolean forward;
    private final boolean stateful;
 
    private final AdvancedPool pool;
@@ -69,7 +68,7 @@ public class Session
       {
          session = new Session(info);
 
-         if (!info.owner)
+         if (info.online && !info.owner)
          {
             // Session must be validated before accepted
             Config.logger().info(Messages.get("NOT_SESSION_OWNER",guid,info.inst));
@@ -77,7 +76,10 @@ public class Session
          }
 
          if (!info.online)
+         {
             Config.logger().info(Messages.get("SESSION_REINSTATED",guid));
+            session.transfer();
+         }
 
          State.addSession(session);
       }
@@ -112,13 +114,13 @@ public class Session
       this.guid = info.guid;
       this.user = info.user;
 
-      this.owner = info.owner;
-      this.online = info.online;
       this.stateful = info.stateful;
 
       this.used = new Date();
       this.pool = Config.pool();
       this.idle = Config.conTimeout();
+
+      this.forward = info.online && !info.owner;
    }
 
 
@@ -127,8 +129,7 @@ public class Session
       this.guid = guid;
       this.user = user;
 
-      this.owner = true;
-      this.online = true;
+      this.forward = false;
       this.stateful = stateful;
 
       this.used = new Date();
@@ -166,14 +167,9 @@ public class Session
       return(user);
    }
 
-   public boolean owner()
+   public boolean forward()
    {
-      return(owner);
-   }
-
-   public boolean online()
-   {
-      return(online);
+      return(forward);
    }
 
    public boolean isStateful()

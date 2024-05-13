@@ -3,7 +3,7 @@
    {
 		"index": "index.html",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-      "location": "/Users/alhof/Repository/forms42/demo/dist"
+		"location": "/Users/alhof/Repository/forms42/demo/dist"
 		,
 		"admin":
 		{
@@ -12,14 +12,55 @@
 			"password": "Manager1",
 			"ssl-required": true
 		}
-		,
-		"cluster":
-		[
-			{"instance": "local01" , "url": "https://localhost:6002"},
-			{"instance": "docker01", "url": "https://localhost:8002"}
-		]
    }
-   ,
+	,
+	"cluster":
+	{
+		"types":
+		[
+			{
+				"type": "docker",
+				"location": "/dist",
+				"endpoint": "https://localhost:{ssl}"
+			}
+			,
+			{
+				"type": "local",
+				"embedded": true,
+				"queue-length": 16,
+				"worker-threads": 16,
+				"endpoint": "https://{host}:{ssl}"
+			}
+		]
+		,
+		"instances":
+		[
+			{
+				"type": "local",
+				"name": "local01",
+				"port": 6001, "ssl": 6002
+			}
+			,
+			{
+				"type": "local",
+				"name": "local02",
+				"port": 6003, "ssl": 6004
+			}
+			,
+			{
+				"type": "docker",
+				"name": "docker01",
+				"port": 8002, "ssl": 8003
+			}
+			,
+			{
+				"type": "docker",
+				"name": "docker02",
+				"port": 8003, "ssl": 8004
+			}
+		]
+	}
+	,
    "session":
    {
 		"session-timeout": 60,
@@ -29,15 +70,6 @@
 	,
 	"embedded":
 	{
-		"cluster":
-		[
-			{"instance": "local01" , "port": 6001, "ssl": 6002},
-			{"instance": "local02" , "port": 6003, "ssl": 6004}
-		]
-		,
-		"queue-length": 16,
-		"worker-threads": 16,
-
 		"keystore":
 		{
 			"type": "pkcs12",

@@ -32,14 +32,10 @@ public class Forward
 {
    public static Forward redirect(Session session, JSONObject definition) throws Exception
    {
-      if (!session.online())
+      if (session.forward())
       {
-         session.transfer();
-         return(null);
+         System.out.println("redirect");
       }
-
-      if (session.owner())
-         return(null);
 
       return(null);
    }

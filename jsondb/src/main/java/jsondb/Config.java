@@ -33,8 +33,10 @@ import files.FileConfig;
 import logger.Applogger;
 import database.SQLTypes;
 import messages.Messages;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import java.net.InetAddress;
 import state.StatePersistency;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
@@ -51,6 +53,11 @@ public class Config
    private static final String FILE = "config.json";
    private static final String APPL = "application";
 
+   private static final String CLUSTER = "cluster";
+   private static final String INSTTYPES = "types";
+   private static final String ENDPOINT = "endpoint";
+   private static final String INSTANCES = "instances";
+
    private static final String SESTMOUT = "session-timeout";
    private static final String CONTMOUT = "connection-timeout";
    private static final String TRXTMOUT = "transaction-timeout";
@@ -61,9 +68,11 @@ public class Config
 
    private static String inst = null;
    private static String appl = null;
+   private static String endp = null;
 
    private static Logger logger = null;
    private static JSONObject config = null;
+   private static JSONObject instance = null;
 
    private static String root = null;
    private static AdvancedPool pool = null;
@@ -107,14 +116,17 @@ public class Config
       String path = path(CONF,file);
 
       FileInputStream in = new FileInputStream(path);
+
       JSONTokener tokener = new JSONTokener(in);
       JSONObject config = new JSONObject(tokener);
+
       in.close();
 
       Config.inst = inst;
       Config.config = config;
-
       Config.appl = get(get(APPL),PATH);
+      Config.instance = getInstanceConfig();
+
       Config.sestmout = get(get(SESS),SESTMOUT);
       Config.trxtmout = get(get(SESS),TRXTMOUT);
       Config.contmout = get(get(SESS),CONTMOUT);
@@ -243,5 +255,83 @@ public class Config
       }
 
       return(path);
+   }
+
+
+   private static JSONObject getInstanceConfig() throws Exception
+   {
+      String type = null;
+
+      JSONObject instance = null;
+      JSONObject insttype = null;
+      JSONObject cluster = get(CLUSTER);
+
+      JSONArray types = get(cluster,INSTTYPES);
+      JSONArray instances = get(cluster,INSTANCES);
+
+      for (int i = 0; i < instances.length(); i++)
+      {
+         JSONObject entry = instances.getJSONObject(i);
+
+         if (entry.getString("name").equals(inst))
+         {
+            instance = entry;
+            type = instance.getString("type");
+            break;
+         }
+      }
+
+      if (instance == null)
+         throw new Exception("No configuration found for instance "+inst);
+
+      for (int i = 0; i < types.length(); i++)
+      {
+         JSONObject entry = types.getJSONObject(i);
+
+         if (entry.getString("type").equals(type))
+         {
+            insttype = entry;
+            break;
+         }
+      }
+
+      if (insttype == null)
+         throw new Exception("No configuration found for instance type "+type);
+
+      for(String name : JSONObject.getNames(insttype))
+      {
+         if (!instance.has(name))
+            instance.put(name,insttype.get(name));
+      }
+
+      if (instance.has(PATH))
+         Config.appl = instance.getString(PATH);
+
+      String endpoint = instance.getString(ENDPOINT);
+
+      if (endpoint.indexOf("{ssl}") >= 0)
+      {
+         int ssl = instance.getInt("ssl");
+         endpoint = endpoint.replace("{ssl}",ssl+"");
+      }
+
+      if (endpoint.indexOf("{port}") >= 0)
+      {
+         int port = instance.getInt("port");
+         endpoint = endpoint.replace("{port}",port+"");
+      }
+
+      if (endpoint.indexOf("{host}") >= 0)
+      {
+         try
+         {
+            InetAddress id = InetAddress.getLocalHost();
+            endpoint = endpoint.replace("{host}",id.getHostName());
+         }
+         catch (Exception e) {}
+      }
+
+      Config.endp = endpoint;
+      return(instance);
    }
 }
