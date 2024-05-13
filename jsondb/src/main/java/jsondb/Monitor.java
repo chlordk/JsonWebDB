@@ -92,21 +92,37 @@ public class Monitor extends Thread
          if (trx && (now - lastTrxUsed.getTime() > trxtmout))
          {
             Config.logger().info("rollback "+session.guid());
-            session.rollback();
+            session = Session.get(session.guid());
+
+            if (session != null)
+            {
+               try {session.rollback();}
+               finally {session.down();}
+            }
          }
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
             Config.logger().info("release "+session.guid());
             session = Session.get(session.guid());
-            session.release();
+
+            if (session != null)
+            {
+               try {session.release();}
+               finally {session.down();}
+            }
          }
 
-         if (now - lastUsed.getTime() > trxtmout)
+         if (now - lastUsed.getTime() > sestmout)
          {
-            Config.logger().info("disconnect "+session.guid());
+            Config.logger().info("remove "+session.guid());
             session = Session.get(session.guid());
-            session.disconnect();
+            
+            if (session != null)
+            {
+               try {session.disconnect();}
+               finally {session.down();}
+            }
          }
       }
    }

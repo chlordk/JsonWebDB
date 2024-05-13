@@ -97,11 +97,12 @@ public class State
    {
       synchronized(getLock(guid))
       {
-         Session session = sessions.get(guid);  
+         Session session = sessions.get(guid);
 
          if (session == null) return(true);
          if (session.clients() != 1) return(false);
 
+         sessions.remove(guid);
          HashSet<String> sescurs = cursesmap.remove(guid);
 
          if (sescurs != null) for(String cursid : sescurs)

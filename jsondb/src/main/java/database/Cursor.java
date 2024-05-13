@@ -272,16 +272,22 @@ public class Cursor
 
    public void close()
    {
-      close(true);
+      close(true,true);
    }
 
 
    public void offline()
    {
-      close(false);
+      close(false,false);
    }
 
-   private void close(boolean delete)
+
+   public void release()
+   {
+      close(true,false);
+   }
+
+   private void close(boolean delete, boolean remove)
    {
       eof = true;
       inuse = false;
@@ -304,8 +310,11 @@ public class Cursor
          catch (Exception e) {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
 
-      try {State.removeCursor(this);} catch (Exception e)
-      {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      if (remove)
+      {
+         try {State.removeCursor(this);} catch (Exception e)
+         {Config.logger().log(Level.SEVERE,e.toString(),e);}
+      }
    }
 
 

@@ -32,3 +32,4 @@ TRANSFER_SESSION           = Transfer {%1} to this instance
 NOT_SESSION_OWNER          = {%1} is owned by '{%2}'
 SESSION_REINSTATED         = {%1} reinstated
 DISC_WITH_CLIENTS          = {%1} will be closed with active clients {%2}
+END_TRX_MULTI_CLIENTS      = Perform {%1} with multiple clients '{%2}'

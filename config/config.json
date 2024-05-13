@@ -22,8 +22,8 @@
    ,
    "session":
    {
-		"session-timeout": 900,
-		"connection-timeout": 60,
+		"session-timeout": 60,
+		"connection-timeout": 45,
 		"transaction-timeout": 30
    }
 	,
@@ -31,8 +31,8 @@
 	{
 		"cluster":
 		[
-			{"instance": "local01" , "port": 6001, "ssl": 6002},			
-			{"instance": "local02" , "port": 6003, "ssl": 6004}			
+			{"instance": "local01" , "port": 6001, "ssl": 6002},
+			{"instance": "local02" , "port": 6003, "ssl": 6004}
 		]
 		,
 		"queue-length": 16,

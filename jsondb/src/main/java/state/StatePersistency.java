@@ -413,6 +413,7 @@ public class StatePersistency
             if (now - session.lastModified() > timeout)
             {
                File folder = session.getParentFile();
+               Config.logger().info("remove "+file.getName());
 
                File[] content = folder.listFiles();
                for(File child : content) child.delete();

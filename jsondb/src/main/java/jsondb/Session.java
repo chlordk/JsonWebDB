@@ -153,7 +153,6 @@ public class Session
    {
       synchronized(SYNC)
       { clients--; }
-      System.out.println("down: "+guid+" "+clients);
       return(this);
    }
 
@@ -307,7 +306,7 @@ public class Session
       }
 
       for(Cursor curs : cursors)
-         curs.close();
+         curs.release();
 
       if (wconn != null)
       {
@@ -331,6 +330,12 @@ public class Session
 
    public synchronized boolean commit() throws Exception
    {
+      synchronized(SYNC)
+      {
+         if (clients != 1)
+            Config.logger().warning(Messages.get("END_TRX_MULTI_CLIENTS","commit",guid));
+      }
+
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
@@ -353,6 +358,12 @@ public class Session
 
    public synchronized boolean rollback() throws Exception
    {
+      synchronized(SYNC)
+      {
+         if (clients != 1)
+            Config.logger().warning(Messages.get("END_TRX_MULTI_CLIENTS","rollback",guid));
+      }
+
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
