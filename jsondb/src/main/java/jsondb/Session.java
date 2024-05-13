@@ -97,7 +97,13 @@ public class Session
 
    public static boolean remove(Session session)
    {
-      return(State.removeSession(session.guid,1));
+      if (State.removeSession(session.guid,1))
+      {
+         StatePersistency.removeSession(session.guid);
+         return(true);
+      }
+
+      return(false);
    }
 
 
