@@ -29,7 +29,6 @@ import java.net.URL;
 import java.io.File;
 import jsondb.Config;
 import jsondb.JsonDB;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import java.security.KeyStore;
 import java.io.FilenameFilter;
@@ -50,9 +49,6 @@ public class Server
    private static final String SECTION = "embedded";
    private static final String SECURITY = "security";
    private static final String KEYSTORE = "keystore";
-
-   private static final String CLUSTER = "cluster";
-   private static final String INSTANCE = "instance";
 
    private static final String PORT = "port";
    private static final String SSLPORT = "ssl";

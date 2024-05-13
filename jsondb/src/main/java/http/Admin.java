@@ -115,13 +115,13 @@ public class Admin
 
       stats.put("pid",pid);
       stats.put("instance",inst);
-      stats.put("server",server);
       stats.put("totmem", ((int) (totmem /M))+"M");
       stats.put("freemem",((int) (freemem/M))+"M");
       stats.put("usedmem",((int) (usedmem/M))+"M");
       stats.put("uptime",days+" days, "+hours+" hours");
-      stats.put("file requests",JsonDB.getFileRequests());
-      stats.put("jsondb requests",JsonDB.getJsonRequests());
+      stats.put("file-requests",JsonDB.getFileRequests());
+      stats.put("jsondb-requests",JsonDB.getJsonRequests());
+      stats.put("server-endpoint",server);
 
       return(new AdminResponse(stats.toString(2)).setHeader("Last-Modified",GMTDate.format()));
    }

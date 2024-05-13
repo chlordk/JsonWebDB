@@ -56,8 +56,6 @@ public class StatePersistency
 
    public static void initialize() throws Exception
    {
-      FileOutputStream pf = null;
-
       StatePersistency.inst = Config.inst();
       StatePersistency.path = Config.path(STATE);
       StatePersistency.pid = ProcessHandle.current().pid();
@@ -95,12 +93,12 @@ public class StatePersistency
                String inst = file.getName();
                inst = inst.substring(0,inst.length()-PID.length()-1);
 
-               FileInputStream in = new FileInputStream(file);
-               String pid = new String(in.readAllBytes()); in.close();
+               ServerInfo info = getServerInfo(inst);
 
                JSONOObject entry = new JSONOObject();
+               entry.put("process#",info.pid);
                entry.put("instance",inst);
-               entry.put("process#",pid);
+               entry.put("endpoint",info.endp);
                processes.put(entry);
             }
          }

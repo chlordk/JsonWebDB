@@ -10,7 +10,7 @@
 			"admin": "/admin",
 			"username": "admin",
 			"password": "Manager1",
-			"ssl-required": true
+			"ssl-required": false
 		}
    }
 	,
@@ -29,7 +29,7 @@
 				"embedded": true,
 				"queue-length": 16,
 				"worker-threads": 16,
-				"endpoint": "https://{host}:{ssl}"
+				"endpoint": "http://{host}:{port}"
 			}
 		]
 		,
