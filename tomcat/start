@@ -34,7 +34,7 @@ docker run -dit --name $NAME \
  -e TZ=Europe/Copenhagen \
  -e JsonWebDB_Inst=$INST \
  -e JsonWebDB_Home=/jsonwebdb \
- -e JsonWebDB_Config=docker.json \
+ -e JsonWebDB_Config=config.json \
  -v /Users/alhof/Repository/JsonWebDB:/jsonwebdb \
  -v /Users/alhof/Repository/forms42/demo/dist:/dist \
 jsonwebdb

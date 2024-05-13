@@ -50,7 +50,7 @@
 			{
 				"type": "docker",
 				"name": "docker01",
-				"port": 8002, "ssl": 8003
+				"port": 8001, "ssl": 8002
 			}
 			,
 			{
