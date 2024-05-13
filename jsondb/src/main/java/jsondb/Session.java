@@ -97,7 +97,7 @@ public class Session
 
    public static boolean remove(Session session)
    {
-      if (State.removeSession(session.guid,1))
+      if (State.removeSession(session.guid))
       {
          StatePersistency.removeSession(session.guid);
          return(true);
@@ -264,7 +264,7 @@ public class Session
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
-      if (!State.removeSession(guid,0))
+      if (!State.removeSession(guid))
       {
          Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
          return(false);
@@ -300,7 +300,7 @@ public class Session
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
-      if (!State.removeSession(guid,1))
+      if (!State.removeSession(guid))
       {
          Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
          return(false);

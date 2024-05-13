@@ -93,14 +93,14 @@ public class State
    }
 
 
-   public static boolean removeSession(String guid, int clients)
+   public static boolean removeSession(String guid)
    {
       synchronized(getLock(guid))
       {
-         Session session = sessions.get(guid);
+         Session session = sessions.get(guid);  
 
          if (session == null) return(true);
-         if (session.clients() != clients) return(false);
+         if (session.clients() != 1) return(false);
 
          HashSet<String> sescurs = cursesmap.remove(guid);
 

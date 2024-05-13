@@ -82,6 +82,7 @@ public class Monitor extends Thread
    {
       for(Session session : state.State.sessions())
       {
+         Date lastUsed = session.lastUsed();
          Date lastTrxUsed = session.lastUsedTrx();
          Date lastConnUsed = session.lastUsedConn();
 
@@ -97,7 +98,15 @@ public class Monitor extends Thread
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
             Config.logger().info("release "+session.guid());
+            session = Session.get(session.guid());
             session.release();
+         }
+
+         if (now - lastUsed.getTime() > trxtmout)
+         {
+            Config.logger().info("disconnect "+session.guid());
+            session = Session.get(session.guid());
+            session.disconnect();
          }
       }
    }
