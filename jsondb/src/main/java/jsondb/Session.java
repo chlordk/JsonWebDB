@@ -90,13 +90,14 @@ public class Session
    {
       String guid = StatePersistency.createSession(user,stateful);
       Session session = new Session(guid,user,stateful);
+      State.addSession(session);
       return(session);
    }
 
 
    public static boolean remove(Session session)
    {
-      return(State.removeSession(session.guid));
+      return(State.removeSession(session.guid,1));
    }
 
 
@@ -136,18 +137,18 @@ public class Session
       return(this);
    }
 
+   public int clients()
+   {
+      synchronized(SYNC)
+      {return(clients);}
+   }
+
    public Session down()
    {
       synchronized(SYNC)
       { clients--; }
       System.out.println("down: "+guid+" "+clients);
       return(this);
-   }
-
-   public boolean hasClients()
-   {
-      synchronized(SYNC)
-      {return(clients > 0);}
    }
 
    public String guid()
@@ -255,11 +256,13 @@ public class Session
 
    public synchronized boolean release() throws Exception
    {
-      synchronized(SYNC)
-      {System.out.println("release clients "+clients);}
+      ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
-      synchronized(SYNC)
-      {if (clients > 0) return(false);}
+      if (!State.removeSession(guid,0))
+      {
+         Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
+         return(false);
+      }
 
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
@@ -267,8 +270,8 @@ public class Session
       if (this.trxused != null) return(false);
       if (curr - used < idle*1000) return(false);
 
-      ArrayList<Cursor> cursors = State.getAllCursors(guid);
-      for (Cursor cursor : cursors) cursor.offline();
+      for (Cursor cursor : cursors)
+         cursor.offline();
 
       if (wconn != null && wconn.isConnected())
       {
@@ -283,22 +286,22 @@ public class Session
       }
 
       StatePersistency.releaseSession(this.guid,this.user,this.stateful);
-      State.removeSession(guid);
-
       return(true);
    }
 
 
    public synchronized boolean disconnect()
    {
-      synchronized(SYNC)
+      ArrayList<Cursor> cursors = State.getAllCursors(guid);
+
+      if (!State.removeSession(guid,1))
       {
-         if (clients != 1)
-            Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
+         Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
+         return(false);
       }
 
-      ArrayList<Cursor> cursors = State.getAllCursors(guid);
-      for(Cursor curs : cursors) curs.close();
+      for(Cursor curs : cursors)
+         curs.close();
 
       if (wconn != null)
       {
@@ -315,7 +318,6 @@ public class Session
       }
 
       boolean success = StatePersistency.removeSession(guid);
-      State.removeSession(guid);
 
       return(success);
    }

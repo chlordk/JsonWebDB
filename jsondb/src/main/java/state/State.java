@@ -93,21 +93,21 @@ public class State
    }
 
 
-   // Cannot remove session if open-cursors
-   public static boolean removeSession(String guid)
+   public static boolean removeSession(String guid, int clients)
    {
       synchronized(getLock(guid))
       {
          Session session = sessions.get(guid);
-         if (session == null) return(true);
 
-         synchronized(session)
-         {
-            HashSet<String> sescurs = cursesmap.get(guid);
-            if (sescurs != null) return(false);
-            sessions.remove(guid);
-            return(true);
-         }
+         if (session == null) return(true);
+         if (session.clients() != clients) return(false);
+
+         HashSet<String> sescurs = cursesmap.remove(guid);
+
+         if (sescurs != null) for(String cursid : sescurs)
+            cursors.remove(cursid);
+
+         return(true);
       }
    }
 
@@ -175,6 +175,7 @@ public class State
       synchronized(session)
       {
          HashSet<String> sescurs = cursesmap.get(sessid);
+         if (sescurs == null) return(cursors);
 
          for(String cursid : sescurs)
          {
