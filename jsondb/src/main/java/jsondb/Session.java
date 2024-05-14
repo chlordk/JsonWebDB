@@ -40,7 +40,8 @@ import state.StatePersistency.TransactionInfo;
 
 public class Session
 {
-   private final int idle;
+   private String inst;
+
    private final String guid;
    private final String user;
 
@@ -113,12 +114,12 @@ public class Session
    {
       this.guid = info.guid;
       this.user = info.user;
+      this.inst = info.inst;
 
       this.stateful = info.stateful;
 
       this.used = new Date();
       this.pool = Config.pool();
-      this.idle = Config.conTimeout();
 
       this.forward = info.online && !info.owner;
    }
@@ -133,8 +134,8 @@ public class Session
       this.stateful = stateful;
 
       this.used = new Date();
+      this.inst = Config.inst();
       this.pool = Config.pool();
-      this.idle = Config.conTimeout();
    }
 
    public Session up()
@@ -155,6 +156,11 @@ public class Session
       synchronized(SYNC)
       { clients--; }
       return(this);
+   }
+
+   public String inst()
+   {
+      return(inst);
    }
 
    public String guid()
@@ -198,8 +204,13 @@ public class Session
 
    public synchronized void transfer() throws Exception
    {
-      Config.logger().info(Messages.get("TRANSFER_SESSION",guid));
+      boolean move = this.inst.equals(Config.inst());
+
+      if (!move) Config.logger().info(Messages.get("SESSION_REINSTATED",guid));
+      else Config.logger().info(Messages.get("TRANSFER_SESSION",guid,this.inst));
+
       StatePersistency.transferSession(guid,this.user,this.stateful);
+      this.inst = Config.inst();
    }
 
    public synchronized boolean touch() throws Exception
@@ -255,7 +266,7 @@ public class Session
    }
 
 
-   public synchronized boolean release() throws Exception
+   public synchronized boolean release(int idle) throws Exception
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
@@ -326,12 +337,6 @@ public class Session
 
    public synchronized boolean commit() throws Exception
    {
-      synchronized(SYNC)
-      {
-         if (clients != 1)
-            Config.logger().warning(Messages.get("END_TRX_MULTI_CLIENTS","commit",guid));
-      }
-
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
@@ -354,12 +359,6 @@ public class Session
 
    public synchronized boolean rollback() throws Exception
    {
-      synchronized(SYNC)
-      {
-         if (clients != 1)
-            Config.logger().warning(Messages.get("END_TRX_MULTI_CLIENTS","rollback",guid));
-      }
-
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 

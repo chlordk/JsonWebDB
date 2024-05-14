@@ -94,7 +94,10 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       getCommonProps(secdef,sec);
 
       if (def.has(DRIVER))
-         sec.setDriverClassName(def.getString(DRIVER));
+      {
+         String drv = def.getString(DRIVER);
+         Class.forName(drv); sec.setDriverClassName(drv);
+      }
 
       if (def.has(CLASSES))
       {

@@ -108,8 +108,8 @@ public class Monitor extends Thread
 
             if (session != null)
             {
-               try {session.release();}
-               finally {session.down();}
+               try {session.release(contmout);}
+                 finally {session.down();}
             }
          }
 
@@ -117,7 +117,7 @@ public class Monitor extends Thread
          {
             Config.logger().info("remove "+session.guid());
             session = Session.get(session.guid());
-            
+
             if (session != null)
             {
                try {session.disconnect();}

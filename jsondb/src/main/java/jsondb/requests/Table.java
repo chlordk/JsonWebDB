@@ -145,7 +145,7 @@ public class Table
 
       try
       {
-         Forward fw = Forward.redirect(session,definition);
+         Forward fw = Forward.redirect(session,"Table",definition);
          if (fw != null) return(new Response(fw.response()));
          return(select(session));
       }
@@ -163,7 +163,7 @@ public class Table
       TableSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,definition);
+      Forward fw = Forward.redirect(session,"Table",definition);
       if (fw != null) return(new Response(fw.response()));
 
       return(select(session,source));

@@ -63,8 +63,8 @@
 	,
    "session":
    {
-		"session-timeout": 60,
-		"connection-timeout": 45,
+		"session-timeout": 600,
+		"connection-timeout": 60,
 		"transaction-timeout": 30
    }
 	,
@@ -111,7 +111,7 @@
 			"max-wait": 10000,
 			"validate": 30000,
 
-			"jdbc-url": "jdbc:postgresql://localhost:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
 		,
 		"secondary":
@@ -122,7 +122,7 @@
 			"max-wait": 10000,
 			"validate": 30000,
 
-			"jdbc-url": "jdbc:postgresql://localhost:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 		}
    }
    ,

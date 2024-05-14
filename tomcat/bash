@@ -1,5 +1,5 @@
 ARGS=$#
-INST="inst01"
+INST="docker01"
 
 if [[ ARGS -gt 0 ]]
 then

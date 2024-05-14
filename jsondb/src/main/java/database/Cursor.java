@@ -30,6 +30,7 @@ import state.State;
 import java.sql.Date;
 import jsondb.Config;
 import jsondb.Session;
+import messages.Messages;
 import utils.JSONOObject;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -72,7 +73,7 @@ public class Cursor
       CursorInfo info = StatePersistency.getCursor(guid,cursid);
       if (info == null) return(null);
 
-      Config.logger().info("Reinstate cursor "+cursid);
+      Config.logger().info(Messages.get("REINSTATE_CURSOR",cursid));
 
       String sql = info.json.getString("query");
 

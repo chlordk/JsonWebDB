@@ -24,25 +24,63 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import http.Client;
+import jsondb.Config;
 import jsondb.Session;
+import utils.JSONOObject;
 import org.json.JSONObject;
+
+import state.State;
+import state.StatePersistency;
+import java.util.logging.Level;
+import state.StatePersistency.ServerInfo;
 
 
 public class Forward
 {
-   public static Forward redirect(Session session, JSONObject definition) throws Exception
+   private final JSONObject response;
+
+   public static Forward redirect(Session session, String object, JSONObject definition) throws Exception
    {
       if (session.forward())
       {
-         System.out.println("redirect");
+         JSONObject response = invoke(session,object,definition);
+         if (response != null) return(new Forward(response));
       }
 
       return(null);
    }
 
 
+   private static JSONObject invoke(Session session, String object, JSONObject definition) throws Exception
+   {
+      String request = "{\""+object+"\": "+definition.toString()+"}";
+      ServerInfo info = StatePersistency.getServerInfo(session.inst());
+
+      try
+      {
+         Client client = new Client(info.endp);
+         byte[] bytes = client.post(request);
+         return(new JSONOObject(new String(bytes)));
+      }
+      catch (Throwable t)
+      {
+         Config.logger().log(Level.WARNING,t.toString(),t);
+         session.transfer(); State.addSession(session);
+      }
+
+      return(null);
+   }
+
+
+   private Forward(JSONObject response)
+   {
+      this.response = response;
+   }
+
+
    public JSONObject response()
    {
-      return(null);
+      return(response);
    }
 }
