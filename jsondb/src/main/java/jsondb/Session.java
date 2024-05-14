@@ -70,11 +70,7 @@ public class Session
          session = new Session(info);
 
          if (info.online && !info.owner)
-         {
-            // Session must be validated before accepted
             Config.logger().info(Messages.get("NOT_SESSION_OWNER",guid,info.inst));
-            return(session);
-         }
 
          if (!info.online)
          {

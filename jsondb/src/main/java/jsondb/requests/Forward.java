@@ -61,12 +61,13 @@ public class Forward
       {
          Client client = new Client(info.endp);
          byte[] bytes = client.post(request);
+         State.removeSession(session.guid());
          return(new JSONOObject(new String(bytes)));
       }
       catch (Throwable t)
       {
          Config.logger().log(Level.WARNING,t.toString(),t);
-         session.transfer(); State.addSession(session);
+         session.transfer();
       }
 
       return(null);
