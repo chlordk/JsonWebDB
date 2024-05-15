@@ -203,15 +203,13 @@ public class Cursor
 
       for (int i = 0; i < cols; i++)
       {
-         int sqltype = meta.getColumnType(i+1);
-
+         int type = meta.getColumnType(i+1);
          String name = meta.getColumnName(i+1);
-         String type = meta.getColumnTypeName(i+1);
 
          int scale = meta.getScale(i+1);
          int precs = meta.getPrecision(i+1);
 
-         columns.add(new Column(name,type,sqltype,precs,scale));
+         columns.add(new Column(name,type,precs,scale));
       }
 
       return(columns);

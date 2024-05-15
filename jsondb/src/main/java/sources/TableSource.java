@@ -61,8 +61,7 @@ public class TableSource extends Source
    public final QuerySource query;
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
-
-   public HashMap<String,Column> columns;
+   public final HashMap<String,Column> columns = new HashMap<String,Column>();
 
 
    public TableSource(JSONObject definition) throws Exception
@@ -103,7 +102,8 @@ public class TableSource extends Source
 
    public boolean described()
    {
-      return(columns != null);
+      synchronized(this.columns)
+      {return(this.columns.size() > 0);}
    }
 
    public Column getColumn(String column)
@@ -121,9 +121,14 @@ public class TableSource extends Source
 
    public void setColumns(ArrayList<Column> columns)
    {
-      HashMap<String,Column> index = new HashMap<String,Column>();
-      for(Column column : columns) index.put(column.name.toLowerCase(),column);
-      this.columns = index;
+      synchronized(this.columns)
+      {
+         if (this.columns.size() == 0)
+         {
+            for(Column column : columns)
+               this.columns.put(column.name.toLowerCase(),column);
+         }
+      }
    }
 
    public SQLPart from(HashMap<String,BindValue> bindvalues)

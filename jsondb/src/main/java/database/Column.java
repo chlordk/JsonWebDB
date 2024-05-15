@@ -28,29 +28,24 @@ import utils.JSONOObject;
 import org.json.JSONObject;
 
 
-public class Column
+public class Column extends DataType
 {
-   public final int sqltype;
-   public final String type;
-   public final String name;
    public final Integer[] precision;
 
-   Column(String name, String type, int sqltype, int prec, int scale)
+   Column(String name, int sqlid, int prec, int scale)
    {
-      this.type = type;
-      this.name = name;
-      this.sqltype = sqltype;
+      super(name,sqlid);
       this.precision = new Integer[] {prec,scale};
    }
 
    public boolean isDateType()
    {
-      return(SQLTypes.isDateType(sqltype));
+      return(SQLTypes.isDateType(sqlid));
    }
 
    public String toString()
    {
-      return(name+" "+type+"["+sqltype+"] ["+precision[0]+","+precision[1]+"]");
+      return(name+" "+type+"["+sqlid+"] ["+precision[0]+","+precision[1]+"]");
    }
 
    public JSONObject toJSONObject()
@@ -58,7 +53,7 @@ public class Column
       JSONObject json = new JSONOObject();
       json.put("name",name);
       json.put("type",type);
-      json.put("sqltype",sqltype);
+      json.put("sqltype",sqlid);
       json.put("precision",precision);
       return(json);
    }

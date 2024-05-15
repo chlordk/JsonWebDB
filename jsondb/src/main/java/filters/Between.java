@@ -25,7 +25,7 @@ SOFTWARE.
 package filters;
 
 import sources.Source;
-import database.Column;
+import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -60,12 +60,12 @@ public class Between extends Filter
          if (source instanceof TableSource)
          {
             TableSource ts = (TableSource) source;
-            Column coldef = ts.getColumn(column);
+            DataType coldef = ts.getColumn(column);
 
             if (coldef != null)
             {
-               bv1.type(coldef.sqltype);
-               bv2.type(coldef.sqltype);
+               bv1.type(coldef.sqlid);
+               bv2.type(coldef.sqlid);
             }
          }
       }
