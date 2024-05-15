@@ -40,6 +40,7 @@ import database.BindValue;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import filters.GreaterThan;
+import java.util.Collections;
 import filters.LessThanEquals;
 import filters.GreaterThanEquals;
 
@@ -52,6 +53,20 @@ public abstract class Filter
    private final static String VALUES = "values";
    private final static String COLUMNS = "columns";
 
+   public static void main(String[] args)
+   {
+      ArrayList<String> flts = new ArrayList<String>();
+
+      for(String flt : classes.keySet())
+         flts.add(flt.replace("not","not "));
+
+      Collections.sort(flts);
+
+      for(String flt : flts)
+         System.out.println(flt);
+   }
+
+   
    private static final HashMap<String,Class<?>> classes =
       new HashMap<String,Class<?>>()
       {{

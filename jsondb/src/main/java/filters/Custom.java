@@ -50,7 +50,7 @@ public class Custom extends Filter
          if (source instanceof TableSource)
          {
             TableSource ts = (TableSource) source;
-            CustomFilter f = ts.filters.get(custom);
+            CustomFilter f = ts.filters.get(custom.toLowerCase());
 
             HashMap<String,BindValue> bindings =
                new HashMap<String,BindValue>();
