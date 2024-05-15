@@ -74,12 +74,33 @@ public class WhereClause
       return(whcl);
    }
 
+
+   public SQLPart append(WhereClause append)
+   {
+      if (append == null)
+         return(this.asSQL());
+
+      SQLPart p1 = this.asSQL();
+      SQLPart p2 = append.asSQL();
+
+      if (!this.exists()) return(append.asSQL());
+      if (!append.exists()) return(this.asSQL());
+
+      String sql = p1.snippet() + p2.snippet().replaceFirst("where","and");
+      ArrayList<BindValue> bindvalues = p1.bindValues();
+      bindvalues.addAll(p1.bindValues());
+
+      return(new SQLPart(sql,bindvalues));
+   }
+
+
    private SQLPart build() throws Exception
    {
       this.clause = new Clause(source,filters);
       this.clause.root = true; this.clause.build();
       return(new SQLPart("\nwhere "+clause.sql,clause.bindvalues));
    }
+
 
 
    private static class Clause

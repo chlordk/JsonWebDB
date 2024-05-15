@@ -262,6 +262,17 @@ public class Session
    }
 
 
+   public synchronized boolean removeForeign() throws Exception
+   {
+      if (this.inst.equals(Config.inst()))
+         return(false);
+
+      if (wconn != null || rconn != null)
+         return(false);
+
+      return(State.removeSession(guid));
+   }
+
    public synchronized boolean release(int idle) throws Exception
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);

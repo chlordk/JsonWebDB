@@ -50,10 +50,13 @@ public class Table
    private final JSONObject definition;
 
    private static final String ORDER = "order";
+   private static final String VALUE = "value";
    private static final String SOURCE = "source";
+   private static final String COLUMN = "column";
    private static final String CURSOR = "cursor";
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
+   private static final String FILTERS = "filters";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
@@ -186,8 +189,6 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
 
-      Assertion ass = Assertion.parse(args);
-
       Boolean usecurs = Misc.get(args,CURSOR);
       if (usecurs == null) usecurs = true;
 
@@ -202,6 +203,7 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
+      Assertion assrt = Assertion.parse(source,args);
       WhereClause whcl = new WhereClause(source,args);
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
@@ -210,7 +212,10 @@ public class Table
       if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
          throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
 
-      select.append(whcl.asSQL());
+      SQLPart wh = whcl.asSQL();
+      wh = whcl.append(assrt.whcl());
+
+      select.append(wh);
 
       if (source.vpd != null && source.vpd.appliesTo("select"))
       {
@@ -249,12 +254,51 @@ public class Table
 
    private static class Assertion
    {
-      static Assertion parse(JSONObject def)
+      private final WhereClause whcl;
+
+
+      static Assertion parse(TableSource source, JSONObject def) throws Exception
       {
          if (!def.has(ASSERTIONS))
-            return(null);
+            return(new Assertion(null));
 
-         return(null);
+         JSONObject ass = null;
+         JSONArray asserts = null;
+
+         JSONArray filters = new JSONArray();
+         JSONObject filterdef = new JSONObject().put(FILTERS,filters);
+
+
+         asserts = def.getJSONArray(ASSERTIONS);
+
+         for (int i = 0; i < asserts.length(); i++)
+         {
+            ass = asserts.getJSONObject(i);
+
+            Object value = ass.get(VALUE);
+            String column = ass.getString(COLUMN);
+
+            JSONObject filter = new JSONObject();
+
+            filter.put("value",value);
+            filter.put("column",column);
+            filter.put("filter","equals");
+
+            filters.put(filter);
+         }
+
+         WhereClause whcl = new WhereClause(source,filterdef);
+         return(new Assertion(whcl));
+      }
+
+      Assertion(WhereClause whcl)
+      {
+         this.whcl = whcl;
+      }
+
+      WhereClause whcl()
+      {
+         return(this.whcl);
       }
    }
 }
