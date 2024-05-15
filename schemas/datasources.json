@@ -125,8 +125,17 @@
 
          "properties":
          {
-            "sql": {"$ref": "#/types/Text"},
-            "datatypes": {"object": "array", "items": {"$ref": "#/types/DataType"}}
+            "sql":
+            {
+               "$ref": "#/types/Text",
+               "description": "select statement"
+            },
+            "datatypes":
+            {
+               "object": "array",
+               "items": {"$ref": "#/types/DataType"},
+               "description": "All bindvalues must be defined"
+            }
          }
       }
       ,
