@@ -88,7 +88,7 @@ public class WhereClause
 
       String sql = p1.snippet() + p2.snippet().replaceFirst("where","and");
       ArrayList<BindValue> bindvalues = p1.bindValues();
-      bindvalues.addAll(p1.bindValues());
+      bindvalues.addAll(p2.bindValues());
 
       return(new SQLPart(sql,bindvalues));
    }
@@ -249,7 +249,7 @@ public class WhereClause
             for (int i = 0; i < group.length; i++)
             {
                if (group[i].type != null)
-                  sql += "\n"+group[i].type+"\n";
+                  sql += "\n"+group[i].type+" ";
 
                if (group[i].isGroup()) sql += group[i].build();
                else

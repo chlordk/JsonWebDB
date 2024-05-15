@@ -280,9 +280,9 @@ public class Table
 
             JSONObject filter = new JSONObject();
 
-            filter.put("value",value);
             filter.put("column",column);
-            filter.put("filter","equals");
+            filter.put("filter","=");
+            filter.put("value",value);
 
             filters.put(filter);
          }
