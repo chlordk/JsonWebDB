@@ -103,7 +103,7 @@
                      "assertions":
                      {
                         "type": "array",
-                        "items": {"$ref": "#/types/NameValuePair"}
+                        "items": {"$ref": "#/types/Assertion"}
                      }
                      ,
                      "savepoint":
@@ -136,7 +136,7 @@
                      "assertions":
                      {
                         "type": "array",
-                        "items": {"$ref": "#/types/NameValuePair"}
+                        "items": {"$ref": "#/types/Assertion"}
                      }
                      ,
                      "savepoint":
@@ -183,7 +183,7 @@
                      "assertions":
                      {
                         "type": "array",
-                        "items": {"$ref": "#/types/NameValuePair"}
+                        "items": {"$ref": "#/types/Assertion"}
                      }
                      ,
                      "cursor":
@@ -223,6 +223,19 @@
       ,
       "types":
       {
+         "Assertion":
+         {
+            "type": "object",
+            "required": ["column","value"],
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "column": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
+         }
+         ,
          "NameValuePair":
          {
             "type": "object",

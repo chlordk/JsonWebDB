@@ -41,6 +41,9 @@ public class WhereClause
    private Source source;
    private Clause clause;
    private JSONArray filters;
+
+   private static final String FILTER = "filter";
+   private static final String CUSTOM = "custom";
    private static final String FILTERS = "filters";
 
 
@@ -256,9 +259,8 @@ public class WhereClause
       {
          String name = null;
 
-         if (def.has("custom")) name = "custom";
-         else if (def.has("op")) name = def.getString("op");
-         else if (def.has("operator")) name = def.getString("operator");
+         if (def.has(CUSTOM)) name = CUSTOM;
+         else if (def.has(FILTER)) name = def.getString(FILTER);
 
          if (name == null)
             throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));
