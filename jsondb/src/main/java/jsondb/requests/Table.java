@@ -58,6 +58,7 @@ public class Table
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
    private static final String FORUPDATE = "for-update";
+   private static final String ASSERTIONS = "assertions";
 
 
    public Table(JSONObject definition) throws Exception
@@ -185,6 +186,8 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
 
+      Assertion ass = Assertion.parse(args);
+
       Boolean usecurs = Misc.get(args,CURSOR);
       if (usecurs == null) usecurs = true;
 
@@ -241,5 +244,17 @@ public class Table
       for(Object[] row : table) rows.put(row);
 
       return(new Response(response));
+   }
+
+
+   private static class Assertion
+   {
+      static Assertion parse(JSONObject def)
+      {
+         if (!def.has(ASSERTIONS))
+            return(null);
+
+         return(null);
+      }
    }
 }
