@@ -22,12 +22,17 @@
 package database;
 
 import jsondb.Config;
+
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.HashSet;
 import messages.Messages;
 import java.util.logging.Level;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 
 public class SQLTypes
@@ -91,6 +96,68 @@ public class SQLTypes
       String name = sqlids.get(id);
       if (name == null) name = "varchar";
       return(name);
+   }
+
+   public static int guessType(Object value)
+   {
+      Integer sqlid = null;
+
+      if (value instanceof Short)
+      {
+         sqlid = sqlnames.get("smallint");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof Integer)
+      {
+         sqlid = sqlnames.get("integer");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof Long)
+      {
+         sqlid = sqlnames.get("bigint");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof BigInteger)
+      {
+         sqlid = sqlnames.get("bigint");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof Float)
+      {
+         sqlid = sqlnames.get("float");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof Double)
+      {
+         sqlid = sqlnames.get("double");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof BigDecimal)
+      {
+         sqlid = sqlnames.get("decimal");
+         if (sqlid == null) sqlid = getType("numeric");
+      }
+
+      else if (value instanceof Date)
+      {
+         sqlid = sqlnames.get("date");
+      }
+
+      else if (value instanceof Timestamp)
+      {
+         sqlid = sqlnames.get("timestamp");
+      }
+
+      if (sqlid == null)
+         sqlid = getType("varchar");
+
+      return(sqlid);
    }
 
    public static boolean isDateType(int id)

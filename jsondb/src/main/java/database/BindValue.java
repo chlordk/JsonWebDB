@@ -149,7 +149,10 @@ public class BindValue
    public void validate() throws Exception
    {
       if (type == null)
+      {
+         type = SQLTypes.guessType(value);
          Config.logger().warning(Messages.get("NO_DATATYPE_SPECIFIED",this.name));
+      }
 
       if (SQLTypes.isDateType(type))
          this.value = Dates.convert(value);
