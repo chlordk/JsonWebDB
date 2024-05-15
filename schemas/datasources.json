@@ -134,7 +134,7 @@
             {
                "object": "array",
                "items": {"$ref": "#/types/DataType"},
-               "description": "All bindvalues must be defined"
+               "description": "All bindvalues must be defined. As the query has not been parsed at this stage"
             }
          }
       }
