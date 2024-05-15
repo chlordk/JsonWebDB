@@ -65,7 +65,10 @@ public abstract class Filter
          @Override
          public int compare(String s1, String s2)
          {
-            return(s1.length() - s2.length());
+            if (s1.length() != s2.length())
+               return(s1.length() - s2.length());
+
+            return(s1.compareTo(s2));
          }
       });
 

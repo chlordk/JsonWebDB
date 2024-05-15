@@ -205,6 +205,12 @@ public class Config
       return(logger);
    }
 
+   /** Set the logger */
+   public static void logger(Logger logger)
+   {
+      Config.logger = logger;
+   }
+
    /** The instance config */
    public static JSONObject instance()
    {

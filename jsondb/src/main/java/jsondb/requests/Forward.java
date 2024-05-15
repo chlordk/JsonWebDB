@@ -29,8 +29,6 @@ import jsondb.Config;
 import jsondb.Session;
 import utils.JSONOObject;
 import org.json.JSONObject;
-
-import state.State;
 import state.StatePersistency;
 import java.util.logging.Level;
 import state.StatePersistency.ServerInfo;

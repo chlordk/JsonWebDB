@@ -30,16 +30,21 @@ import java.io.File;
 import jsondb.Config;
 import java.util.Date;
 import java.util.HashMap;
+import database.SQLTypes;
 import org.json.JSONArray;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.nio.file.WatchKey;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.FileInputStream;
 import java.nio.file.WatchEvent;
 import java.nio.file.FileSystems;
 import java.nio.file.WatchService;
+import database.implementations.DatabaseType;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 
@@ -59,17 +64,13 @@ public class Sources extends Thread
    private static HashMap<String,Source> sources =
       new HashMap<String,Source>();
 
-   private static HashMap<String,Source> preload =
-      new HashMap<String,Source>();
-
    public static void main(String[] args) throws Exception
    {
-      if (args.length == 0)
-         syntax();
+      if (args.length == 0) syntax();
+      String path = Misc.url(Server.findAppHome(),CONF,SOURCES);
 
       if (args[0].equals("reload"))
       {
-         String path = Misc.url(Server.findAppHome(),CONF,SOURCES);
          File trigger = new File(path,TRIGGER);
 
          if (!trigger.exists()) trigger.createNewFile();
@@ -80,7 +81,26 @@ public class Sources extends Thread
 
       if (args[0].equals("list"))
       {
-         System.out.println("Not implemented yet");
+         SQLTypes.initialize();
+
+         Logger logger = Logger.getLogger("JsonWebDB");
+         logger.setUseParentHandlers(false); Config.logger(logger);
+
+         File root = new File(path);
+         Sources instance = new Sources();
+
+         for(DatabaseType type :  DatabaseType.values())
+         {
+            ArrayList<Source> allsrc = new ArrayList<Source>();
+            File folder = new File(root,type.name().toLowerCase());
+            HashMap<String,Source> sources = instance.loadSources(folder);
+
+            if (sources.size() == 0) continue;
+            allsrc.addAll(sources.values()); allsrc.sort(new SourceSort());
+
+            System.out.println(folder.toString());
+            for(Source src : allsrc) System.out.println(src.toString());
+         }
       }
    }
 
@@ -88,7 +108,7 @@ public class Sources extends Thread
    {
       System.out.println();
       System.out.println();
-      System.out.println("usage: sources reload|list");
+      System.out.println("usage: sources reload|list <database-folder>");
       System.out.println();
       System.exit(-1);
    }
@@ -113,7 +133,6 @@ public class Sources extends Thread
       File root = new File(Misc.url(path.toString(),dbtype));
 
       Config.logger().info("Load source definitions");
-      preload = instance.loadStatic(root);
       sources = instance.loadSources(root);
       Config.logger().info("Source definitions loaded");
 
@@ -125,7 +144,6 @@ public class Sources extends Thread
    {
       id = id.toLowerCase();
       Source source = sources.get(id);
-      if (source == null) source = preload.get(id);
       return((T) source);
    }
 
@@ -173,9 +191,13 @@ public class Sources extends Thread
       }
    }
 
+
    private HashMap<String,Source> loadSources(File root) throws Exception
    {
       HashMap<String,Source> sources = new HashMap<String,Source>();
+
+      if (!root.exists())
+         return(sources);
 
       for(File file : root.listFiles())
       {
@@ -197,26 +219,6 @@ public class Sources extends Thread
       return(sources);
    }
 
-   private HashMap<String,Source> loadStatic(File root) throws Exception
-   {
-      HashMap<String,Source> sources = new HashMap<String,Source>();
-
-      for(File file : root.getParentFile().listFiles())
-      {
-         if (file.isDirectory())
-            continue;
-
-         if (file.getName().endsWith(".json"))
-         {
-            FileInputStream in = new FileInputStream(file);
-            String content = new String(in.readAllBytes()); in.close();
-            JSONObject defs = new JSONObject(content);
-            sources.putAll(load(defs));
-         }
-      }
-
-      return(sources);
-   }
 
    private HashMap<String,Source> load(JSONObject defs) throws Exception
    {
@@ -233,5 +235,15 @@ public class Sources extends Thread
       }
 
       return(sources);
+   }
+
+
+   private static class SourceSort implements Comparator<Source>
+   {
+      @Override
+      public int compare(Source o1, Source o2)
+      {
+         return(o1.toString().compareTo(o2.toString()));
+      }
    }
 }
