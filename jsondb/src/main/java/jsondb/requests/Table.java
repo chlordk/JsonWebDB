@@ -119,6 +119,18 @@ public class Table
                Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
                source.setColumns(cursor.describe());
                cursor.close();
+
+               if (source.queryBased() && source.hasBaseObject())
+               {
+                  stmt = "select * from";
+                  select = new SQLPart(stmt);
+                  select.append(source.object);
+                  select.snippet(select.snippet()+" where 1 = 2");
+
+                  cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+                  source.setColumns(cursor.describe());
+                  cursor.close();
+               }
             }
          }
       }

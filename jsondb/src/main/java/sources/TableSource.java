@@ -47,7 +47,6 @@ public class TableSource extends Source
    private static final String QUERY = "query";
    private static final String ORDER = "order";
    private static final String OBJECT = "object";
-   private static final String DERIVED = "derived";
    private static final String PRIMARY = "primary-key";
    private static final String WHCLAUSE = "where-clause";
    private static final String CUSTOMFLTS = "custom-filters";
@@ -57,11 +56,11 @@ public class TableSource extends Source
    public final String object;
    public final Access access;
    public final VPDFilter vpd;
-   public final String[] derived;
    public final QuerySource query;
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
-   public final HashMap<String,Column> columns = new HashMap<String,Column>();
+   public final HashMap<String,Column> objcolumns = new HashMap<String,Column>();
+   public final HashMap<String,Column> qrycolumns = new HashMap<String,Column>();
 
 
    public TableSource(JSONObject definition) throws Exception
@@ -69,7 +68,6 @@ public class TableSource extends Source
       String id = getString(definition,ID,true,true);
       String order = getString(definition,ORDER,false);
       String object = getString(definition,OBJECT,false);
-      String[] derived = getStringArray(definition,DERIVED,false);
       String[] primarykey = getStringArray(definition,PRIMARY,false);
 
       id = id.toLowerCase();
@@ -84,10 +82,9 @@ public class TableSource extends Source
       this.id = id;
       this.vpd = vpd;
       this.query = query;
+      this.order = order;
       this.object = object;
       this.access = access;
-      this.order = order;
-      this.derived = derived;
       this.filters = filters;
       this.primarykey = primarykey;
 
@@ -102,31 +99,41 @@ public class TableSource extends Source
 
    public boolean described()
    {
-      synchronized(this.columns)
-      {return(this.columns.size() > 0);}
+      synchronized(this.qrycolumns)
+      {return(this.qrycolumns.size() > 0);}
+   }
+
+   public boolean queryBased()
+   {
+      return(query != null);
+   }
+
+   public boolean hasBaseObject()
+   {
+      return(object != null);
    }
 
    public Column getColumn(String column)
    {
-      return(columns.get(column.toLowerCase()));
+      return(qrycolumns.get(column.toLowerCase()));
    }
 
    public ArrayList<Column> getColumns()
    {
-      if (columns == null) return(null);
+      if (qrycolumns == null) return(null);
       ArrayList<Column> columns = new ArrayList<Column>();
-      columns.addAll(this.columns.values());
+      columns.addAll(this.qrycolumns.values());
       return(columns);
    }
 
    public void setColumns(ArrayList<Column> columns)
    {
-      synchronized(this.columns)
+      synchronized(this.qrycolumns)
       {
-         if (this.columns.size() == 0)
+         if (this.qrycolumns.size() == 0)
          {
             for(Column column : columns)
-               this.columns.put(column.name.toLowerCase(),column);
+               this.qrycolumns.put(column.name.toLowerCase(),column);
          }
       }
    }

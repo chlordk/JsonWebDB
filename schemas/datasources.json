@@ -5,7 +5,7 @@
    "type": "object",
    "additionalProperties": false,
 
-   "description": "This schema defines the different types datasources, defined by JsonWebDB",
+   "description": "This schema defines the different types of datasources",
 
    "properties":
    {
@@ -50,12 +50,6 @@
             {
                "$ref": "#/types/Query",
                "description": "Use this query as base for select statements (not for DML)"
-            }
-            ,
-            "derived":
-            {
-               "$ref": "#/types/List",
-               "description": "DML will ignore derived columns"
             }
             ,
             "order":
