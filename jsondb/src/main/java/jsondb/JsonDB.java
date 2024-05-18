@@ -157,7 +157,10 @@ public class JsonDB
    {
       dbreqs.incrementAndGet();
       Response response = RequestHandler.handle(request);
-      response.put("instance",instance); response.put("version",version);
+
+      if (!response.payload().has("instance"))
+         response.put("instance",instance).put("version",version);
+
       log(request,response); return(response);
    }
 
