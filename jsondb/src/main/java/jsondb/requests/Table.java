@@ -31,6 +31,7 @@ import database.Cursor;
 import jsondb.Response;
 import database.Column;
 import database.SQLPart;
+import database.DataType;
 import utils.JSONOObject;
 import java.util.HashMap;
 import messages.Messages;
@@ -136,7 +137,7 @@ public class Table
       }
 
       JSONArray rows = new JSONArray();
-      ArrayList<Column> columns = source.getColumns();
+      ArrayList<DataType> columns = source.getColumns();
 
       if (source.order != null)
          response.put("order",source.order);
@@ -145,7 +146,7 @@ public class Table
          response.put("primary-key",source.primarykey);
 
       for (int i = 0; i < columns.size(); i++)
-         rows.put(columns.get(i).toJSONObject());
+         rows.put(((Column) columns.get(i)).toJSONObject());
 
       response.put("rows",rows);
       return(new Response(response));
@@ -216,7 +217,7 @@ public class Table
       select.append(source.from(bindvalues));
 
       Assertion assrt = Assertion.parse(source,args);
-      WhereClause whcl = new WhereClause(source,args);
+      WhereClause whcl = new WhereClause(source,source.qrycolumns,args);
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
          throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
@@ -299,7 +300,7 @@ public class Table
             filters.put(filter);
          }
 
-         WhereClause whcl = new WhereClause(source,filterdef);
+         WhereClause whcl = new WhereClause(source,source.qrycolumns,filterdef);
          return(new Assertion(whcl));
       }
 

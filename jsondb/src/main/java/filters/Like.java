@@ -24,15 +24,16 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
+import database.DataType;
+import java.util.HashMap;
 import org.json.JSONObject;
 
 
 public class Like extends Equals
 {
-   public Like(Source source, JSONObject definition)
+   public Like(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      super(source,definition);
+      super(datatypes,definition);
    }
 
    @Override

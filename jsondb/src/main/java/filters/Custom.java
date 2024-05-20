@@ -24,7 +24,6 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
 import database.SQLPart;
 import database.DataType;
 import java.util.HashMap;
@@ -41,28 +40,22 @@ public class Custom extends Filter
    private SQLPart parsed = null;
 
 
-   public Custom(Source source, JSONObject definition)
+   public Custom(TableSource source, HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      super(source,definition);
+      super(datatypes,definition);
 
       try
       {
-         if (source instanceof TableSource)
+         CustomFilter custflt = source.filters.get(custom.toLowerCase());
+         HashMap<String,BindValue> bindings = new HashMap<String,BindValue>();
+
+         for(DataType type : custflt.types.values())
          {
-            TableSource ts = (TableSource) source;
-            CustomFilter f = ts.filters.get(custom.toLowerCase());
-
-            HashMap<String,BindValue> bindings =
-               new HashMap<String,BindValue>();
-
-            for(DataType type : f.types.values())
-            {
-               Object value = definition.get(type.name);
-               bindings.put(type.name.toLowerCase(),new BindValue(type.name).value(value));
-            }
-
-            this.parsed = f.bind(bindings);
+            Object value = definition.get(type.name);
+            bindings.put(type.name.toLowerCase(),new BindValue(type.name).value(value));
          }
+
+         this.parsed = custflt.bind(bindings);
       }
       catch (Throwable t) {}
    }

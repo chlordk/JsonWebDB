@@ -24,20 +24,19 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
 import database.DataType;
+import java.util.HashMap;
 import database.BindValue;
 import java.util.ArrayList;
-import sources.TableSource;
 import org.json.JSONObject;
 import filters.definitions.Filter;
 
 
 public class Equals extends Filter
 {
-   public Equals(Source source, JSONObject definition)
+   public Equals(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      super(source,definition);
+      super(datatypes,definition);
    }
 
    public Object value()
@@ -64,12 +63,9 @@ public class Equals extends Filter
          BindValue bv = new BindValue(column);
          bindvalues.add(bv.value(value));
 
-         if (source instanceof TableSource)
-         {
-            TableSource ts = (TableSource) source;
-            DataType coldef = ts.getColumn(column);
-            if (coldef != null) bv.type(coldef.sqlid);
-         }
+         String name = column.toLowerCase();
+         DataType coldef = datatypes.get(name);
+         if (coldef != null) bv.type(coldef.sqlid);
       }
 
       return(bindvalues);

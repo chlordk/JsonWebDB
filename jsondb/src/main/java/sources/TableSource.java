@@ -59,8 +59,8 @@ public class TableSource extends Source
    public final QuerySource query;
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
-   public final HashMap<String,Column> objcolumns = new HashMap<String,Column>();
-   public final HashMap<String,Column> qrycolumns = new HashMap<String,Column>();
+   public final HashMap<String,DataType> objcolumns = new HashMap<String,DataType>();
+   public final HashMap<String,DataType> qrycolumns = new HashMap<String,DataType>();
 
 
    public TableSource(JSONObject definition) throws Exception
@@ -113,15 +113,15 @@ public class TableSource extends Source
       return(object != null);
    }
 
-   public Column getColumn(String column)
+   public DataType getColumn(String column)
    {
       return(qrycolumns.get(column.toLowerCase()));
    }
 
-   public ArrayList<Column> getColumns()
+   public ArrayList<DataType> getColumns()
    {
       if (qrycolumns == null) return(null);
-      ArrayList<Column> columns = new ArrayList<Column>();
+      ArrayList<DataType> columns = new ArrayList<DataType>();
       columns.addAll(this.qrycolumns.values());
       return(columns);
    }

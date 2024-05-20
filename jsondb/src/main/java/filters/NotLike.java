@@ -24,15 +24,16 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
+import database.DataType;
+import java.util.HashMap;
 import org.json.JSONObject;
 
 
 public class NotLike extends Like
 {
-   public NotLike(Source source, JSONObject definition)
+   public NotLike(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      super(source,definition);
+      super(datatypes,definition);
    }
 
    @Override

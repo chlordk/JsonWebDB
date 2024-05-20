@@ -26,7 +26,6 @@ package filters.definitions;
 
 import filters.Like;
 import filters.Equals;
-import sources.Source;
 import filters.Custom;
 import filters.NotLike;
 import filters.Between;
@@ -34,9 +33,11 @@ import filters.LessThan;
 import filters.NotEquals;
 import java.util.HashMap;
 import messages.Messages;
+import database.DataType;
 import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
+import sources.TableSource;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import filters.GreaterThan;
@@ -102,10 +103,10 @@ public abstract class Filter
    protected Object value = null;
    protected String column = null;
    protected String custom = null;
-   protected Source source = null;
    protected Object[] values = null;
    protected String[] columns = null;
    protected JSONObject definition = null;
+   protected HashMap<String,DataType> datatypes;
 
    protected ArrayList<BindValue> bindvalues =
       new ArrayList<BindValue>();
@@ -115,9 +116,9 @@ public abstract class Filter
    public abstract ArrayList<BindValue> bindvalues();
 
 
-   public Filter(Source source, JSONObject definition)
+   public Filter(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      this.source = source;
+      this.datatypes = datatypes;
       this.definition = definition;
 
       if (definition.has(VALUE))
@@ -150,13 +151,29 @@ public abstract class Filter
 
 
    @SuppressWarnings("unchecked")
-   public static <T extends Filter> T getInstance(String name, Source source, JSONObject definition) throws Exception
+   public static <T extends Filter> T getInstance(String name, HashMap<String,DataType> datatypes, JSONObject definition) throws Exception
    {
       Class<?> clazz = classes.get(name.toLowerCase().replaceAll(" ",""));
 
       try
       {
-         return((T) clazz.getConstructor(Source.class,JSONObject.class).newInstance(source,definition));
+         return((T) clazz.getConstructor(HashMap.class,JSONObject.class).newInstance(datatypes,definition));
+      }
+      catch (Exception e)
+      {
+         throw new Exception(Messages.get("UNKNOWN_FILTER",name));
+      }
+   }
+
+
+   @SuppressWarnings("unchecked")
+   public static <T extends Filter> T getInstance(String name, TableSource source, HashMap<String,DataType> datatypes, JSONObject definition) throws Exception
+   {
+      Class<?> clazz = classes.get(name.toLowerCase().replaceAll(" ",""));
+
+      try
+      {
+         return((T) clazz.getConstructor(TableSource.class,HashMap.class,JSONObject.class).newInstance(source,datatypes,definition));
       }
       catch (Exception e)
       {

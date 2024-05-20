@@ -24,20 +24,19 @@ SOFTWARE.
 
 package filters;
 
-import sources.Source;
 import database.DataType;
+import java.util.HashMap;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
-import sources.TableSource;
 import filters.definitions.Filter;
 
 
 public class Between extends Filter
 {
-   public Between(Source source, JSONObject definition)
+   public Between(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      super(source,definition);
+      super(datatypes,definition);
    }
 
    @Override
@@ -57,16 +56,13 @@ public class Between extends Filter
          bindvalues.add(bv1.value(values[0]));
          bindvalues.add(bv2.value(values[1]));
 
-         if (source instanceof TableSource)
-         {
-            TableSource ts = (TableSource) source;
-            DataType coldef = ts.getColumn(column);
+         String name = column.toLowerCase();
+         DataType coldef = datatypes.get(name);
 
-            if (coldef != null)
-            {
-               bv1.type(coldef.sqlid);
-               bv2.type(coldef.sqlid);
-            }
+         if (coldef != null)
+         {
+            bv1.type(coldef.sqlid);
+            bv2.type(coldef.sqlid);
          }
       }
 
