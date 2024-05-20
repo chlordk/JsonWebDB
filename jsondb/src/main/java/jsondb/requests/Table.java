@@ -118,7 +118,7 @@ public class Table
                select.snippet(select.snippet()+" where 1 = 2");
 
                Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
-               source.setColumns(cursor.describe());
+               source.setColumns(true,cursor.describe());
                cursor.close();
 
                if (source.queryBased() && source.hasBaseObject())
@@ -129,7 +129,7 @@ public class Table
                   select.snippet(select.snippet()+" where 1 = 2");
 
                   cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
-                  source.setColumns(cursor.describe());
+                  source.setColumns(false,cursor.describe());
                   cursor.close();
                }
             }
@@ -137,7 +137,7 @@ public class Table
       }
 
       JSONArray rows = new JSONArray();
-      ArrayList<DataType> columns = source.getColumns();
+      ArrayList<DataType> columns = source.getColumns(true);
 
       if (source.order != null)
          response.put("order",source.order);

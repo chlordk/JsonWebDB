@@ -59,8 +59,8 @@ public class TableSource extends Source
    public final QuerySource query;
    public final String[] primarykey;
    public final HashMap<String,CustomFilter> filters;
-   public final HashMap<String,DataType> objcolumns = new HashMap<String,DataType>();
    public final HashMap<String,DataType> qrycolumns = new HashMap<String,DataType>();
+   public final HashMap<String,DataType> basecolumns = new HashMap<String,DataType>();
 
 
    public TableSource(JSONObject definition) throws Exception
@@ -113,27 +113,52 @@ public class TableSource extends Source
       return(object != null);
    }
 
-   public DataType getColumn(String column)
+   public DataType getColumn(boolean query, String column)
    {
-      return(qrycolumns.get(column.toLowerCase()));
+      if (query) return(qrycolumns.get(column.toLowerCase()));
+      return(basecolumns.get(column.toLowerCase()));
    }
 
-   public ArrayList<DataType> getColumns()
+   public ArrayList<DataType> getColumns(boolean query)
    {
-      if (qrycolumns == null) return(null);
       ArrayList<DataType> columns = new ArrayList<DataType>();
-      columns.addAll(this.qrycolumns.values());
-      return(columns);
+
+      if (query)
+      {
+         if (qrycolumns == null) return(null);
+         columns.addAll(this.qrycolumns.values());
+         return(columns);
+      }
+      else
+      {
+         if (basecolumns == null) return(null);
+         columns.addAll(this.basecolumns.values());
+         return(columns);
+      }
    }
 
-   public void setColumns(ArrayList<Column> columns)
+   public void setColumns(boolean query, ArrayList<Column> columns)
    {
-      synchronized(this.qrycolumns)
+      if (query)
       {
-         if (this.qrycolumns.size() == 0)
+         synchronized(this.qrycolumns)
          {
-            for(Column column : columns)
-               this.qrycolumns.put(column.name.toLowerCase(),column);
+            if (this.qrycolumns.size() == 0)
+            {
+               for(Column column : columns)
+                  this.qrycolumns.put(column.name.toLowerCase(),column);
+            }
+         }
+      }
+      else
+      {
+         synchronized(this.basecolumns)
+         {
+            if (this.basecolumns.size() == 0)
+            {
+               for(Column column : columns)
+                  this.basecolumns.put(column.name.toLowerCase(),column);
+            }
          }
       }
    }
