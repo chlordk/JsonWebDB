@@ -42,7 +42,6 @@ import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.WhereClause;
-import java.util.logging.Level;
 import sources.TableSource.AccessType;
 
 
