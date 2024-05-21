@@ -91,6 +91,7 @@
 
 		"type": "PostgreSQL",
 		"test": "select user",
+		"primary-key-source": "PrimaryKey",
 
 		"proxyuser": true,
 		"defaultuser": "hr",

@@ -119,15 +119,18 @@ public class TableSource extends Source
       return(object != null);
    }
 
-   public DataType getColumn(boolean query, String column)
-   {
-      if (query) return(qrycolumns.get(column.toLowerCase()));
-      return(basecolumns.get(column.toLowerCase()));
-   }
-
    public ArrayList<DataType> getColumns(boolean query)
    {
-      ArrayList<DataType> columns = new ArrayList<DataType>();
+      HashMap<String,DataType> qrycolumns = null;
+      HashMap<String,DataType> basecolumns = null;
+
+      synchronized(this)
+      {
+         qrycolumns = this.qrycolumns;
+         basecolumns = this.qrycolumns;
+      }
+
+         ArrayList<DataType> columns = new ArrayList<DataType>();
 
       if (query)
       {
@@ -145,9 +148,9 @@ public class TableSource extends Source
 
    public void setColumns(boolean query, ArrayList<Column> columns)
    {
-      if (query)
+      synchronized(this)
       {
-         synchronized(this.qrycolumns)
+         if (query)
          {
             if (this.qrycolumns.size() == 0)
             {
@@ -155,10 +158,7 @@ public class TableSource extends Source
                   this.qrycolumns.put(column.name.toLowerCase(),column);
             }
          }
-      }
-      else
-      {
-         synchronized(this.basecolumns)
+         else
          {
             if (this.basecolumns.size() == 0)
             {
@@ -171,7 +171,8 @@ public class TableSource extends Source
 
    public void setPrimaryKey(ArrayList<String> columns)
    {
-      this.primarykey.addAll(columns);
+      synchronized(this)
+      {this.primarykey.addAll(columns);}
    }
 
    public SQLPart from(HashMap<String,BindValue> bindvalues)
