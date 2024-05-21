@@ -57,7 +57,7 @@ public class TableSource extends Source
    public final Access access;
    public final VPDFilter vpd;
    public final QuerySource query;
-   public final String[] primarykey;
+   public final ArrayList<String> primarykey;
    public final HashMap<String,CustomFilter> filters;
    public final HashMap<String,DataType> qrycolumns = new HashMap<String,DataType>();
    public final HashMap<String,DataType> basecolumns = new HashMap<String,DataType>();
@@ -86,7 +86,13 @@ public class TableSource extends Source
       this.object = object;
       this.access = access;
       this.filters = filters;
-      this.primarykey = primarykey;
+      this.primarykey = new ArrayList<String>();
+
+      if (primarykey != null)
+      {
+         for(String col : primarykey)
+            this.primarykey.add(col);
+      }
 
       if (object == null && query == null)
          throw new Exception(Messages.get("INCOMPLETE_SOURCE",id));
@@ -161,6 +167,11 @@ public class TableSource extends Source
             }
          }
       }
+   }
+
+   public void setPrimaryKey(ArrayList<String> columns)
+   {
+      this.primarykey.addAll(columns);
    }
 
    public SQLPart from(HashMap<String,BindValue> bindvalues)

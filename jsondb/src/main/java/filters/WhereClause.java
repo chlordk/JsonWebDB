@@ -63,7 +63,7 @@ public class WhereClause
       }
    }
 
-   public boolean usesPrimaryKey(String... columns)
+   public boolean usesPrimaryKey(ArrayList<String> columns)
    {
       return(clause.usesPrimaryKey(columns));
    }
@@ -219,7 +219,7 @@ public class WhereClause
       }
 
 
-      public boolean usesPrimaryKey(String... columns)
+      public boolean usesPrimaryKey(ArrayList<String> columns)
       {
          Equals test = null;
          HashSet<String> keys = new HashSet<String>();

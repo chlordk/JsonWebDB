@@ -26,6 +26,8 @@ package messages;
 
 import java.io.File;
 import jsondb.Config;
+
+import java.util.ArrayList;
 import java.util.Locale;
 import java.io.PrintStream;
 import java.util.logging.Level;
@@ -49,6 +51,20 @@ public class Messages
       {
          if (i == 0) list = ""+args[i];
          else list += ", "+args[i];
+      }
+
+      return(list);
+   }
+
+
+   public static String flatten(ArrayList<String> args)
+   {
+      String list = null;
+
+      for (int i = 0; i < args.size(); i++)
+      {
+         if (i == 0) list = args.get(i);
+         else list += ", "+args.get(i);
       }
 
       return(list);

@@ -31,6 +31,7 @@ import database.Cursor;
 import jsondb.Response;
 import database.Column;
 import database.SQLPart;
+import database.SQLTypes;
 import database.DataType;
 import utils.JSONOObject;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import sources.TableSource;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.WhereClause;
+import java.util.logging.Level;
 import sources.TableSource.AccessType;
 
 
@@ -132,6 +134,44 @@ public class Table
                   source.setColumns(false,cursor.describe());
                   cursor.close();
                }
+
+               if (source.primarykey.size() == 0)
+               {
+                  try
+                  {
+                     String pksrc = "PrimaryKey";
+                     TableSource pkeysrc = Utils.getSource(response,pksrc);
+
+                     if (pkeysrc != null)
+                     {
+                        Integer type = SQLTypes.guessType(source.object);
+
+                        HashMap<String,BindValue> tabbinding = new HashMap<String,BindValue>()
+                        {{put("table",new BindValue("table").value(source.object).type(type));}};
+
+                        stmt = "select *";
+                        select = new SQLPart(stmt);
+                        select.append(pkeysrc.from(tabbinding));
+
+                        cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+
+                        ArrayList<String> pkey = new ArrayList<String>();
+
+                        while (cursor.next())
+                        {
+                           ArrayList<Object[]> table = cursor.fetch();
+                           pkey.add((String) table.get(0)[0]);
+                        }
+
+                        cursor.close();
+                        source.setPrimaryKey(pkey);
+                     }
+                  }
+                  catch (Throwable t)
+                  {
+                     Config.logger().log(Level.WARNING,t.toString(),t);
+                  }
+               }
             }
          }
       }
@@ -142,7 +182,7 @@ public class Table
       if (source.order != null)
          response.put("order",source.order);
 
-      if (source.primarykey != null)
+      if (source.primarykey.size() > 0)
          response.put("primary-key",source.primarykey);
 
       for (int i = 0; i < columns.size(); i++)
