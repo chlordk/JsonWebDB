@@ -22,7 +22,6 @@
 package database.definitions;
 
 import java.sql.Connection;
-import database.implementations.DatabaseType;
 
 
 /**
@@ -31,12 +30,7 @@ import database.implementations.DatabaseType;
  */
 public interface AdvancedPool
 {
-   int latency();
-   boolean proxy();
    boolean secondary();
-   String defaultuser();
-   boolean savepoint(boolean write);
-   DatabaseType type(boolean write);
    void freeConnection(Connection conn) throws Exception;
    Connection getConnection(boolean write) throws Exception;
    boolean authenticate(String username, String password) throws Exception;

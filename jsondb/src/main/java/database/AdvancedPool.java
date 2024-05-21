@@ -25,10 +25,8 @@ import jsondb.Config;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
-import static utils.Misc.*;
 import java.sql.DriverManager;
 import java.util.logging.Level;
-import database.implementations.DatabaseType;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
@@ -38,27 +36,16 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String URL = "jdbc-url";
    private static final String MIN = "min";
    private static final String MAX = "max";
-   private static final String TYPE = "type";
    private static final String WAIT = "max-wait";
-   private static final String USER = "defaultuser";
    private static final String QUERY = "test";
    private static final String DRIVER = "driver";
-   private static final String PROXY = "proxyuser";
    private static final String CLASSES = "classes";
-   private static final String USESEC = "use-secondary";
-   private static final String LATENCY = "replication-latency";
    private static final String PRIMARY = "primary";
+   private static final String USESECDB = "use-secondary";
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
-   private static final String SAVEPOINT = "savepoint";
    private static final String SECONDARY = "secondary";
-
-   private final int latency;
-   private final int savepoint;
-   private final String defusr;
-   private final boolean proxy;
-   private final DatabaseType type;
 
    private final DataSource primary;
    private final DataSource secondary;
@@ -69,14 +56,9 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       PoolProperties prm = new PoolProperties();
       PoolProperties sec = new PoolProperties();
 
+      boolean secondary = def.getBoolean(USESECDB);
       JSONObject prmdef = def.getJSONObject(PRIMARY);
       JSONObject secdef = def.getJSONObject(SECONDARY);
-
-      int latency = def.getInt(LATENCY);
-      String type = def.getString(TYPE);
-      String defusr = def.getString(USER);
-      boolean proxy = def.getBoolean(PROXY);
-      boolean secondary = def.getBoolean(USESEC);
 
       String sql = Config.get(def,QUERY);
       String usr = Config.get(def,USERNAME);
@@ -105,34 +87,9 @@ public class AdvancedPool implements database.definitions.AdvancedPool
          for (int i = 0; i < arr.length(); i++) Class.forName(arr.getString(i));
       }
 
-      this.proxy = proxy;
-      this.defusr = defusr;
-      this.latency = latency;
       this.primary = new DataSource(prm);
-      this.type = DatabaseType.getType(type);
-      this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));
-      if (!secondary) this.secondary = null; else this.secondary = new DataSource(sec);
-   }
-
-
-   @Override
-   public int latency()
-   {
-      return(latency);
-   }
-
-
-   @Override
-   public boolean proxy()
-   {
-      return(proxy);
-   }
-
-
-   @Override
-   public String defaultuser()
-   {
-      return(defusr);
+      if (!secondary) this.secondary = null;
+      else this.secondary = new DataSource(sec);
    }
 
 
@@ -140,26 +97,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    public boolean secondary()
    {
       return(secondary != null);
-   }
-
-
-   @Override
-   public DatabaseType type(boolean write)
-   {
-      return(type);
-   }
-
-
-   @Override
-   public boolean savepoint(boolean write)
-   {
-      switch (savepoint)
-      {
-         case 3: return(true);
-         case 2: return(write);
-         case 1: return(!write);
-         default: return(false);
-      }
    }
 
 
@@ -217,33 +154,5 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       props.setValidationInterval(cval);
 
       return(props);
-   }
-
-
-   private int savepoint(String[] spec)
-   {
-      int sp = 0;
-
-      if (spec == null) return(sp);
-      if (spec.length == 0) return(sp);
-
-      for (int i = 0; i < spec.length; i++)
-      {
-         if (spec[i].equalsIgnoreCase("read"))
-         {
-            if (sp == 0) sp = 1;
-            if (sp == 2) sp = 3;
-         }
-
-         else
-
-         if (spec[i].equalsIgnoreCase("write"))
-         {
-            if (sp == 0) sp = 2;
-            if (sp == 1) sp = 3;
-         }
-      }
-
-      return(sp);
    }
 }

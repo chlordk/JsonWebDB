@@ -96,13 +96,13 @@
 		"proxyuser": true,
 		"defaultuser": "hr",
 
+		"savepoint": ["read","write"],
+
 		"username": "hr",
 		"password": "hr",
 
-		"savepoint": ["read","write"],
-
-		"driver": "org.postgresql.Driver",
 		"classes": [],
+		"driver": "org.postgresql.Driver",
 
 		"primary":
 		{

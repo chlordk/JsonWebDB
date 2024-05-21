@@ -40,7 +40,7 @@ public abstract class JdbcInterface
 
    public static JdbcInterface getInstance(boolean write) throws Exception
    {
-      return(Config.pool().type(write).getInstance());
+      return(Config.dbconfig().getInstance(write));
    }
 
    public JdbcInterface(AdvancedPool pool)
@@ -56,7 +56,10 @@ public abstract class JdbcInterface
    public JdbcInterface connect(String username, boolean write, boolean stateful) throws Exception
    {
       this.conn = pool.getConnection(write);
-      if (pool.proxy()) setProxyUser(conn,username);
+
+      if (Config.dbconfig().useproxy())
+         setProxyUser(conn,username);
+
       conn.setAutoCommit(!stateful);
       return(this);
    }

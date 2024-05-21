@@ -33,12 +33,15 @@ import logger.Applogger;
 import database.SQLTypes;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import static utils.Misc.*;
 import org.json.JSONTokener;
 import java.net.InetAddress;
 import state.StatePersistency;
+import database.JdbcInterface;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
 import database.definitions.AdvancedPool;
+import database.implementations.DatabaseType;
 
 
 public class Config
@@ -60,6 +63,13 @@ public class Config
    private static final String CONTMOUT = "connection-timeout";
    private static final String TRXTMOUT = "transaction-timeout";
 
+   private static final String DBTYPE = "type";
+   private static final String USEPROXY = "proxyuser";
+   private static final String DEFUSER = "defaultuser";
+   private static final String SAVEPOINT = "savepoint";
+   private static final String REPLATENCY = "replication-latency";
+
+
    private static int sestmout = 0;
    private static int trxtmout = 0;
    private static int contmout = 0;
@@ -74,6 +84,7 @@ public class Config
 
    private static String root = null;
    private static AdvancedPool pool = null;
+   private static DataBaseConfig dbconf = null;
 
 
    /**
@@ -130,11 +141,10 @@ public class Config
       Config.contmout = get(get(SESS),CONTMOUT);
 
       Config.logger = Applogger.setup(logall);
-
       JSONObject dbsc = config.getJSONObject(DBSC);
 
-      if (dbsc.getBoolean(POOL))
-         Config.pool = new database.AdvancedPool(dbsc);
+      Config.dbconf = new DataBaseConfig(dbsc);
+      if (dbsc.getBoolean(POOL)) Config.pool = new database.AdvancedPool(dbsc);
    }
 
    public static void initialize() throws Exception
@@ -215,6 +225,12 @@ public class Config
    public static JSONObject instance()
    {
       return(instance);
+   }
+
+   /** The databse config */
+   public static DataBaseConfig dbconfig()
+   {
+      return(dbconf);
    }
 
    /** The config json */
@@ -345,5 +361,82 @@ public class Config
 
       Config.endp = endpoint;
       return(instance);
+   }
+
+
+   public static class DataBaseConfig
+   {
+      private final int replatency;
+      private final int savepoint;
+      private final boolean useproxy;
+      private final String defaultuser;
+      private final DatabaseType dbtype;
+
+      private DataBaseConfig(JSONObject def) throws Exception
+      {
+         this.useproxy = def.getBoolean(USEPROXY);
+         this.replatency = def.getInt(REPLATENCY);
+         this.defaultuser = def.getString(DEFUSER);
+         this.dbtype = DatabaseType.getType(def.getString(DBTYPE));
+         this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));
+      }
+
+      public boolean savepoint(boolean write)
+      {
+         switch (savepoint)
+         {
+            case 3: return(true);
+            case 2: return(write);
+            case 1: return(!write);
+            default: return(false);
+         }
+      }
+
+      public int latency()
+      {
+         return(replatency);
+      }
+
+      public boolean useproxy()
+      {
+         return(useproxy);
+      }
+
+      public String defaultuser()
+      {
+         return(defaultuser);
+      }
+
+      public JdbcInterface getInstance(boolean write) throws Exception
+      {
+         return(dbtype.getInstance());
+      }
+
+      private int savepoint(String[] spec)
+      {
+         int sp = 0;
+
+         if (spec == null) return(sp);
+         if (spec.length == 0) return(sp);
+
+         for (int i = 0; i < spec.length; i++)
+         {
+            if (spec[i].equalsIgnoreCase("read"))
+            {
+               if (sp == 0) sp = 1;
+               if (sp == 2) sp = 3;
+            }
+
+            else
+
+            if (spec[i].equalsIgnoreCase("write"))
+            {
+               if (sp == 0) sp = 2;
+               if (sp == 1) sp = 3;
+            }
+         }
+
+         return(sp);
+      }
    }
 }

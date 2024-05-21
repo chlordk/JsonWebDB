@@ -58,7 +58,7 @@ public class Session
 
       JSONObject response = new JSONOObject();
 
-      String username = Config.pool().defaultuser();
+      String username = Config.dbconfig().defaultuser();
       JSONObject data = definition.getJSONObject(PARAMETERS);
 
       if (data.has(USERNAME))

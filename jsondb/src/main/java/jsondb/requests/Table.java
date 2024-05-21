@@ -223,7 +223,7 @@ public class Table
       if (order != null) select.append("\norder by "+order);
       if (lock && session.isStateful()) select.append("\nfor update");
 
-      boolean savepoint = Config.pool().savepoint(false);
+      boolean savepoint = Config.dbconfig().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       Integer pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
