@@ -41,7 +41,6 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    private static final String DRIVER = "driver";
    private static final String CLASSES = "classes";
    private static final String PRIMARY = "primary";
-   private static final String USESECDB = "use-secondary";
    private static final String VALIDATE = "validate";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
@@ -56,9 +55,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       PoolProperties prm = new PoolProperties();
       PoolProperties sec = new PoolProperties();
 
-      boolean secondary = def.getBoolean(USESECDB);
       JSONObject prmdef = def.getJSONObject(PRIMARY);
-      JSONObject secdef = def.getJSONObject(SECONDARY);
+      JSONObject secdef = def.has(SECONDARY) ? def.getJSONObject(SECONDARY) : null;
 
       String sql = Config.get(def,QUERY);
       String usr = Config.get(def,USERNAME);
@@ -88,7 +86,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       }
 
       this.primary = new DataSource(prm);
-      if (!secondary) this.secondary = null;
+      
+      if (secdef == null) this.secondary = null;
       else this.secondary = new DataSource(sec);
    }
 

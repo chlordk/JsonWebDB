@@ -85,12 +85,10 @@
 	,
 	"database":
    {
-		"enabled": true,
 		"use-secondary": true,
 		"replication-latency": 1000,
 
 		"type": "PostgreSQL",
-		"test": "select user",
 		"primary-key-source": "PrimaryKey",
 
 		"proxyuser": true,
@@ -98,32 +96,37 @@
 
 		"savepoint": ["read","write"],
 
-		"username": "hr",
-		"password": "hr",
-
-		"classes": [],
-		"driver": "org.postgresql.Driver",
-
-		"primary":
+		"pool-properties":
 		{
-			"min": 5,
-			"max": 60,
+			"username": "hr",
+			"password": "hr",
 
-			"max-wait": 10000,
-			"validate": 30000,
+			"test": "select user",
 
-			"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
-		}
-		,
-		"secondary":
-		{
-			"min": 10,
-			"max": 600,
+			"classes": [],
+			"driver": "org.postgresql.Driver",
 
-			"max-wait": 10000,
-			"validate": 30000,
+			"primary":
+			{
+				"min": 5,
+				"max": 60,
 
-			"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+				"max-wait": 10000,
+				"validate": 30000,
+
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			}
+			,
+			"secondary":
+			{
+				"min": 10,
+				"max": 600,
+
+				"max-wait": 10000,
+				"validate": 30000,
+
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
+			}
 		}
    }
    ,

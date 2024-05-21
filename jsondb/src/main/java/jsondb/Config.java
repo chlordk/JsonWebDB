@@ -47,7 +47,6 @@ import database.implementations.DatabaseType;
 public class Config
 {
    private static final String CONF = "config";
-   private static final String POOL = "enabled";
    private static final String SESS = "session";
    private static final String PATH = "location";
    private static final String DBSC = "database";
@@ -67,6 +66,7 @@ public class Config
    private static final String USEPROXY = "proxyuser";
    private static final String DEFUSER = "defaultuser";
    private static final String SAVEPOINT = "savepoint";
+   private static final String POOLPROPS = "pool-properties";
    private static final String REPLATENCY = "replication-latency";
 
 
@@ -143,8 +143,13 @@ public class Config
       Config.logger = Applogger.setup(logall);
       JSONObject dbsc = config.getJSONObject(DBSC);
 
+      JSONObject pool = null;
+
+      if (dbsc.has(POOLPROPS))
+         pool = dbsc.getJSONObject(POOLPROPS);
+
       Config.dbconf = new DataBaseConfig(dbsc);
-      if (dbsc.getBoolean(POOL)) Config.pool = new database.AdvancedPool(dbsc);
+      if (pool != null) Config.pool = new database.AdvancedPool(pool);
    }
 
    public static void initialize() throws Exception
