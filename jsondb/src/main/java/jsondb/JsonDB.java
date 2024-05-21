@@ -26,6 +26,7 @@ package jsondb;
 
 import java.util.Date;
 import files.FileHandler;
+import utils.JSONOObject;
 import files.FileResponse;
 import org.json.JSONObject;
 import static jsondb.Version.*;
@@ -143,7 +144,7 @@ public class JsonDB
     */
    public Response execute(String request) throws Exception
    {
-      return(execute(new JSONObject(request)));
+      return(execute(new JSONOObject(request)));
    }
 
 
