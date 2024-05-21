@@ -152,19 +152,20 @@ public class TableSource extends Source
       {
          if (query)
          {
-            if (this.qrycolumns.size() == 0)
-            {
-               for(Column column : columns)
-                  this.qrycolumns.put(column.name.toLowerCase(),column);
-            }
+            this.qrycolumns.clear();
+
+            for(Column column : columns)
+               this.qrycolumns.put(column.name.toLowerCase(),column);
+
+            if (this.basecolumns.size() == 0)
+               this.basecolumns.putAll(this.qrycolumns);
          }
          else
          {
-            if (this.basecolumns.size() == 0)
-            {
-               for(Column column : columns)
-                  this.basecolumns.put(column.name.toLowerCase(),column);
-            }
+            this.basecolumns.clear();
+
+            for(Column column : columns)
+               this.basecolumns.put(column.name.toLowerCase(),column);
          }
       }
    }

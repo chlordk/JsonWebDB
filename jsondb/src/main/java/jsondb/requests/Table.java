@@ -111,67 +111,13 @@ public class Table
          {
             if (!source.described())
             {
-               HashMap<String,BindValue> bindvalues =
-                  Utils.getBindValues(definition);
-
-               String stmt = "select *";
-               SQLPart select = new SQLPart(stmt);
-               select.append(source.from(bindvalues));
-               select.snippet(select.snippet()+" where 1 = 2");
-
-               Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
-               source.setColumns(true,cursor.describe());
-               cursor.close();
+               getQRYColumns(session,source);
 
                if (source.queryBased() && source.hasBaseObject())
-               {
-                  stmt = "select * from";
-                  select = new SQLPart(stmt);
-                  select.append(source.object);
-                  select.snippet(select.snippet()+" where 1 = 2");
-
-                  cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
-                  source.setColumns(false,cursor.describe());
-                  cursor.close();
-               }
+                  getBASEColumns(session,source);
 
                if (source.primarykey.size() == 0)
-               {
-                  try
-                  {
-                     String pksrc = "PrimaryKey";
-                     TableSource pkeysrc = Utils.getSource(response,pksrc);
-
-                     if (pkeysrc != null)
-                     {
-                        Integer type = SQLTypes.guessType(source.object);
-
-                        HashMap<String,BindValue> tabbinding = new HashMap<String,BindValue>()
-                        {{put("table",new BindValue("table").value(source.object).type(type));}};
-
-                        stmt = "select *";
-                        select = new SQLPart(stmt);
-                        select.append(pkeysrc.from(tabbinding));
-
-                        cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
-
-                        ArrayList<String> pkey = new ArrayList<String>();
-
-                        while (cursor.next())
-                        {
-                           ArrayList<Object[]> table = cursor.fetch();
-                           pkey.add((String) table.get(0)[0]);
-                        }
-
-                        cursor.close();
-                        source.setPrimaryKey(pkey);
-                     }
-                  }
-                  catch (Throwable t)
-                  {
-                     Config.logger().log(Level.WARNING,t.toString(),t);
-                  }
-               }
+                  getPrimaryKey(session,source);
             }
          }
       }
@@ -299,6 +245,68 @@ public class Table
       for(Object[] row : table) rows.put(row);
 
       return(new Response(response));
+   }
+
+
+   private void getQRYColumns(Session session, TableSource source) throws Exception
+   {
+      HashMap<String,BindValue> bindvalues =
+      Utils.getBindValues(definition);
+
+      String stmt = "select *";
+      SQLPart select = new SQLPart(stmt);
+      select.append(source.from(bindvalues));
+      select.snippet(select.snippet()+" where 1 = 2");
+
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+      source.setColumns(true,cursor.describe());
+      cursor.close();
+   }
+
+
+   private void getBASEColumns(Session session, TableSource source) throws Exception
+   {
+      String stmt = "select * from";
+      SQLPart select = new SQLPart(stmt);
+      select.append(source.object);
+      select.snippet(select.snippet()+" where 1 = 2");
+
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+      source.setColumns(false,cursor.describe());
+      cursor.close();
+   }
+
+
+   private void getPrimaryKey(Session session, TableSource source) throws Exception
+   {
+      String pksrc = "PrimaryKey";
+      JSONOObject response = new JSONOObject();
+      TableSource pkeysrc = Utils.getSource(response,pksrc);
+
+      if (pkeysrc != null)
+      {
+         Integer type = SQLTypes.guessType(source.object);
+
+         HashMap<String,BindValue> tabbinding = new HashMap<String,BindValue>()
+         {{put("table",new BindValue("table").value(source.object).type(type));}};
+
+         String stmt = "select *";
+         SQLPart select = new SQLPart(stmt);
+         select.append(pkeysrc.from(tabbinding));
+
+         Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+
+         ArrayList<String> pkey = new ArrayList<String>();
+
+         while (cursor.next())
+         {
+            ArrayList<Object[]> table = cursor.fetch();
+            pkey.add((String) table.get(0)[0]);
+         }
+
+         cursor.close();
+         source.setPrimaryKey(pkey);
+      }
    }
 
 
