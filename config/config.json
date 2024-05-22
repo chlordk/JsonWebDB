@@ -85,15 +85,13 @@
 	,
 	"database":
    {
-		"use-secondary": true,
-		"replication-latency": 1000,
-
 		"type": "PostgreSQL",
 		"primary-key-source": "PrimaryKey",
 
 		"proxyuser": true,
 		"defaultuser": "hr",
 
+		"replication-latency": 1000,
 		"savepoint": ["read","write"],
 
 		"pool-properties":

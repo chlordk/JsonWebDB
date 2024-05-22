@@ -67,6 +67,7 @@ public class Config
    private static final String DEFUSER = "defaultuser";
    private static final String SAVEPOINT = "savepoint";
    private static final String POOLPROPS = "pool-properties";
+   private static final String PKEYSOURCE = "primary-key-source";
    private static final String REPLATENCY = "replication-latency";
 
 
@@ -371,9 +372,10 @@ public class Config
 
    public static class DataBaseConfig
    {
-      private final int replatency;
       private final int savepoint;
+      private final int replatency;
       private final boolean useproxy;
+      private final String pkeysource;
       private final String defaultuser;
       private final DatabaseType dbtype;
 
@@ -382,6 +384,7 @@ public class Config
          this.useproxy = def.getBoolean(USEPROXY);
          this.replatency = def.getInt(REPLATENCY);
          this.defaultuser = def.getString(DEFUSER);
+         this.pkeysource = def.getString(PKEYSOURCE);
          this.dbtype = DatabaseType.getType(def.getString(DBTYPE));
          this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));
       }
@@ -410,6 +413,11 @@ public class Config
       public String defaultuser()
       {
          return(defaultuser);
+      }
+
+      public String pkeysource()
+      {
+         return(pkeysource);
       }
 
       public JdbcInterface getInstance(boolean write) throws Exception
