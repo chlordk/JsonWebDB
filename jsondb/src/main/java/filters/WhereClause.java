@@ -79,6 +79,7 @@ public class WhereClause
    }
 
 
+   @SuppressWarnings("unchecked")
    public SQLPart append(WhereClause append)
    {
       if (append == null)
@@ -91,7 +92,7 @@ public class WhereClause
       if (!append.exists()) return(this.asSQL());
 
       String sql = p1.snippet() + p2.snippet().replaceFirst("where","and");
-      ArrayList<BindValue> bindvalues = p1.bindValues();
+      ArrayList<BindValue> bindvalues = (ArrayList<BindValue>) p1.bindValues().clone();
       bindvalues.addAll(p2.bindValues());
 
       return(new SQLPart(sql,bindvalues));

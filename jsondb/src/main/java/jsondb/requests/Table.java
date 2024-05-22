@@ -39,6 +39,7 @@ import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import sources.TableSource;
+import utils.NameValuePair;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.WhereClause;
@@ -198,7 +199,7 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
-      Assertion assrt = Assertion.parse(source,args);
+      WhereClause asrt = getAssertClause(source,source.qrycolumns,args);
       WhereClause whcl = new WhereClause(source,source.qrycolumns,args);
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
@@ -208,7 +209,7 @@ public class Table
          throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
 
       SQLPart wh = whcl.asSQL();
-      wh = whcl.append(assrt.whcl());
+      if (asrt != null) wh = whcl.append(asrt);
 
       select.append(wh);
 
@@ -243,14 +244,99 @@ public class Table
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);
 
+      if (rows.length() == 0 && asrt != null)
+      {
+         String cols = null;
+         ArrayList<NameValuePair<Object>> asserts = getAssertions(args);
+
+         for (int i = 0; i < asserts.size(); i++)
+         {
+            if (i == 0) cols = asserts.get(i).name();
+            else cols += "," + asserts.get(i).name();
+         }
+
+         select = new SQLPart("select "+cols);
+         select.append(source.from(bindvalues));
+         select.append(whcl.asSQL());
+
+         getAssertResponse(session,select,asserts);
+      }
+
       return(new Response(response));
+   }
+
+
+   private WhereClause getAssertClause(TableSource source, HashMap<String,DataType> types, JSONObject def) throws Exception
+   {
+      if (!def.has(ASSERTIONS))
+         return(null);
+
+      JSONArray filterdef = new JSONArray();
+      ArrayList<NameValuePair<Object>> asserts = getAssertions(def);
+      JSONObject assertflts = new JSONObject().put(FILTERS,filterdef);
+
+      for (int i = 0; i < asserts.size(); i++)
+      {
+         JSONObject filter = new JSONObject();
+         NameValuePair<Object> asscol = asserts.get(i);
+
+         filter.put("column",asscol.name());
+         filter.put("filter","=");
+         filter.put("value",asscol.value());
+
+         filterdef.put(filter);
+      }
+
+      return(new WhereClause(source,types,assertflts));
+   }
+
+
+   private JSONOObject getAssertResponse(Session session, SQLPart select, ArrayList<NameValuePair<Object>> asserts) throws Exception
+   {
+      JSONOObject status = new JSONOObject();
+      JSONOObject response = new JSONOObject().put(ASSERTIONS,status);
+
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,1);
+      ArrayList<Object[]> table = cursor.fetch();
+      cursor.close();
+
+      if (table.size() == 0)
+      {
+         status.put("success",false);
+         status.put("status","deleted");
+      }
+      else
+      {
+
+      }
+
+      return(response);
+   }
+
+
+   private ArrayList<NameValuePair<Object>> getAssertions(JSONObject def)
+   {
+      JSONArray asserts = def.getJSONArray(ASSERTIONS);
+      ArrayList<NameValuePair<Object>> list = new ArrayList<NameValuePair<Object>>();
+
+      for (int i = 0; i < asserts.length(); i++)
+      {
+         JSONObject ass = asserts.getJSONObject(i);
+
+         Object value = ass.get(VALUE);
+         String column = ass.getString(COLUMN);
+
+         list.add(new NameValuePair<Object>(column,value));
+      }
+
+      return(list);
    }
 
 
    private void getQRYColumns(Session session, TableSource source) throws Exception
    {
       HashMap<String,BindValue> bindvalues =
-      Utils.getBindValues(definition);
+         Utils.getBindValues(definition);
 
       String stmt = "select *";
       SQLPart select = new SQLPart(stmt);
@@ -305,57 +391,6 @@ public class Table
 
          cursor.close();
          source.setPrimaryKey(pkey);
-      }
-   }
-
-
-   private static class Assertion
-   {
-      private final WhereClause whcl;
-
-
-      static Assertion parse(TableSource source, JSONObject def) throws Exception
-      {
-         if (!def.has(ASSERTIONS))
-            return(new Assertion(null));
-
-         JSONObject ass = null;
-         JSONArray asserts = null;
-
-         JSONArray filters = new JSONArray();
-         JSONObject filterdef = new JSONObject().put(FILTERS,filters);
-
-
-         asserts = def.getJSONArray(ASSERTIONS);
-
-         for (int i = 0; i < asserts.length(); i++)
-         {
-            ass = asserts.getJSONObject(i);
-
-            Object value = ass.get(VALUE);
-            String column = ass.getString(COLUMN);
-
-            JSONObject filter = new JSONObject();
-
-            filter.put("column",column);
-            filter.put("filter","=");
-            filter.put("value",value);
-
-            filters.put(filter);
-         }
-
-         WhereClause whcl = new WhereClause(source,source.qrycolumns,filterdef);
-         return(new Assertion(whcl));
-      }
-
-      Assertion(WhereClause whcl)
-      {
-         this.whcl = whcl;
-      }
-
-      WhereClause whcl()
-      {
-         return(this.whcl);
       }
    }
 }
