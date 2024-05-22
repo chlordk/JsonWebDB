@@ -281,11 +281,18 @@ public class Cursor
    }
 
 
+   public void remove()
+   {
+      close(false,true);
+   }
+
+
    public void release()
    {
       close(true,false);
    }
 
+   
    private void close(boolean delete, boolean remove)
    {
       eof = true;

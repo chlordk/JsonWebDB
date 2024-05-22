@@ -232,8 +232,19 @@ public class Table
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
 
+      ArrayList<Column> sellist = cursor.describe();
+
+      columns = new String[sellist.size()];
+      for (int i = 0; i < columns.length; i++)
+         columns[i] = sellist.get(i).name;
+
       if (!usecurs) cursor.close();
+
+      else if (Config.conTimeout() <= 0)
+         cursor.remove();
+
       response.put("success",true);
+      response.put("columns",columns);
 
       if (cursor.next())
       {
@@ -259,7 +270,7 @@ public class Table
          select.append(source.from(bindvalues));
          select.append(whcl.asSQL());
 
-         getAssertResponse(session,select,asserts);
+         response.put("violations",getAssertResponse(session,select,asserts));
       }
 
       return(new Response(response));
@@ -303,11 +314,26 @@ public class Table
       if (table.size() == 0)
       {
          status.put("success",false);
-         status.put("status","deleted");
+         status.put("state","deleted");
       }
       else
       {
+         status.put("success",false);
+         status.put("state","modified");
 
+         Object[] actual = table.get(0);
+
+         for (int i = 0; i < asserts.size(); i++)
+         {
+            if (!asserts.get(i).value().equals(actual[i]))
+            {
+               JSONOObject faulted = new JSONOObject();
+               faulted.put("column",asserts.get(i).name());
+               faulted.put("expected",asserts.get(i).value());
+               faulted.put("actual",actual[i]);
+               status.put("violation",faulted);
+            }
+         }
       }
 
       return(response);
