@@ -270,7 +270,7 @@ public class Table
          select.append(source.from(bindvalues));
          select.append(whcl.asSQL());
 
-         response.put("violations",getAssertResponse(session,select,asserts));
+         response.put("assertions",getAssertResponse(session,select,asserts));
       }
 
       return(new Response(response));
@@ -304,8 +304,7 @@ public class Table
 
    private JSONOObject getAssertResponse(Session session, SQLPart select, ArrayList<NameValuePair<Object>> asserts) throws Exception
    {
-      JSONOObject status = new JSONOObject();
-      JSONOObject response = new JSONOObject().put(ASSERTIONS,status);
+      JSONOObject assertion = new JSONOObject();
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,1);
       ArrayList<Object[]> table = cursor.fetch();
@@ -313,14 +312,16 @@ public class Table
 
       if (table.size() == 0)
       {
-         status.put("success",false);
-         status.put("state","deleted");
+         assertion.put("success",false);
+         assertion.put("record","deleted");
       }
       else
       {
-         status.put("success",false);
-         status.put("state","modified");
+         assertion.put("success",false);
+         assertion.put("record","modified");
 
+         JSONArray violations = new JSONArray();
+         assertion.put("violations",violations);
          Object[] actual = table.get(0);
 
          for (int i = 0; i < asserts.size(); i++)
@@ -331,12 +332,12 @@ public class Table
                faulted.put("column",asserts.get(i).name());
                faulted.put("expected",asserts.get(i).value());
                faulted.put("actual",actual[i]);
-               status.put("violation",faulted);
+               violations.put(faulted);
             }
          }
       }
 
-      return(response);
+      return(assertion);
    }
 
 
