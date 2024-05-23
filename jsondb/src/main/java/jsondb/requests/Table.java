@@ -199,8 +199,8 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
-      WhereClause asrt = getAssertClause(source,source.qrycolumns,args);
       WhereClause whcl = new WhereClause(source,source.qrycolumns,args);
+      WhereClause asrt = getAssertClause(source,source.qrycolumns,args);
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
          throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
