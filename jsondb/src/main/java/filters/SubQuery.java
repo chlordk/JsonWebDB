@@ -24,19 +24,25 @@ SOFTWARE.
 
 package filters;
 
+import database.SQLPart;
 import java.util.HashMap;
 import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import jsondb.requests.Table;
 import filters.definitions.Filter;
 
 
 public class SubQuery extends Filter
 {
-   public SubQuery(HashMap<String,DataType> datatypes, JSONObject definition)
+   private final SQLPart subq;
+
+   public SubQuery(HashMap<String,DataType> datatypes, JSONObject definition) throws Exception
    {
       super(datatypes,definition);
+      String table = Table.class.getSimpleName();
+      subq = Table.getSubQuery(definition.getJSONObject(table));
    }
 
    @Override

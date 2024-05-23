@@ -27,7 +27,9 @@ package jsondb.requests;
 import utils.Misc;
 import jsondb.Config;
 import jsondb.Session;
+import sources.Source;
 import database.Cursor;
+import sources.Sources;
 import jsondb.Response;
 import database.Column;
 import database.SQLPart;
@@ -283,6 +285,26 @@ public class Table
       }
 
       return(new Response(response));
+   }
+
+
+   public static SQLPart getSubQuery(JSONObject def) throws Exception
+   {
+      String srcid = def.getString(SOURCE);
+      TableSource source = Sources.get(srcid);
+
+      if (source == null)
+         throw new Exception(Messages.get("UNKNOWN_SOURCE",srcid));
+
+      AccessType limit = source.getAccessLimit("select");
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));
+
+      HashMap<String,BindValue> bindvalues =
+         Utils.getBindValues(def);
+
+      JSONObject args = def.getJSONObject(SELECT);
+
+      return(null);
    }
 
 
