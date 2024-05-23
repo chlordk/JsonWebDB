@@ -22,31 +22,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils;
+package filters;
+
+import java.util.HashMap;
+import database.DataType;
+import database.BindValue;
+import java.util.ArrayList;
+import org.json.JSONObject;
+import filters.definitions.Filter;
 
 
-public class NameValuePair <T>
+public class SubQuery extends Filter
 {
-   private final T value;
-   private final String name;
-
-
-   public NameValuePair(String name, T value)
+   public SubQuery(HashMap<String,DataType> datatypes, JSONObject definition)
    {
-      this.name = name;
-      this.value = (T) value;
+      super(datatypes,definition);
    }
 
-
-   public String name()
+   @Override
+   public String sql()
    {
-      return(name);
+      if (column != null)
+         columns = new String[] {column};
+
+      String sql = "(";
+
+      for (int i = 0; i < columns.length; i++)
+      {
+         if (i == 0) sql += columns[i];
+         else sql += ", " + columns[i];
+      }
+
+      sql += ") in ";
+
+      return(sql);
    }
 
-
-   public T value()
+   @Override
+   public ArrayList<BindValue> bindvalues()
    {
-      return(value);
+      return(new ArrayList<BindValue>());
    }
-
 }

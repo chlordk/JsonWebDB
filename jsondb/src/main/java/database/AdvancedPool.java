@@ -86,7 +86,7 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       }
 
       this.primary = new DataSource(prm);
-      
+
       if (secdef == null) this.secondary = null;
       else this.secondary = new DataSource(sec);
    }

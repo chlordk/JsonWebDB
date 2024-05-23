@@ -29,6 +29,7 @@ import filters.Equals;
 import filters.Custom;
 import filters.NotLike;
 import filters.Between;
+import filters.SubQuery;
 import filters.LessThan;
 import filters.NotEquals;
 import java.util.HashMap;
@@ -96,6 +97,7 @@ public abstract class Filter
          put("between",Between.class);
          put("notbetween",NotBetween.class);
 
+         put("in",SubQuery.class);
          put("custom",Custom.class);
       }};
 

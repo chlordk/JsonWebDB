@@ -26,9 +26,8 @@ package messages;
 
 import java.io.File;
 import jsondb.Config;
-
-import java.util.ArrayList;
 import java.util.Locale;
+import java.util.ArrayList;
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.io.FileInputStream;

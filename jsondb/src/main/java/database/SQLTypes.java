@@ -21,18 +21,17 @@
 
 package database;
 
-import jsondb.Config;
-
 import java.sql.Date;
-import java.sql.Timestamp;
+import jsondb.Config;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.HashSet;
 import messages.Messages;
-import java.util.logging.Level;
-import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.logging.Level;
+import java.lang.reflect.Field;
 
 
 public class SQLTypes

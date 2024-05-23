@@ -292,7 +292,7 @@ public class Cursor
       close(true,false);
    }
 
-   
+
    private void close(boolean delete, boolean remove)
    {
       eof = true;
