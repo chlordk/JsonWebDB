@@ -57,6 +57,7 @@ public class Table
    private static final String SOURCE = "source";
    private static final String COLUMN = "column";
    private static final String CURSOR = "cursor";
+   private static final String HEADING = "heading";
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String FILTERS = "filters";
@@ -185,6 +186,9 @@ public class Table
 
       JSONObject args = definition.getJSONObject(SELECT);
 
+      Boolean heading = Misc.get(args,HEADING);
+      if (heading == null) heading = false;
+
       Boolean usecurs = Misc.get(args,CURSOR);
       if (usecurs == null) usecurs = true;
 
@@ -232,11 +236,16 @@ public class Table
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
 
-      ArrayList<Column> sellist = cursor.describe();
+      ArrayList<Column> sellist = null;
 
-      columns = new String[sellist.size()];
-      for (int i = 0; i < columns.length; i++)
-         columns[i] = sellist.get(i).name;
+      if (heading)
+      {
+         sellist = cursor.describe();
+
+         columns = new String[sellist.size()];
+         for (int i = 0; i < columns.length; i++)
+            columns[i] = sellist.get(i).name;
+      }
 
       if (!usecurs) cursor.close();
 
@@ -244,7 +253,7 @@ public class Table
          cursor.remove();
 
       response.put("success",true);
-      response.put("columns",columns);
+      if (heading) response.put("columns",columns);
 
       if (cursor.next())
       {
