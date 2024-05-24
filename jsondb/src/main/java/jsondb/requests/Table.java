@@ -45,6 +45,7 @@ import utils.NameValuePair;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.WhereClause;
+import filters.WhereClause.Context;
 import sources.TableSource.AccessType;
 
 
@@ -205,8 +206,10 @@ public class Table
       SQLPart select = new SQLPart(stmt);
       select.append(source.from(bindvalues));
 
-      WhereClause whcl = new WhereClause(source,source.qrycolumns,args);
-      WhereClause asrt = getAssertClause(source,source.qrycolumns,args);
+      Context context = new Context(session,source,true);
+
+      WhereClause whcl = new WhereClause(context,args);
+      WhereClause asrt = getAssertClause(context,args);
 
       if (limit == AccessType.ifwhereclause && !whcl.exists())
          throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
@@ -308,7 +311,7 @@ public class Table
    }
 
 
-   private WhereClause getAssertClause(TableSource source, HashMap<String,DataType> types, JSONObject def) throws Exception
+   private WhereClause getAssertClause(Context context, JSONObject def) throws Exception
    {
       if (!def.has(ASSERTIONS))
          return(null);
@@ -329,7 +332,7 @@ public class Table
          filterdef.put(filter);
       }
 
-      return(new WhereClause(source,types,assertflts));
+      return(new WhereClause(context,assertflts));
    }
 
 

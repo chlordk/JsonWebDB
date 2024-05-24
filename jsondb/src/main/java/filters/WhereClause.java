@@ -24,6 +24,7 @@ SOFTWARE.
 
 package filters;
 
+import jsondb.Session;
 import database.SQLPart;
 import messages.Messages;
 import java.util.HashSet;
@@ -42,24 +43,20 @@ public class WhereClause
    private SQLPart whcl;
    private Clause clause;
    private JSONArray filters;
-   private TableSource source;
-   private HashMap<String,DataType> datatypes;
 
    private static final String FILTER = "filter";
    private static final String CUSTOM = "custom";
    private static final String FILTERS = "filters";
 
 
-   public WhereClause(TableSource source, HashMap<String,DataType> datatypes, JSONObject definition) throws Exception
+   public WhereClause(Context context, JSONObject definition) throws Exception
    {
-      this.source = source;
       this.whcl = new SQLPart();
 
       if (definition.has(FILTERS))
       {
-         this.datatypes = datatypes;
          this.filters = definition.getJSONArray(FILTERS);
-         if (this.filters.length() > 0) this.whcl = this.build();
+         if (this.filters.length() > 0) this.whcl = this.build(context);
       }
    }
 
@@ -99,13 +96,12 @@ public class WhereClause
    }
 
 
-   private SQLPart build() throws Exception
+   private SQLPart build(Context context) throws Exception
    {
-      this.clause = new Clause(source,datatypes,filters);
+      this.clause = new Clause(context,filters);
       this.clause.root = true; this.clause.build();
       return(new SQLPart("\nwhere "+clause.sql,clause.bindvalues));
    }
-
 
 
    private static class Clause
@@ -119,7 +115,7 @@ public class WhereClause
       JSONArray definition;
       ArrayList<BindValue> bindvalues;
 
-      Clause(TableSource source, HashMap<String,DataType> datatypes, JSONArray filters) throws Exception
+      Clause(Context context, JSONArray filters) throws Exception
       {
          root = false;
          empty = true;
@@ -133,7 +129,7 @@ public class WhereClause
 
          for (int i = 0; i < entries; i++)
          {
-            this.group[i] = new Clause(source,datatypes,filters.getJSONObject(i));
+            this.group[i] = new Clause(context,filters.getJSONObject(i));
             if (!this.group[i].empty) this.empty = false;
             bindvalues.addAll(this.group[i].bindvalues);
             if (i == 0) StartWithAnd(this.group[i]);
@@ -141,7 +137,7 @@ public class WhereClause
       }
 
 
-      Clause(TableSource source, HashMap<String,DataType> datatypes, JSONObject filter) throws Exception
+      Clause(Context context, JSONObject filter) throws Exception
       {
          empty = true;
          this.type = "and";
@@ -162,7 +158,7 @@ public class WhereClause
 
                for (int i = 0; i < this.group.length; i++)
                {
-                  this.group[i] = new Clause(source,datatypes,flts.getJSONObject(i));
+                  this.group[i] = new Clause(context,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
                   bindvalues.addAll(this.group[i].bindvalues);
                   if (i == 0) StartWithAnd(this.group[i]);
@@ -171,7 +167,7 @@ public class WhereClause
             else
             {
                this.empty = false;
-               this.filter = getFilter(source,datatypes,(JSONObject) fltdef);
+               this.filter = getFilter(context,(JSONObject) fltdef);
                this.bindvalues.addAll(this.filter.bindvalues());
             }
          }
@@ -192,7 +188,7 @@ public class WhereClause
 
                for (int i = 0; i < this.group.length; i++)
                {
-                  this.group[i] = new Clause(source,datatypes,flts.getJSONObject(i));
+                  this.group[i] = new Clause(context,flts.getJSONObject(i));
                   if (!this.group[i].empty) this.empty = false;
                   bindvalues.addAll(this.group[i].bindvalues);
                   if (i == 0) StartWithAnd(this.group[i]);
@@ -201,15 +197,16 @@ public class WhereClause
             else
             {
                this.empty = false;
-               this.filter = getFilter(source,datatypes,(JSONObject) fltdef);
+               this.filter = getFilter(context,(JSONObject) fltdef);
                this.bindvalues.addAll(this.filter.bindvalues());
             }
          }
 
          else
+
          {
             this.empty = false;
-            this.filter = getFilter(source,datatypes,filter);
+            this.filter = getFilter(context,filter);
             this.bindvalues.addAll(this.filter.bindvalues());
          }
       }
@@ -281,7 +278,7 @@ public class WhereClause
          clause.type = null;
       }
 
-      private static Filter getFilter(TableSource source, HashMap<String,DataType> datatypes, JSONObject def) throws Exception
+      private static Filter getFilter(Context context, JSONObject def) throws Exception
       {
          String name = null;
 
@@ -292,8 +289,25 @@ public class WhereClause
             throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));
 
          if (!name.equals(CUSTOM))
-         return(Filter.getInstance(name,datatypes,def));
-         return(Filter.getInstance(name,source,datatypes,def));
+         return(Filter.getInstance(name,context.datatypes,def));
+         return(Filter.getInstance(name,context.source,context.datatypes,def));
+      }
+   }
+
+
+   public static class Context
+   {
+      public final boolean query;
+      public final Session session;
+      public final TableSource source;
+      public final HashMap<String,DataType> datatypes;
+
+      public Context(Session session, TableSource source, boolean query)
+      {
+         this.query = query;
+         this.source = source;
+         this.session = session;
+         datatypes = query ? source.qrycolumns : source.basecolumns;
       }
    }
 }

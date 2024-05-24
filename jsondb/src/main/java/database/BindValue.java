@@ -96,11 +96,6 @@ public class BindValue
       return(type == null);
    }
 
-   public boolean hasTypeID()
-   {
-      return(type instanceof Integer);
-   }
-
    public Integer type()
    {
       return(type);
