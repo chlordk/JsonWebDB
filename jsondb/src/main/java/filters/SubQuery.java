@@ -25,24 +25,24 @@ SOFTWARE.
 package filters;
 
 import database.SQLPart;
-import java.util.HashMap;
-import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import jsondb.requests.Table;
+import filters.WhereClause.Context;
 import filters.definitions.Filter;
 
 
 public class SubQuery extends Filter
 {
    private final SQLPart subq;
+   private static final String TABLE = Table.class.getSimpleName();
 
-   public SubQuery(HashMap<String,DataType> datatypes, JSONObject definition) throws Exception
+
+   public SubQuery(Context context, JSONObject definition) throws Exception
    {
-      super(datatypes,definition);
-      String table = Table.class.getSimpleName();
-      subq = Table.getSubQuery(definition.getJSONObject(table));
+      super(context,definition);
+      subq = Table.getSubQuery(context,definition.getJSONObject(TABLE));
    }
 
    @Override
@@ -59,14 +59,13 @@ public class SubQuery extends Filter
          else sql += ", " + columns[i];
       }
 
-      sql += ") in ";
-
+      sql += ") in (" + subq.snippet() + ")";
       return(sql);
    }
 
    @Override
    public ArrayList<BindValue> bindvalues()
    {
-      return(new ArrayList<BindValue>());
+      return(subq.bindValues());
    }
 }

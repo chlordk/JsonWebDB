@@ -288,9 +288,7 @@ public class WhereClause
          if (name == null)
             throw new Exception(Messages.get("BAD_FILTER_DEFINITION",def.toString(2)));
 
-         if (!name.equals(CUSTOM))
-         return(Filter.getInstance(name,context.datatypes,def));
-         return(Filter.getInstance(name,context.source,context.datatypes,def));
+         return(Filter.getInstance(name,context,def));
       }
    }
 

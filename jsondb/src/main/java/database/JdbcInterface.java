@@ -189,7 +189,7 @@ public abstract class JdbcInterface
       if (conn == null)
          throw new Exception(Messages.get("NOT_CONNECTED"));
 
-      Config.logger().fine(logentry(cursor));
+      Config.logger().info(logentry(cursor));
 
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
@@ -226,7 +226,7 @@ public abstract class JdbcInterface
          }
          catch (Exception e)
          {
-            Config.logger().severe(cursor.sql());
+            Config.logger().severe(logentry(cursor,e));
             throw new Exception(e);
          }
       }
@@ -253,12 +253,7 @@ public abstract class JdbcInterface
          logentry += "\n"+cursor.bindvalues().get(i).desc();
 
       if (e != null)
-      {
-         ByteArrayOutputStream out = new ByteArrayOutputStream();
-         e.printStackTrace(new PrintStream(out));
-         try {out.close();} catch (Exception ex) {}
-         logentry += "\n" + new String(out.toByteArray());
-      }
+         logentry += "\n\n" + e.toString() + "\n";
 
       logentry += del;
 

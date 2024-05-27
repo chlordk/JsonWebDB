@@ -24,16 +24,15 @@ SOFTWARE.
 
 package filters;
 
-import java.util.HashMap;
-import database.DataType;
 import org.json.JSONObject;
+import filters.WhereClause.Context;
 
 
 public class GreaterThan extends Equals
 {
-   public GreaterThan(HashMap<String,DataType> datatypes, JSONObject definition)
+   public GreaterThan(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    @Override

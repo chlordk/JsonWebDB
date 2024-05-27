@@ -24,16 +24,15 @@ SOFTWARE.
 
 package filters;
 
-import database.DataType;
-import java.util.HashMap;
 import org.json.JSONObject;
+import filters.WhereClause.Context;
 
 
 public class NotBetween extends Between
 {
-   public NotBetween(HashMap<String,DataType> datatypes, JSONObject definition)
+   public NotBetween(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    @Override

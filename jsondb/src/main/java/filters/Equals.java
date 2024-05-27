@@ -25,18 +25,18 @@ SOFTWARE.
 package filters;
 
 import database.DataType;
-import java.util.HashMap;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.definitions.Filter;
+import filters.WhereClause.Context;
 
 
 public class Equals extends Filter
 {
-   public Equals(HashMap<String,DataType> datatypes, JSONObject definition)
+   public Equals(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    public Object value()
@@ -64,7 +64,8 @@ public class Equals extends Filter
          bindvalues.add(bv.value(value));
 
          String name = column.toLowerCase();
-         DataType coldef = datatypes.get(name);
+         DataType coldef = context.datatypes.get(name);
+
          if (coldef != null) bv.type(coldef.sqlid);
       }
 

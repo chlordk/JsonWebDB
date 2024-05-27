@@ -25,18 +25,18 @@ SOFTWARE.
 package filters;
 
 import database.DataType;
-import java.util.HashMap;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import filters.definitions.Filter;
+import filters.WhereClause.Context;
 
 
 public class Between extends Filter
 {
-   public Between(HashMap<String,DataType> datatypes, JSONObject definition)
+   public Between(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    @Override
@@ -57,7 +57,7 @@ public class Between extends Filter
          bindvalues.add(bv2.value(values[1]));
 
          String name = column.toLowerCase();
-         DataType coldef = datatypes.get(name);
+         DataType coldef = context.datatypes.get(name);
 
          if (coldef != null)
          {

@@ -24,16 +24,15 @@ SOFTWARE.
 
 package filters;
 
-import database.DataType;
-import java.util.HashMap;
 import org.json.JSONObject;
+import filters.WhereClause.Context;
 
 
 public class NotEquals extends Equals
 {
-   public NotEquals(HashMap<String,DataType> datatypes, JSONObject definition)
+   public NotEquals(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    @Override

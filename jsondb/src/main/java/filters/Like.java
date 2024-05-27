@@ -24,16 +24,15 @@ SOFTWARE.
 
 package filters;
 
-import database.DataType;
-import java.util.HashMap;
 import org.json.JSONObject;
+import filters.WhereClause.Context;
 
 
 public class Like extends Equals
 {
-   public Like(HashMap<String,DataType> datatypes, JSONObject definition)
+   public Like(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
    }
 
    @Override

@@ -29,9 +29,9 @@ import database.DataType;
 import java.util.HashMap;
 import database.BindValue;
 import org.json.JSONObject;
-import sources.TableSource;
 import java.util.ArrayList;
 import filters.definitions.Filter;
+import filters.WhereClause.Context;
 import sources.TableSource.CustomFilter;
 
 
@@ -40,14 +40,14 @@ public class Custom extends Filter
    private SQLPart parsed = null;
 
 
-   public Custom(TableSource source, HashMap<String,DataType> datatypes, JSONObject definition)
+   public Custom(Context context, JSONObject definition)
    {
-      super(datatypes,definition);
+      super(context,definition);
 
       try
       {
-         CustomFilter custflt = source.filters.get(custom.toLowerCase());
          HashMap<String,BindValue> bindings = new HashMap<String,BindValue>();
+         CustomFilter custflt = context.source.filters.get(custom.toLowerCase());
 
          for(DataType type : custflt.types.values())
          {

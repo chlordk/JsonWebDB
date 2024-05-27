@@ -27,7 +27,6 @@ package jsondb.requests;
 import utils.Misc;
 import jsondb.Config;
 import jsondb.Session;
-import sources.Source;
 import database.Cursor;
 import sources.Sources;
 import jsondb.Response;
@@ -75,7 +74,7 @@ public class Table
    {
       this.definition = definition;
       source = definition.getString(SOURCE);
-      sessid = definition.getString(SESSION);
+      sessid = definition.optString(SESSION);
    }
 
 
@@ -179,7 +178,7 @@ public class Table
       JSONObject response = new JSONOObject();
 
       AccessType limit = source.getAccessLimit("select");
-      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED",source));
 
       if (!source.described())
          this.describe(session,source);
@@ -291,7 +290,7 @@ public class Table
    }
 
 
-   public static SQLPart getSubQuery(JSONObject def) throws Exception
+   public static SQLPart getSubQuery(Context context, JSONObject def) throws Exception
    {
       String srcid = def.getString(SOURCE);
       TableSource source = Sources.get(srcid);
@@ -300,14 +299,40 @@ public class Table
          throw new Exception(Messages.get("UNKNOWN_SOURCE",srcid));
 
       AccessType limit = source.getAccessLimit("select");
-      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED"));
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED",srcid));
 
-      HashMap<String,BindValue> bindvalues =
-         Utils.getBindValues(def);
+      if (!source.described())
+         new Table(def).describe(context.session,source);
 
       JSONObject args = def.getJSONObject(SELECT);
+      String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
+      HashMap<String,BindValue> bindvalues = Utils.getBindValues(def);
 
-      return(null);
+      String stmt = "select "+Utils.getColumnList(columns);
+
+      SQLPart select = new SQLPart(stmt);
+      select.append(source.from(bindvalues));
+
+      context = new Context(context.session,source,true);
+      WhereClause whcl = new WhereClause(context,args);
+
+      if (limit == AccessType.ifwhereclause && !whcl.exists())
+         throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
+
+      if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
+         throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
+
+      SQLPart wh = whcl.asSQL();
+      select.append(wh);
+
+      if (source.vpd != null && source.vpd.appliesTo("select"))
+      {
+         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         if (whcl.exists()) select.append("\nand",vpdflt);
+         else select.append("\nwhere",vpdflt);
+      }
+
+      return(select);
    }
 
 
