@@ -1,0 +1,10 @@
+{
+   "datasources":
+   [
+      {
+         "id": "Dates",
+         "query": {"sql": "select current_date"},
+         "select": "allowed"
+      }     
+   ]
+}
