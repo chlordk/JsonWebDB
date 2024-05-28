@@ -119,7 +119,7 @@ public class Table
                if (source.queryBased() && source.hasBaseObject())
                   getBASEColumns(session,source);
 
-               if (source.primarykey.size() == 0)
+               if (source.hasBaseObject() && source.primarykey.size() == 0)
                   getPrimaryKey(session,source);
             }
          }

@@ -3,7 +3,7 @@
    [
       {
          "id": "Dates",
-         "query": {"sql": "select current_date"},
+         "query": {"sql": "select now() as date"},
          "select": "allowed"
       }     
    ]

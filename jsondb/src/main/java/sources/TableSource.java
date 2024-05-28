@@ -71,8 +71,6 @@ public class TableSource extends Source
       String[] primarykey = getStringArray(definition,PRIMARY,false);
 
       id = id.toLowerCase();
-      if (object == null) object = id;
-      else object = object.toLowerCase();
 
       Access access = new Access(definition);
       VPDFilter vpd = VPDFilter.parse(definition);
@@ -178,10 +176,10 @@ public class TableSource extends Source
 
    public SQLPart from(HashMap<String,BindValue> bindvalues)
    {
-      SQLPart from;
+      SQLPart from = new SQLPart();
 
       if (query != null) from = query.from(bindvalues);
-      else               from = new SQLPart("\nfrom "+object);
+      else if (object != null) from = new SQLPart("\nfrom "+object);
 
       return(from);
    }
@@ -227,6 +225,7 @@ public class TableSource extends Source
       private SQLPart from(HashMap<String,BindValue> values)
       {
          SQLPart bound = query.clone();
+         String alias = object == null ? "t" : object;
 
          for(BindValue used : bound.bindValues())
          {
@@ -235,7 +234,7 @@ public class TableSource extends Source
          }
 
          bound.bindByValue();
-         String sql = "\nfrom ("+bound.snippet()+") "+object;
+         String sql = "\nfrom ("+bound.snippet()+") "+alias;
 
          return(bound.snippet(sql));
       }
