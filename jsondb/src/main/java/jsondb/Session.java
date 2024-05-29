@@ -410,6 +410,23 @@ public class Session
    }
 
 
+   public synchronized void executeUpdate(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   {
+      JdbcInterface read = ensure(false);
+
+      for(BindValue bv : bindvalues)
+         bv.validate();
+
+      int affected = read.executeUpdate(sql,bindvalues,savepoint);
+
+      synchronized(SYNC)
+      {
+         used = new Date();
+         connused = new Date();
+      }
+   }
+
+
    public boolean authenticate(String username, String password) throws Exception
    {
       if (username == null) return(false);

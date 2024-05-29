@@ -33,3 +33,4 @@ NOT_SESSION_OWNER          = {%1} is owned by '{%2}'
 SESSION_REINSTATED         = Session {%1} reinstated
 REINSTATE_CURSOR           = Cursor {%1} reinstated
 DISC_WITH_CLIENTS          = {%1} will be closed with active clients {%2}
+INSERT_NO_BASEOBJECT       = Cannot insert into '{%1}', as it is neither a table or view

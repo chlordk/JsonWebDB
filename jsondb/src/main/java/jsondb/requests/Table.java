@@ -60,6 +60,9 @@ public class Table
    private static final String COLUMN = "column";
    private static final String CURSOR = "cursor";
    private static final String HEADING = "heading";
+   private static final String INSERT = "insert()";
+   private static final String UPDATE = "update()";
+   private static final String DELETE = "delete()";
    private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String FILTERS = "filters";
@@ -138,6 +141,91 @@ public class Table
          rows.put(((Column) columns.get(i)).toJSONObject());
 
       response.put("rows",rows);
+      return(new Response(response));
+   }
+
+
+   public Response insert() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,"insert()");
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Table",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(insert(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response insert(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      TableSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(insert(session,source));
+   }
+
+
+   public Response insert(Session session, TableSource source) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      if (!source.hasBaseObject())
+         throw new Exception(Messages.get("INSERT_NO_BASEOBJECT",source));
+
+      AccessType limit = source.getAccessLimit("insert");
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED",source));
+
+      if (!source.described())
+         this.describe(session,source);
+
+      JSONObject args = definition.getJSONObject(INSERT);
+
+      String list = null;
+      String values = null;
+
+      JSONArray colspec = args.optJSONArray(COLUMNS);
+      ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
+
+      for (int i = 0; i < colspec.length(); i++)
+      {
+         JSONObject col = colspec.getJSONObject(i);
+
+         Object value = col.get("value");
+         String name = col.getString("name");
+
+         if (i == 0) list = name;
+         else list += "," + name;
+
+         if (i == 0) values = "?";
+         else values += "," + "?";
+
+         BindValue bv = new BindValue(name).value(value);
+         DataType dt = source.basecolumns.get(name.toLowerCase());
+
+         if (dt != null) bv.type(dt.sqlid);
+         bindvalues.add(bv);
+      }
+
+      String stmt = "insert into "+source.object+" (" + list + ") values (" + values + ")";
+      SQLPart insert = new SQLPart(stmt,bindvalues);
+
+      boolean savepoint = Config.dbconfig().savepoint(false);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      System.out.println(insert.snippet());
+      session.executeUpdate(insert.snippet(),insert.bindValues(),savepoint);
+
       return(new Response(response));
    }
 

@@ -22,13 +22,11 @@
 package database;
 
 import jsondb.Config;
-import messages.Messages;
 import java.sql.Statement;
 import java.sql.Savepoint;
-import java.io.PrintStream;
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.io.ByteArrayOutputStream;
 import database.definitions.AdvancedPool;
 
 
@@ -135,14 +133,21 @@ public abstract class JdbcInterface
    }
 
 
-   public int executeUpdate(String sql, boolean savepoint) throws Exception
+   public int executeUpdate(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
    {
       Savepoint sp = null;
 
       if (conn.getAutoCommit())
          savepoint = false;
 
-      Statement stmt = conn.createStatement();
+      PreparedStatement stmt = conn.prepareStatement(sql);
+
+      for (int i = 0; i < bindvalues.size(); i++)
+      {
+         BindValue bv = bindvalues.get(i);
+         if (bv.untyped()) stmt.setObject(i+1,bv.value());
+         else stmt.setObject(i+1,bv.value(),bv.type());
+      }
 
       if (savepoint)
       {
@@ -151,7 +156,7 @@ public abstract class JdbcInterface
             synchronized(conn)
             {
                sp = conn.setSavepoint();
-               int affected = stmt.executeUpdate(sql);
+               int affected = stmt.executeUpdate();
                releaseSavePoint(sp,false);
                return(affected);
             }
@@ -167,7 +172,7 @@ public abstract class JdbcInterface
       {
          try
          {
-            int affected = stmt.executeUpdate(sql);
+            int affected = stmt.executeUpdate();
             return(affected);
          }
          catch (Exception e)
@@ -185,9 +190,6 @@ public abstract class JdbcInterface
 
       if (conn.getAutoCommit())
          savepoint = false;
-
-      if (conn == null)
-         throw new Exception(Messages.get("NOT_CONNECTED"));
 
       Config.logger().info(logentry(cursor));
 
