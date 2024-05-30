@@ -22,7 +22,9 @@
 package database.implementations;
 
 import java.sql.Savepoint;
+import database.BindValue;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Properties;
 import database.JdbcInterface;
 import database.definitions.AdvancedPool;
@@ -58,5 +60,12 @@ public class Oracle extends JdbcInterface
       if (savepoint == null) return;
       // Oracle only supports rollback. Savepoints are released when commit/rollback
       if (rollback) super.releaseSavePoint(savepoint,rollback);
+   }
+
+   
+   @Override
+   public void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   {
+      throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
    }
 }

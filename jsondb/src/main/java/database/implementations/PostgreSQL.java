@@ -21,7 +21,9 @@
 
 package database.implementations;
 
+import database.BindValue;
 import java.sql.Connection;
+import java.util.ArrayList;
 import database.JdbcInterface;
 import database.definitions.AdvancedPool;
 
@@ -42,5 +44,12 @@ public class PostgreSQL extends JdbcInterface
    @Override
    public void releaseProxyUser(Connection conn) throws Exception
    {
+   }
+
+
+   @Override
+   public void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   {
+      throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
    }
 }

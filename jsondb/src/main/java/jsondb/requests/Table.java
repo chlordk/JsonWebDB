@@ -68,6 +68,7 @@ public class Table
    private static final String FILTERS = "filters";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
+   private static final String RETURNING = "returning";
    private static final String SAVEPOINT = "savepoint";
    private static final String FORUPDATE = "for-update";
    private static final String ASSERTIONS = "assertions";
@@ -217,6 +218,8 @@ public class Table
          bindvalues.add(bv);
       }
 
+      String[] returning = Misc.getJSONList(args,RETURNING,String.class);
+
       String stmt = "insert into "+source.object+" (" + list + ") values (" + values + ")";
       SQLPart insert = new SQLPart(stmt,bindvalues);
 
@@ -224,7 +227,7 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       System.out.println(insert.snippet());
-      session.executeUpdate(insert.snippet(),insert.bindValues(),savepoint);
+      session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
 
       return(new Response(response));
    }

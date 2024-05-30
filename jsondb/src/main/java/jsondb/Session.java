@@ -30,6 +30,7 @@ import database.Cursor;
 import messages.Messages;
 import database.BindValue;
 import java.util.ArrayList;
+import org.json.JSONObject;
 import database.JdbcInterface;
 import state.StatePersistency;
 import java.util.logging.Level;
@@ -410,20 +411,24 @@ public class Session
    }
 
 
-   public synchronized void executeUpdate(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   public synchronized JSONObject executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
    {
+      JSONObject response = null;
       JdbcInterface read = ensure(false);
 
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      int affected = read.executeUpdate(sql,bindvalues,savepoint);
+      int affected = read.executeUpdate(sql,bindvalues,returning,savepoint);
+      response = new JSONObject().put("affected",affected);
 
       synchronized(SYNC)
       {
          used = new Date();
          connused = new Date();
       }
+
+      return(response);
    }
 
 

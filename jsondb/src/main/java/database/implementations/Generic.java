@@ -21,7 +21,9 @@
 
 package database.implementations;
 
+import database.BindValue;
 import java.sql.Connection;
+import java.util.ArrayList;
 import database.JdbcInterface;
 import database.definitions.AdvancedPool;
 
@@ -43,5 +45,11 @@ public class Generic extends JdbcInterface
    public void releaseProxyUser(Connection conn) throws Exception
    {
       throw new Exception("Not implemented");
+   }
+
+   @Override
+   public void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   {
+      throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
    }
  }

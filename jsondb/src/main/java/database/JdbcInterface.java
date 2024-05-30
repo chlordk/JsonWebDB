@@ -133,7 +133,7 @@ public abstract class JdbcInterface
    }
 
 
-   public int executeUpdate(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   public int executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
    {
       Savepoint sp = null;
 
@@ -264,4 +264,5 @@ public abstract class JdbcInterface
 
    public abstract void releaseProxyUser(Connection conn) throws Exception;
    public abstract void setProxyUser(Connection conn, String username) throws Exception;
+   public abstract void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception;
 }
