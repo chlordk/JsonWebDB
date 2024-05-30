@@ -140,6 +140,19 @@ public abstract class JdbcInterface
       if (conn.getAutoCommit())
          savepoint = false;
 
+      if (returning != null && returning.length > 0)
+      {
+         if (savepoint)
+            sp = conn.setSavepoint();
+
+         executeUpdateWithReturnValues(conn,sql,bindvalues,returning);
+
+         if (savepoint)
+            releaseSavePoint(sp,false);
+
+         return(0);
+      }
+
       PreparedStatement stmt = conn.prepareStatement(sql);
 
       for (int i = 0; i < bindvalues.size(); i++)
@@ -149,37 +162,29 @@ public abstract class JdbcInterface
          else stmt.setObject(i+1,bv.value(),bv.type());
       }
 
-      if (savepoint)
+      try
       {
-         try
+         synchronized(conn)
          {
-            synchronized(conn)
-            {
+            if (savepoint)
                sp = conn.setSavepoint();
-               int affected = stmt.executeUpdate();
-               releaseSavePoint(sp,false);
-               return(affected);
-            }
-         }
-         catch (Exception e)
-         {
-            Config.logger().severe(sql);
-            releaseSavePoint(sp,true);
-            throw new Exception(e);
-         }
-      }
-      else
-      {
-         try
-         {
+
             int affected = stmt.executeUpdate();
+
+            if (savepoint)
+               releaseSavePoint(sp,false);
+
             return(affected);
          }
-         catch (Exception e)
-         {
-            Config.logger().severe(sql);
-            throw new Exception(e);
-         }
+      }
+      catch (Exception e)
+      {
+         Config.logger().severe(sql);
+
+         if (savepoint)
+            releaseSavePoint(sp,true);
+
+         throw new Exception(e);
       }
    }
 
@@ -264,5 +269,5 @@ public abstract class JdbcInterface
 
    public abstract void releaseProxyUser(Connection conn) throws Exception;
    public abstract void setProxyUser(Connection conn, String username) throws Exception;
-   public abstract void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception;
+   public abstract void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception;
 }

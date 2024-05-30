@@ -213,12 +213,20 @@ public class Table
 
          BindValue bv = new BindValue(name).value(value);
          DataType dt = source.basecolumns.get(name.toLowerCase());
-
-         if (dt != null) bv.type(dt.sqlid);
-         bindvalues.add(bv);
+         if (dt != null) bv.type(dt.sqlid); bindvalues.add(bv);
       }
 
       String[] returning = Misc.getJSONList(args,RETURNING,String.class);
+
+      if (returning != null)
+      {
+         for (int i = 0; i < returning.length; i++)
+         {
+            BindValue bv = new BindValue(returning[i]);
+            DataType dt = source.basecolumns.get(bv.name().toLowerCase());
+            if (dt != null) bv.type(dt.sqlid); bindvalues.add(bv);
+         }
+      }
 
       String stmt = "insert into "+source.object+" (" + list + ") values (" + values + ")";
       SQLPart insert = new SQLPart(stmt,bindvalues);
@@ -226,7 +234,6 @@ public class Table
       boolean savepoint = Config.dbconfig().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
-      System.out.println(insert.snippet());
       session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
 
       return(new Response(response));

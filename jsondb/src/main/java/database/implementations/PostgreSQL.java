@@ -25,6 +25,9 @@ import database.BindValue;
 import java.sql.Connection;
 import java.util.ArrayList;
 import database.JdbcInterface;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import database.definitions.AdvancedPool;
 
 
@@ -48,8 +51,32 @@ public class PostgreSQL extends JdbcInterface
 
 
    @Override
-   public void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   public void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
    {
-      throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
+      sql += " returning ";
+      for (int i = 0; i < returning.length; i++)
+      {
+         if (i == 0) sql += returning[i];
+         else  sql += "," + returning[i];
+      }
+
+      PreparedStatement stmt = conn.prepareStatement(sql);
+
+      for (int i = 0; i < bindvalues.size() - returning.length; i++)
+      {
+         BindValue bv = bindvalues.get(i);
+         if (bv.untyped()) stmt.setObject(i+1,bv.value());
+         else stmt.setObject(i+1,bv.value(),bv.type());
+      }
+
+      ResultSet rset = stmt.executeQuery();
+
+      if (rset.next())
+      {
+         Object o1 = rset.getObject(1);
+      }
+
+      rset.close();
+      stmt.close();
    }
 }

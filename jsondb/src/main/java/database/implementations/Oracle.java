@@ -62,9 +62,9 @@ public class Oracle extends JdbcInterface
       if (rollback) super.releaseSavePoint(savepoint,rollback);
    }
 
-   
+
    @Override
-   public void executeUpdateWithReturnValues(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   public void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
    {
       throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
    }

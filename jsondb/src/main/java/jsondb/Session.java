@@ -414,12 +414,12 @@ public class Session
    public synchronized JSONObject executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
    {
       JSONObject response = null;
-      JdbcInterface read = ensure(false);
+      JdbcInterface write = ensure(true);
 
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      int affected = read.executeUpdate(sql,bindvalues,returning,savepoint);
+      int affected = write.executeUpdate(sql,bindvalues,returning,savepoint);
       response = new JSONObject().put("affected",affected);
 
       synchronized(SYNC)

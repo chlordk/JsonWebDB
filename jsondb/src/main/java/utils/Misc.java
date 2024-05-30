@@ -156,7 +156,7 @@ public class Misc
       if (object instanceof JSONArray)
       {
          JSONArray arr = (JSONArray) object;
-         values = (T[]) Array.newInstance(clz,1);
+         values = (T[]) Array.newInstance(clz,arr.length());
 
          for (int i = 0; i < values.length; i++)
             values[i] = (T) arr.get(i);
