@@ -29,8 +29,8 @@ import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import jsondb.requests.Table;
-import filters.WhereClause.Context;
 import filters.definitions.Filter;
+import filters.WhereClause.Context;
 
 
 public class SubQuery extends Filter

@@ -179,8 +179,6 @@ public class Table
 
    public Response insert(Session session, TableSource source) throws Exception
    {
-      JSONObject response = new JSONOObject();
-
       if (!source.hasBaseObject())
          throw new Exception(Messages.get("INSERT_NO_BASEOBJECT",source));
 
@@ -234,8 +232,7 @@ public class Table
       boolean savepoint = Config.dbconfig().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
-      session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
-
+      JSONObject response = session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
       return(new Response(response));
    }
 

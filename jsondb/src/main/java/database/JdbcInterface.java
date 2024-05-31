@@ -133,7 +133,7 @@ public abstract class JdbcInterface
    }
 
 
-   public int executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+   public UpdateResponse executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
    {
       Savepoint sp = null;
 
@@ -145,12 +145,12 @@ public abstract class JdbcInterface
          if (savepoint)
             sp = conn.setSavepoint();
 
-         executeUpdateWithReturnValues(conn,sql,bindvalues,returning);
+         ArrayList<Object[]> data = executeUpdateWithReturnValues(conn,sql,bindvalues,returning);
 
          if (savepoint)
             releaseSavePoint(sp,false);
 
-         return(0);
+         return(new UpdateResponse(data));
       }
 
       PreparedStatement stmt = conn.prepareStatement(sql);
@@ -174,7 +174,7 @@ public abstract class JdbcInterface
             if (savepoint)
                releaseSavePoint(sp,false);
 
-            return(affected);
+            return(new UpdateResponse(affected));
          }
       }
       catch (Exception e)
@@ -197,7 +197,6 @@ public abstract class JdbcInterface
          savepoint = false;
 
       Config.logger().info(logentry(cursor));
-
       PreparedStatement stmt = conn.prepareStatement(cursor.sql());
 
       for (int i = 0; i < cursor.bindvalues().size(); i++)
@@ -207,35 +206,27 @@ public abstract class JdbcInterface
          else stmt.setObject(i+1,bv.value(),bv.type());
       }
 
-      if (savepoint)
+      try
       {
-         try
+         synchronized(conn)
          {
-            synchronized(conn)
-            {
+            if (savepoint)
                sp = conn.setSavepoint();
-               cursor.resultset(stmt.executeQuery());
+
+            cursor.resultset(stmt.executeQuery());
+
+            if (savepoint)
                releaseSavePoint(sp,false);
-            }
-         }
-         catch (Exception e)
-         {
-            Config.logger().severe(logentry(cursor,e));
-            releaseSavePoint(sp,true);
-            throw new Exception(e);
          }
       }
-      else
+      catch (Exception e)
       {
-         try
-         {
-            cursor.resultset(stmt.executeQuery());
-         }
-         catch (Exception e)
-         {
-            Config.logger().severe(logentry(cursor,e));
-            throw new Exception(e);
-         }
+         Config.logger().severe(logentry(cursor,e));
+
+         if (savepoint)
+            releaseSavePoint(sp,true);
+
+         throw new Exception(e);
       }
    }
 
@@ -267,7 +258,26 @@ public abstract class JdbcInterface
       return(logentry);
    }
 
+
+   public static class UpdateResponse
+   {
+      public final int affected;
+      public final ArrayList<Object[]> returning;
+
+      UpdateResponse(int affected)
+      {
+         this.returning = null;
+         this.affected = affected;
+      }
+
+      UpdateResponse(ArrayList<Object[]> returning)
+      {
+         this.returning = returning;
+         this.affected = returning.size();
+      }
+   }
+
    public abstract void releaseProxyUser(Connection conn) throws Exception;
    public abstract void setProxyUser(Connection conn, String username) throws Exception;
-   public abstract void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception;
+   public abstract ArrayList<Object[]> executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception;
 }

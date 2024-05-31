@@ -22,12 +22,11 @@
 package database.implementations;
 
 import database.BindValue;
+import java.sql.ResultSet;
 import java.sql.Connection;
 import java.util.ArrayList;
 import database.JdbcInterface;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import database.definitions.AdvancedPool;
 
 
@@ -51,7 +50,7 @@ public class PostgreSQL extends JdbcInterface
 
 
    @Override
-   public void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
+   public ArrayList<Object[]> executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
    {
       sql += " returning ";
       for (int i = 0; i < returning.length; i++)
@@ -70,13 +69,22 @@ public class PostgreSQL extends JdbcInterface
       }
 
       ResultSet rset = stmt.executeQuery();
+      int cols = rset.getMetaData().getColumnCount();
+      ArrayList<Object[]> data = new ArrayList<Object[]>();
 
       if (rset.next())
       {
-         Object o1 = rset.getObject(1);
+         Object[] row = new Object[cols];
+
+         for (int i = 0; i < row.length; i++)
+            row[i] = rset.getObject(i+1);
+
+         data.add(row);
       }
 
       rset.close();
       stmt.close();
+
+      return(data);
    }
 }

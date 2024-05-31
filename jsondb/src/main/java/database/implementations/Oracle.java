@@ -64,7 +64,7 @@ public class Oracle extends JdbcInterface
 
 
    @Override
-   public void executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
+   public ArrayList<Object[]> executeUpdateWithReturnValues(Connection conn, String sql, ArrayList<BindValue> bindvalues, String[] returning) throws Exception
    {
       throw new UnsupportedOperationException("Unimplemented method 'executeUpdateWithReturnValues'");
    }

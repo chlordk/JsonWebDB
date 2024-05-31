@@ -29,6 +29,7 @@ import java.util.Date;
 import database.Cursor;
 import messages.Messages;
 import database.BindValue;
+import org.json.JSONArray;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import database.JdbcInterface;
@@ -36,6 +37,7 @@ import state.StatePersistency;
 import java.util.logging.Level;
 import database.definitions.AdvancedPool;
 import state.StatePersistency.SessionInfo;
+import database.JdbcInterface.UpdateResponse;
 import state.StatePersistency.TransactionInfo;
 
 
@@ -419,8 +421,25 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      int affected = write.executeUpdate(sql,bindvalues,returning,savepoint);
-      response = new JSONObject().put("affected",affected);
+      UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
+
+      response = new JSONObject().put("affected",resp.affected);
+
+      if (resp.returning != null)
+      {
+         JSONArray row = null;
+         JSONArray rows = new JSONArray();
+
+         for (int i = 0; i < resp.returning.size(); i++)
+         {
+            row = new JSONArray();
+            Object[] values = resp.returning.get(i);
+            for(Object value : values) row.put(value);
+            rows.put(row);
+         }
+
+         response.put("rows",rows);
+      }
 
       synchronized(SYNC)
       {
