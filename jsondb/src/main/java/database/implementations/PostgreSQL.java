@@ -72,7 +72,7 @@ public class PostgreSQL extends JdbcInterface
       int cols = rset.getMetaData().getColumnCount();
       ArrayList<Object[]> data = new ArrayList<Object[]>();
 
-      if (rset.next())
+      while(rset.next())
       {
          Object[] row = new Object[cols];
 
