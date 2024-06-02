@@ -1,0 +1,177 @@
+{
+   "application":
+   {
+		"index": "index.html",
+		"virtual": [{"path": "/forms", "page": "index.html"}],
+		"location": "/Users/alhof/Repository/forms42/demo/dist"
+		,
+		"admin":
+		{
+			"admin": "/admin",
+			"username": "admin",
+			"password": "Manager1",
+			"ssl-required": false
+		}
+   }
+	,
+	"cluster":
+	{
+		"types":
+		[
+			{
+				"type": "docker",
+				"location": "/dist",
+				"endpoint": "https://localhost:{ssl}"
+			}
+			,
+			{
+				"type": "local",
+				"embedded": true,
+				"queue-length": 16,
+				"worker-threads": 16,
+				"endpoint": "http://{host}:{port}"
+			}
+		]
+		,
+		"instances":
+		[
+			{
+				"type": "local",
+				"name": "local01",
+				"port": 6001, "ssl": 6002
+			}
+			,
+			{
+				"type": "local",
+				"name": "local02",
+				"port": 6003, "ssl": 6004
+			}
+			,
+			{
+				"type": "docker",
+				"name": "docker01",
+				"port": 8001, "ssl": 8002
+			}
+			,
+			{
+				"type": "docker",
+				"name": "docker02",
+				"port": 8003, "ssl": 8004
+			}
+		]
+	}
+	,
+   "session":
+   {
+		"session-timeout": 600,
+		"connection-timeout": 60,
+		"transaction-timeout": 30
+   }
+	,
+	"embedded":
+	{
+		"keystore":
+		{
+			"type": "pkcs12",
+			"file": "jsonwebdb.p12",
+			"password": "Manager1"
+		}
+	}
+   ,
+	"super-users":
+	[
+		{"entity": "root", "signature": "e3887d1f-bda1-425a-b30d-4065403a5be1"}
+	]
+	,
+	"database":
+   {
+		"type": "Oracle",
+		"primary-key-source": "PrimaryKey",
+
+		"proxyuser": true,
+		"defaultuser": "hr",
+
+		"replication-latency": 1000,
+		"savepoint": ["read","write"],
+
+		"pool-properties":
+		{
+			"username": "hr",
+			"password": "hr",
+
+			"test": "select * from dual",
+
+			"classes": [],
+			"driver": "oracle.jdbc.driver.OracleDriver",
+
+			"primary":
+			{
+				"min": 5,
+				"max": 60,
+
+				"max-wait": 10000,
+				"validate": 30000,
+
+				"jdbc-url": "jdbc:oracle:thin:@//AlexMacBook03.home:1521/xepdb1"
+			}
+			,
+			"secondary":
+			{
+				"min": 10,
+				"max": 600,
+
+				"max-wait": 10000,
+				"validate": 30000,
+
+				"jdbc-url": "jdbc:oracle:thin:@//AlexMacBook03.home:1521/xepdb1"
+			}
+		}
+   }
+   ,
+   "files":
+   {
+		"mimetypes":
+		[
+			{"filetype": "css",  "mimetype": "text/css"},
+
+			{"filetype": "txt",  "mimetype": "text/plain"},
+			{"filetype": "htm",  "mimetype": "text/html"},
+			{"filetype": "html", "mimetype": "text/html"},
+
+			{"filetype": "gif",  "mimetype": "image/gif"},
+			{"filetype": "png",  "mimetype": "image/png"},
+			{"filetype": "jpg",  "mimetype": "image/jpeg"},
+			{"filetype": "jpeg", "mimetype": "image/jpeg"},
+
+			{"filetype": "js",   "mimetype": "text/javascript"},
+			{"filetype": "json", "mimetype": "application/json"}
+		]
+		,
+		"cache":
+		{
+			"small":
+			[
+				{"pattern": "*.js", "maxsize": 1024},
+				{"pattern": "*.css", "maxsize": 1024},
+				{"pattern": "*.png", "maxsize": 1024},
+				{"pattern": "*.jpg", "maxsize": 1024},
+				{"pattern": "*.gif", "maxsize": 1024},
+				{"pattern": "*.jpeg", "maxsize": 1024},
+				{"pattern": "*.html", "maxsize": 1024}
+			]
+			,
+			"large":
+			[
+				{"pattern": "*.js", "minsize": 1048576},
+				{"pattern": "*.html", "minsize": 1048576}
+			]
+		}
+	}
+	,
+	"logger":
+	{
+		"files"	: 10,
+		"size"	: "1MB",
+		"level"  : "info"
+	}
+}

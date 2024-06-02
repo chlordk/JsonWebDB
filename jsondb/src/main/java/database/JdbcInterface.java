@@ -69,7 +69,7 @@ public abstract class JdbcInterface
 
       if (Config.dbconfig().useproxy())
          releaseProxyUser(conn);
-         
+
       pool.freeConnection(conn);
 
       conn = null;
