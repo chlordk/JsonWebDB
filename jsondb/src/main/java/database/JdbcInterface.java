@@ -67,7 +67,9 @@ public abstract class JdbcInterface
       if (conn == null) return(false);
       if (!conn.getAutoCommit()) conn.rollback();
 
-      releaseProxyUser(conn);
+      if (Config.dbconfig().useproxy())
+         releaseProxyUser(conn);
+         
       pool.freeConnection(conn);
 
       conn = null;
