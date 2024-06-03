@@ -352,6 +352,102 @@ public class Table
    }
 
 
+   public Response delete() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,"insert()");
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Table",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(delete(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response delete(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      TableSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(delete(session,source));
+   }
+
+
+   public Response delete(Session session, TableSource source) throws Exception
+   {
+      if (!source.hasBaseObject())
+      throw new Exception(Messages.get("DELETE_NO_BASEOBJECT",source));
+
+      AccessType limit = source.getAccessLimit("delete");
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED",source));
+
+      if (!source.described())
+         this.describe(session,source);
+
+      HashMap<String,BindValue> bindvalues =
+         Utils.getBindValues(definition);
+
+      JSONObject args = definition.getJSONObject(DELETE);
+
+      String stmt = "delete from "+source.object;
+      SQLPart delete = new SQLPart(stmt);
+
+      Context context = new Context(session,source,true);
+
+      WhereClause whcl = new WhereClause(context,args);
+      WhereClause asrt = getAssertClause(context,args);
+
+      if (limit == AccessType.ifwhereclause && !whcl.exists())
+         throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
+
+      if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
+         throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
+
+      SQLPart wh = whcl.asSQL();
+      if (asrt != null) wh = whcl.append(asrt);
+
+      delete.append(wh);
+
+      if (source.vpd != null && source.vpd.appliesTo("update"))
+      {
+         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         if (whcl.exists()) delete.append("\nand",vpdflt);
+         else delete.append("\nwhere",vpdflt);
+      }
+
+      ArrayList<BindValue> retvals = new ArrayList<BindValue>();
+      String[] returning = Misc.getJSONList(args,RETURNING,String.class);
+
+      if (returning != null)
+      {
+         for (int i = 0; i < returning.length; i++)
+         {
+            BindValue bv = new BindValue(returning[i]);
+            DataType dt = source.basecolumns.get(bv.name().toLowerCase());
+            if (dt != null) bv.type(dt.sqlid); retvals.add(bv);
+         }
+
+         delete.append(retvals);
+      }
+
+      boolean savepoint = Config.dbconfig().savepoint(false);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      JSONObject response = session.executeUpdate(delete.snippet(),delete.bindValues(),returning,savepoint);
+      return(new Response(response));
+   }
+
+
    public Response select() throws Exception
    {
       JSONObject response = new JSONOObject();
