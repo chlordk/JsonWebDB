@@ -3,14 +3,19 @@
   {
     "invoke": "insert()",
     "source": "countries",
-    "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
-      
+    "session": "fe58cfbe-699f-4643-862c-dbe68f342aa0",
+    
     "insert()":
     {
-      "columns":
+      "values":
       [
-        {"name": "country_id", "value": "UK"},
-        {"name": "country_name", "value": "United Kingdom"}
+        {"column": "country_id", "value": "UK"},
+        {"column": "country_name", "value": "United Kingdom"}
+      ]
+      ,
+      "returning":
+      [
+        "country_id", "country_name"
       ]
     }
   }

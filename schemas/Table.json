@@ -63,14 +63,14 @@
                "insert()":
                {
                   "additionalProperties": false,
-                  "required": ["columns"],
+                  "required": ["values"],
 
                   "properties":
                   {
-                     "columns":
+                     "values":
                      {
                         "type": "array",
-                        "items": {"$ref": "#/types/NameValuePair"}
+                        "items": {"$ref": "#/types/ColumnValue"}
                      }
                      ,
                      "savepoint":
@@ -90,14 +90,14 @@
                "update()":
                {
                   "additionalProperties": false,
-                  "required": ["columns"],
+                  "required": ["set"],
 
                   "properties":
                   {
-                     "columns":
+                     "set":
                      {
                         "type": "array",
-                        "items": {"$ref": "#/types/NameValuePair"}
+                        "items": {"$ref": "#/types/ColumnValue"}
                      }
                      ,
                      "assertions":
@@ -251,6 +251,19 @@
             "properties":
             {
                "name": {"type": "string"},
+               "value": {"type": ["string","number","integer","boolean"]}
+            }
+         }
+         ,
+         "ColumnValue":
+         {
+            "type": "object",
+            "required": ["column","value"],
+            "additionalProperties": false,
+
+            "properties":
+            {
+               "column": {"type": "string"},
                "value": {"type": ["string","number","integer","boolean"]}
             }
          }

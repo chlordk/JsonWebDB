@@ -16,16 +16,16 @@
     
     "update()":
     {
-      "columns": 
+      "set": 
       [
-        {"name": "country_id", "value": "UK"},
-        {"name": "country_name", "value": "United Kingdom"}
+        {"column": "country_id", "value": "UK"},
+        {"column": "country_name", "value": "United Kingdom"}
       ]
       ,
       "assertions": 
       [
-        {"name": "country_id", "value": "Uk"},
-        {"name": "country_name", "value": "United kingdom"}
+        {"column": "country_id", "value": "Uk"},
+        {"column": "country_name", "value": "United kingdom"}
       ]
       ,
       "filters":

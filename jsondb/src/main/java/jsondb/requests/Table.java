@@ -59,6 +59,8 @@ public class Table
    private static final String SOURCE = "source";
    private static final String COLUMN = "column";
    private static final String CURSOR = "cursor";
+   private static final String VALUES = "values";
+   private static final String FILTER = "filter";
    private static final String HEADING = "heading";
    private static final String INSERT = "insert()";
    private static final String UPDATE = "update()";
@@ -193,15 +195,15 @@ public class Table
       String list = null;
       String values = null;
 
-      JSONArray colspec = args.optJSONArray(COLUMNS);
+      JSONArray colspec = args.optJSONArray(VALUES);
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
 
       for (int i = 0; i < colspec.length(); i++)
       {
          JSONObject col = colspec.getJSONObject(i);
 
-         Object value = col.get("value");
-         String name = col.getString("name");
+         Object value = col.get(VALUE);
+         String name = col.getString(COLUMN);
 
          if (i == 0) list = name;
          else list += "," + name;
@@ -445,9 +447,9 @@ public class Table
          JSONObject filter = new JSONObject();
          NameValuePair<Object> asscol = asserts.get(i);
 
-         filter.put("column",asscol.name());
-         filter.put("filter","=");
-         filter.put("value",asscol.value());
+         filter.put(COLUMN,asscol.name());
+         filter.put(FILTER,"=");
+         filter.put(VALUE,asscol.value());
 
          filterdef.put(filter);
       }
