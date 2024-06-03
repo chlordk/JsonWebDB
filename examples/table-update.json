@@ -3,17 +3,8 @@
   {
     "invoke": "update()",
     "source": "countries",
-    "session": "833026d5-48fe-4076-b9e3-37b1e99aff31",
-      
-    "bindvalues":
-    [
-      {
-        "name": "Secret",
-        "type": "varchar",
-        "value": "37b1e99aff31"
-      }
-    ],
-    
+    "session": "009b6653-c301-4755-aa03-476b186d6b33",
+          
     "update()":
     {
       "set": 
@@ -22,15 +13,20 @@
         {"column": "country_name", "value": "United Kingdom"}
       ]
       ,
+      "returning":
+      [
+        "country_id", "country_name"
+      ]
+      ,
       "assertions": 
       [
-        {"column": "country_id", "value": "Uk"},
-        {"column": "country_name", "value": "United kingdom"}
+        {"column": "country_id", "value": "UK"},
+        {"column": "country_name", "value": "United Kingdom"}
       ]
       ,
       "filters":
       [
-        {"column": "country_id", "filter": "Equals", "value": "Uk"}
+        {"column": "country_id", "filter": "=", "value": "UK"}
       ]
     }
   }

@@ -142,6 +142,8 @@ public abstract class JdbcInterface
       if (conn.getAutoCommit())
          savepoint = false;
 
+      Config.logger().severe(logentry(sql,bindvalues));
+
       if (returning != null && returning.length > 0)
       {
          if (savepoint)
@@ -181,7 +183,7 @@ public abstract class JdbcInterface
       }
       catch (Exception e)
       {
-         Config.logger().severe(sql);
+         Config.logger().severe(logentry(sql,bindvalues,e));
 
          if (savepoint)
             releaseSavePoint(sp,true);
@@ -241,16 +243,28 @@ public abstract class JdbcInterface
 
    private String logentry(Cursor cursor, Exception e)
    {
+      return(logentry(cursor.sql(),cursor.bindvalues(),e));
+   }
+
+
+   private String logentry(String sql, ArrayList<BindValue> bindvalues)
+   {
+      return(logentry(sql,bindvalues,null));
+   }
+   
+
+   private String logentry(String sql, ArrayList<BindValue> bindvalues, Exception e)
+   {
       String del = "\n---------------------------------------------------------------------\n";
 
       String logentry = del;
-      logentry += cursor.sql();
+      logentry += sql;
 
-      if (cursor.bindvalues().size() > 0)
+      if (bindvalues.size() > 0)
          logentry += "\n\nbindings:";
 
-      for (int i = 0; i < cursor.bindvalues().size(); i++)
-         logentry += "\n"+cursor.bindvalues().get(i).desc();
+      for (int i = 0; i < bindvalues.size(); i++)
+         logentry += "\n"+bindvalues.get(i).desc();
 
       if (e != null)
          logentry += "\n\n" + e.toString() + "\n";

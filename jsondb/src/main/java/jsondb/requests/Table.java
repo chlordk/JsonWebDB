@@ -54,6 +54,7 @@ public class Table
    private final String source;
    private final JSONObject definition;
 
+   private static final String SET = "set";
    private static final String ORDER = "order";
    private static final String VALUE = "value";
    private static final String SOURCE = "source";
@@ -195,7 +196,7 @@ public class Table
       String list = null;
       String values = null;
 
-      JSONArray colspec = args.optJSONArray(VALUES);
+      JSONArray colspec = args.getJSONArray(VALUES);
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
 
       for (int i = 0; i < colspec.length(); i++)
@@ -203,16 +204,16 @@ public class Table
          JSONObject col = colspec.getJSONObject(i);
 
          Object value = col.get(VALUE);
-         String name = col.getString(COLUMN);
+         String column = col.getString(COLUMN);
 
-         if (i == 0) list = name;
-         else list += "," + name;
+         if (i == 0) list = column;
+         else list += "," + column;
 
          if (i == 0) values = "?";
          else values += "," + "?";
 
-         BindValue bv = new BindValue(name).value(value);
-         DataType dt = source.basecolumns.get(name.toLowerCase());
+         BindValue bv = new BindValue(column).value(value);
+         DataType dt = source.basecolumns.get(column.toLowerCase());
          if (dt != null) bv.type(dt.sqlid); bindvalues.add(bv);
       }
 
@@ -235,6 +236,118 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
+      return(new Response(response));
+   }
+
+
+   public Response update() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,"insert()");
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Table",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(update(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response update(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      TableSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(update(session,source));
+   }
+
+
+   public Response update(Session session, TableSource source) throws Exception
+   {
+      if (!source.hasBaseObject())
+         throw new Exception(Messages.get("UPDATE_NO_BASEOBJECT",source));
+
+      AccessType limit = source.getAccessLimit("update");
+      if (limit == AccessType.denied) throw new Exception(Messages.get("ACCESS_DENIED",source));
+
+      if (!source.described())
+         this.describe(session,source);
+
+      HashMap<String,BindValue> bindvalues =
+         Utils.getBindValues(definition);
+
+      String list = null;
+      JSONObject args = definition.getJSONObject(UPDATE);
+
+      JSONArray colspec = args.getJSONArray(SET);
+      ArrayList<BindValue> values = new ArrayList<BindValue>();
+
+      for (int i = 0; i < colspec.length(); i++)
+      {
+         JSONObject col = colspec.getJSONObject(i);
+
+         Object value = col.get(VALUE);
+         String column = col.getString(COLUMN);
+
+         if (i == 0) list = column+" = ?";
+         else list += ", " + column+" = ?";
+
+         BindValue bv = new BindValue(column).value(value);
+         DataType dt = source.basecolumns.get(column.toLowerCase());
+         if (dt != null) bv.type(dt.sqlid); values.add(bv);
+      }
+
+      String stmt = "update "+source.object+" set "+list;
+      SQLPart update = new SQLPart(stmt,values);
+
+      Context context = new Context(session,source,true);
+
+      WhereClause whcl = new WhereClause(context,args);
+      WhereClause asrt = getAssertClause(context,args);
+
+      if (limit == AccessType.ifwhereclause && !whcl.exists())
+         throw new Exception(Messages.get("NO_WHERE_CLAUSE"));
+
+      if (limit == AccessType.byprimarykey && !whcl.usesPrimaryKey(source.primarykey))
+         throw new Exception(Messages.get("WHERE_PRIMARY_KEY",Messages.flatten(source.primarykey)));
+
+      SQLPart wh = whcl.asSQL();
+      if (asrt != null) wh = whcl.append(asrt);
+
+      update.append(wh);
+
+      if (source.vpd != null && source.vpd.appliesTo("update"))
+      {
+         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         if (whcl.exists()) update.append("\nand",vpdflt);
+         else update.append("\nwhere",vpdflt);
+      }
+
+      String[] returning = Misc.getJSONList(args,RETURNING,String.class);
+
+      if (returning != null)
+      {
+         for (int i = 0; i < returning.length; i++)
+         {
+            BindValue bv = new BindValue(returning[i]);
+            DataType dt = source.basecolumns.get(bv.name().toLowerCase());
+            if (dt != null) bv.type(dt.sqlid); values.add(bv);
+         }
+      }
+
+      boolean savepoint = Config.dbconfig().savepoint(false);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      JSONObject response = session.executeUpdate(update.snippet(),update.bindValues(),returning,savepoint);
       return(new Response(response));
    }
 
