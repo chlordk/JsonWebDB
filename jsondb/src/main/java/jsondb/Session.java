@@ -491,7 +491,7 @@ public class Session
       if (stateful && trxused != null)
       {
          write = true;
-         forcewrt = true;
+         if (usesec) forcewrt = true;
       }
 
       if (!write && trxused != null)
@@ -502,7 +502,7 @@ public class Session
          if ((now - trx)/1000 < latency)
          {
             write = true;
-            forcewrt = true;
+            if (usesec) forcewrt = true;
          }
       }
 
