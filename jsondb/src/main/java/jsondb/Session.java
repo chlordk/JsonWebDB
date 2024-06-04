@@ -57,6 +57,7 @@ public class Session
    private Date used = null;
    private Date trxused = null;
    private Date connused = null;
+   private boolean forcewrt = false;
 
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
@@ -239,6 +240,7 @@ public class Session
 
          JdbcInterface read = ensure(false);
          read.executeQuery(cursor,false);
+         cursor.write(forcewrt);
 
          State.addCursor(cursor);
          cursor.position();
@@ -410,6 +412,7 @@ public class Session
 
       Cursor cursor = Cursor.create(this,sql,bindvalues,pagesize);
 
+      cursor.write(forcewrt);
       long time = System.nanoTime();
       read.executeQuery(cursor,savepoint);
       cursor.excost(System.nanoTime()-time);
@@ -480,8 +483,16 @@ public class Session
 
    private synchronized JdbcInterface ensure(boolean write, boolean forceread) throws Exception
    {
+      forcewrt = false;
+
       if (!usesec) write = true;
       else if (forceread) write = false;
+
+      if (stateful && trxused != null)
+      {
+         write = true;
+         forcewrt = true;
+      }
 
       if (!write && trxused != null)
       {
@@ -491,7 +502,7 @@ public class Session
          if ((now - trx)/1000 < latency)
          {
             write = true;
-            System.out.println("force write");
+            forcewrt = true;
          }
       }
 

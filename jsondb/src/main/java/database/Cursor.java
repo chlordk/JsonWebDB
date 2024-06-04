@@ -51,6 +51,7 @@ public class Cursor
    private int pagesize = 0;
    private boolean eof = false;
    private boolean inuse = false;
+   private boolean write = false;
    private ResultSet rset = null;
    private Statement stmt = null;
    private ArrayList<Column> columns = null;
@@ -140,6 +141,16 @@ public class Cursor
    public void inUse(boolean inuse)
    {
       this.inuse = inuse;
+   }
+
+   public boolean write()
+   {
+      return(write);
+   }
+
+   public void write(boolean write)
+   {
+      this.write = write;
    }
 
    public Session session()
