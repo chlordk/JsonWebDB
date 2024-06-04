@@ -735,7 +735,7 @@ public class Table
       select.append(source.from(bindvalues));
       select.snippet(select.snippet()+" where 1 = 2");
 
-      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
       source.setColumns(true,cursor.describe());
       cursor.close();
    }
@@ -748,7 +748,7 @@ public class Table
       select.append(source.object);
       select.snippet(select.snippet()+" where 1 = 2");
 
-      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
       source.setColumns(false,cursor.describe());
       cursor.close();
    }
@@ -771,7 +771,7 @@ public class Table
          SQLPart select = new SQLPart(stmt);
          select.append(pkeysrc.from(tabbinding));
 
-         Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),false,0);
+         Cursor cursor = session.executeQuery(select.snippet(),select.bindValues());
 
          ArrayList<String> pkey = new ArrayList<String>();
 

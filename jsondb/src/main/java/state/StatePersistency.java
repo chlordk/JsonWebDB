@@ -252,18 +252,6 @@ public class StatePersistency
    }
 
 
-   public static boolean createTransaction(String session, String inst) throws Exception
-   {
-      File file = trxFile(session);
-      if (file.exists()) return(false);
-
-      FileOutputStream out = new FileOutputStream(file);
-      out.write((inst+" "+StatePersistency.pid).getBytes()); out.close();
-
-      return(true);
-   }
-
-
    public static TransactionInfo getTransaction(String session) throws Exception
    {
       TransactionInfo info = null;
@@ -281,11 +269,14 @@ public class StatePersistency
       TransactionInfo info = null;
       File file = trxFile(session);
 
-      if (file.exists())
+      if (!file.exists())
       {
-         info = new TransactionInfo(file);
-         file.setLastModified(start.getTime());
+         FileOutputStream out = new FileOutputStream(file);
+         out.write((inst+" "+StatePersistency.pid).getBytes()); out.close();
       }
+
+      info = new TransactionInfo(file);
+      file.setLastModified(start.getTime());
 
       return(info);
    }
@@ -643,7 +634,7 @@ public class StatePersistency
          this.user = args[0];
          this.inst = args[1];
 
-         this.pid = Long.parseLong(args[2]);
+         this.pid = Long.parseLong(args[1]);
       }
    }
 

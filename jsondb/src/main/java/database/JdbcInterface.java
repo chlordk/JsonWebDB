@@ -146,15 +146,27 @@ public abstract class JdbcInterface
 
       if (returning != null && returning.length > 0)
       {
-         if (savepoint)
-            sp = conn.setSavepoint();
+         try
+         {
+            if (savepoint)
+               sp = conn.setSavepoint();
 
-         ArrayList<Object[]> data = executeUpdateWithReturnValues(conn,sql,bindvalues,returning);
+            ArrayList<Object[]> data = executeUpdateWithReturnValues(conn,sql,bindvalues,returning);
 
-         if (savepoint)
-            releaseSavePoint(sp,false);
+            if (savepoint)
+               releaseSavePoint(sp,false);
 
-         return(new UpdateResponse(data));
+            return(new UpdateResponse(data));
+         }
+         catch (Exception e)
+         {
+            Config.logger().severe(logentry(sql,bindvalues,e));
+
+            if (savepoint)
+               releaseSavePoint(sp,true);
+
+            throw new Exception(e);
+         }
       }
 
       PreparedStatement stmt = conn.prepareStatement(sql);
@@ -251,7 +263,7 @@ public abstract class JdbcInterface
    {
       return(logentry(sql,bindvalues,null));
    }
-   
+
 
    private String logentry(String sql, ArrayList<BindValue> bindvalues, Exception e)
    {

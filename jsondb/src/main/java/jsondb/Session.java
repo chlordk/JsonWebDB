@@ -51,7 +51,6 @@ public class Session
    private final boolean forward;
    private final boolean stateful;
 
-   private final AdvancedPool pool;
    private final Object SYNC = new Object();
 
    private int clients = 0;
@@ -61,6 +60,10 @@ public class Session
 
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
+
+   private final static AdvancedPool pool = Config.pool();
+   private final static int latency = Config.dbconfig().latency();
+   private final static boolean usesec = Config.pool().secondary();
 
 
    public static Session get(String guid) throws Exception
@@ -115,11 +118,9 @@ public class Session
       this.user = info.user;
       this.inst = info.inst;
 
-      this.stateful = info.stateful;
-
       this.used = new Date();
-      this.pool = Config.pool();
 
+      this.stateful = info.stateful;
       this.forward = info.online && !info.owner;
    }
 
@@ -134,7 +135,6 @@ public class Session
 
       this.used = new Date();
       this.inst = Config.inst();
-      this.pool = Config.pool();
    }
 
    public Session up()
@@ -389,9 +389,21 @@ public class Session
    }
 
 
+   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
+   {
+      return(executeQuery(sql,bindvalues,true,false,0));
+   }
+
+
    public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
    {
-      JdbcInterface read = ensure(false);
+      return(executeQuery(sql,bindvalues,false,savepoint,pagesize));
+   }
+
+
+   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean forceread, boolean savepoint, int pagesize) throws Exception
+   {
+      JdbcInterface read = ensure(false,forceread);
 
       for(BindValue bv : bindvalues)
          bv.validate();
@@ -421,6 +433,7 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
+      touchTrx();
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
@@ -461,8 +474,26 @@ public class Session
 
    private synchronized JdbcInterface ensure(boolean write) throws Exception
    {
-      if (!write && !pool.secondary())
-         write = true;
+      return(ensure(write,false));
+   }
+
+
+   private synchronized JdbcInterface ensure(boolean write, boolean forceread) throws Exception
+   {
+      if (!usesec) write = true;
+      else if (forceread) write = false;
+
+      if (!write && trxused != null)
+      {
+         long trx = trxused.getTime();
+         long now = new Date().getTime();
+
+         if ((now - trx)/1000 < latency)
+         {
+            write = true;
+            System.out.println("force write");
+         }
+      }
 
       if (write && wconn == null)
          wconn = JdbcInterface.getInstance(true);
