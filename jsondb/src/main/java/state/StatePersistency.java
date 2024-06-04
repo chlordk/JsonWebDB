@@ -285,7 +285,7 @@ public class StatePersistency
    public static boolean removeTransaction(String session) throws Exception
    {
       File file = trxFile(session);
-      if (file.exists()) return(false);
+      if (!file.exists()) return(false);
       file.delete();
       return(true);
    }
@@ -353,7 +353,7 @@ public class StatePersistency
 
    private static File trxFile(String session)
    {
-      return(new File(Config.path(STATE,session+"."+TRX)));
+      return(new File(Config.path(STATE,session,session+"."+TRX)));
    }
 
 
