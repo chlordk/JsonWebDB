@@ -59,6 +59,9 @@ public class Session
    private Date connused = null;
    private boolean forcewrt = false;
 
+   private long trxend = 0;
+   private boolean intrx = false;
+
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
@@ -349,14 +352,21 @@ public class Session
 
    public synchronized boolean commit() throws Exception
    {
+      Date now = new Date();
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
       synchronized(SYNC)
       {
+         used = now;
+         connused = now;
          trxused = null;
-         used = new Date();
-         connused = new Date();
+
+         if (intrx)
+         {
+            intrx = false;
+            trxend = now.getTime();
+         }
       }
 
       if (wconn != null)
@@ -371,14 +381,21 @@ public class Session
 
    public synchronized boolean rollback() throws Exception
    {
+      Date now = new Date();
       StatePersistency.removeTransaction(this.guid);
       boolean success = StatePersistency.touchSession(guid);
 
       synchronized(SYNC)
       {
+         used = now;
+         connused = now;
          trxused = null;
-         used = new Date();
-         connused = new Date();
+
+         if (intrx)
+         {
+            intrx = false;
+            trxend = now.getTime();
+         }
       }
 
       if (wconn != null)
@@ -436,7 +453,7 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      touchTrx();
+      touchTrx(); trxend = 0; intrx = true;
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
@@ -488,22 +505,18 @@ public class Session
       if (!usesec) write = true;
       else if (forceread) write = false;
 
-      if (stateful && trxused != null)
+      if (trxend > 0)
       {
-         write = true;
-         if (usesec) forcewrt = true;
-      }
-
-      if (!write && trxused != null)
-      {
-         long trx = trxused.getTime();
          long now = new Date().getTime();
 
-         if ((now - trx)/1000 < latency)
-         {
-            write = true;
-            if (usesec) forcewrt = true;
-         }
+         if ((now - trxend)/1000 > latency)
+            trxend = 0;
+      }
+
+      if (usesec && (intrx || trxend > 0))
+      {
+         write = true;
+         forcewrt = true;
       }
 
       if (write && wconn == null)
