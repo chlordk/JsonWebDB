@@ -50,8 +50,8 @@ public class Cursor
    private int ftccost = 0;
    private int pagesize = 0;
    private boolean eof = false;
+   private boolean prim = false;
    private boolean inuse = false;
-   private boolean write = false;
    private ResultSet rset = null;
    private Statement stmt = null;
    private ArrayList<Column> columns = null;
@@ -145,12 +145,12 @@ public class Cursor
 
    public boolean write()
    {
-      return(write);
+      return(prim);
    }
 
-   public void write(boolean write)
+   public void primary(boolean write)
    {
-      this.write = write;
+      this.prim = write;
    }
 
    public Session session()
@@ -349,12 +349,12 @@ public class Cursor
             bind.put(bv.toJSON());
       }
 
-      return(StatePersistency.createCursor(session.guid(),this.pos,this.pagesize,data));
+      return(StatePersistency.createCursor(session.guid(),prim,this.pos,this.pagesize,data));
    }
 
 
    private void saveState() throws Exception
    {
-      StatePersistency.updateCursor(session.guid(),guid,this.pos,this.pagesize,this.excost,this.ftccost);
+      StatePersistency.updateCursor(session.guid(),guid,prim,this.pos,this.pagesize,this.excost,this.ftccost);
    }
 }

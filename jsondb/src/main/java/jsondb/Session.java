@@ -226,6 +226,8 @@ public class Session
 
    public synchronized TransactionInfo touchTrx() throws Exception
    {
+      this.trxend = 0;
+      this.intrx = true;
       this.trxused = new Date();
       TransactionInfo info = StatePersistency.touchTransaction(guid,trxused);
       return(info);
@@ -243,7 +245,7 @@ public class Session
 
          JdbcInterface read = ensure(false);
          read.executeQuery(cursor,false);
-         cursor.write(forcewrt);
+         cursor.primary(forcewrt);
 
          State.addCursor(cursor);
          cursor.position();
@@ -429,7 +431,7 @@ public class Session
 
       Cursor cursor = Cursor.create(this,sql,bindvalues,pagesize);
 
-      cursor.write(forcewrt);
+      cursor.primary(forcewrt);
       long time = System.nanoTime();
       read.executeQuery(cursor,savepoint);
       cursor.excost(System.nanoTime()-time);
@@ -453,7 +455,7 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      touchTrx(); trxend = 0; intrx = true;
+      touchTrx();
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
