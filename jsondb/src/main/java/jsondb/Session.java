@@ -79,6 +79,12 @@ public class Session
       {
          session = new Session(info);
 
+         if (info.owner && !info.online && session.hasTrx())
+         {
+            StatePersistency.removeTransaction(guid);
+            throw new Exception(Messages.get("TRANSACTION_LOST"));
+         }
+
          if (info.online && !info.owner)
             Config.logger().info(Messages.get("NOT_SESSION_OWNER",guid,info.inst));
 
@@ -86,12 +92,6 @@ public class Session
          {
             Config.logger().info(Messages.get("SESSION_REINSTATED",guid));
             session.transfer();
-
-            if (session.hasTrx())
-            {
-               System.out.println("Shit");
-               StatePersistency.removeTransaction(guid);
-            }
          }
 
          State.addSession(session);
