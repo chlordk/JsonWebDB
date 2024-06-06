@@ -143,7 +143,7 @@ public class Cursor
       this.inuse = inuse;
    }
 
-   public boolean write()
+   public boolean primary()
    {
       return(prim);
    }

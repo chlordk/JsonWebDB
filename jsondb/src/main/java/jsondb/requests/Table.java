@@ -571,6 +571,9 @@ public class Table
          response.put("cursor",cursor.guid());
       }
 
+      if (cursor.primary())
+         response.put("primary",true);
+
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);
 

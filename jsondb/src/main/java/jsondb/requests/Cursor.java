@@ -92,6 +92,9 @@ public class Cursor
       response.put("success",true);
       response.put("method","fetch()");
 
+      if (cursor.primary())
+         response.put("primary",true);
+
       if (cursor.next())
          response.put("more",true);
 
