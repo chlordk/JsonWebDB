@@ -190,16 +190,11 @@ public class Cursor
       return(bindvalues);
    }
 
-   public Cursor statement(Statement stmt)
-   {
-      this.stmt = stmt;
-      return(this);
-   }
-
-   public Cursor resultset(ResultSet rset)
+   public Cursor resultset(ResultSet rset) throws Exception
    {
       this.eof = false;
       this.rset = rset;
+      this.stmt = rset.getStatement();
       return(this);
    }
 
@@ -233,6 +228,9 @@ public class Cursor
       int cols = columns.size();
       long nano = System.nanoTime();
       ArrayList<Object[]> rows = new ArrayList<Object[]>();
+
+      if (this.prim)
+         session.useSecondary(this);
 
       for (int i = 0; i < pagesize || pagesize <= 0; i++)
       {

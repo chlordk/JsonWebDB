@@ -261,6 +261,22 @@ public class Session
    }
 
 
+   public synchronized void useSecondary(Cursor cursor) throws Exception
+   {
+      if (!cursor.primary())
+         return;
+
+      JdbcInterface read = ensure(false);
+
+      if (!forcewrt)
+      {
+         read.executeQuery(cursor,false);
+         cursor.primary(false);
+         cursor.position();
+      }
+   }
+
+
    public boolean isConnected()
    {
       synchronized(SYNC)
@@ -511,7 +527,7 @@ public class Session
       {
          long now = new Date().getTime();
 
-         if ((now - trxend)/1000 > latency)
+         if (now - trxend > latency)
             trxend = 0;
       }
 
