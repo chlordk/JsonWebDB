@@ -86,6 +86,12 @@ public class Session
          {
             Config.logger().info(Messages.get("SESSION_REINSTATED",guid));
             session.transfer();
+
+            if (session.hasTrx())
+            {
+               System.out.println("Shit");
+               StatePersistency.removeTransaction(guid);
+            }
          }
 
          State.addSession(session);
@@ -221,6 +227,12 @@ public class Session
       synchronized(SYNC) {this.used = new Date();}
       boolean success = StatePersistency.touchSession(guid);
       return(success);
+   }
+
+
+   public synchronized boolean hasTrx() throws Exception
+   {
+      return(StatePersistency.getTransaction(guid) != null);
    }
 
 
@@ -471,7 +483,7 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      touchTrx();
+      if (stateful) touchTrx();
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
