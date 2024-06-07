@@ -116,7 +116,7 @@ public class Utils
          response.put("success",false);
          response.put("method",method);
          response.put("session",sessid);
-         if (losttrx) response.put("trxfatal",true);
+         if (losttrx) response.put("TRXFatal",true);
          else response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
       }
 
