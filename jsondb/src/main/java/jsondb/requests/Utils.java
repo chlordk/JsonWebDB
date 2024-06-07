@@ -26,6 +26,7 @@ package jsondb.requests;
 
 import sources.Source;
 import jsondb.Session;
+import jsondb.Session.TransactionLost;
 import sources.Sources;
 import database.Cursor;
 import java.util.HashMap;
@@ -97,14 +98,26 @@ public class Utils
 
    public static Session getSession(JSONObject response, String sessid, String method) throws Exception
    {
-      Session session = Session.get(sessid);
+      Session session = null;
+      boolean losttrx = false;
+
+      try
+      {
+         session = Session.get(sessid,false);
+      }
+      catch (Exception e)
+      {
+         if (e instanceof TransactionLost)
+            losttrx = true;
+      }
 
       if (session == null)
       {
          response.put("success",false);
          response.put("method",method);
          response.put("session",sessid);
-         response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
+         if (losttrx) response.put("trxfatal",true);
+         else response.put("message",Messages.get("NO_SUCH_SESSION",sessid));
       }
 
       return(session);

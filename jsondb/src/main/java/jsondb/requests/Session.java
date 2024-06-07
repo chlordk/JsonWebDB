@@ -242,7 +242,7 @@ public class Session
       JSONObject response = new JSONOObject();
 
       String sessid = definition.optString(SESSION);
-      jsondb.Session session = jsondb.Session.get(sessid);
+      jsondb.Session session = jsondb.Session.get(sessid,false);
 
       if (session != null)
          session.down();

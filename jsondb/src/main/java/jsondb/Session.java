@@ -68,7 +68,7 @@ public class Session
    private final static boolean usesec = Config.pool().secondary();
 
 
-   public static Session get(String guid) throws Exception
+   public static Session get(String guid, boolean internal) throws Exception
    {
       Session session = State.getSession(guid);
       SessionInfo info = StatePersistency.getSession(guid);
@@ -79,8 +79,9 @@ public class Session
 
          if (info.owner && !info.online && session.hasTrx())
          {
+            if (internal) return(null);
             StatePersistency.removeTransaction(guid);
-            throw new Exception(Messages.get("TRANSACTION_LOST"));
+            throw new TransactionLost(Messages.get("TRANSACTION_LOST"));
          }
 
          if (info.online && !info.owner)
@@ -600,6 +601,15 @@ public class Session
       private long now()
       {
          return(new Date().getTime());
+      }
+   }
+
+
+   public static class TransactionLost extends Exception
+   {
+      public TransactionLost(String message)
+      {
+         super(message);
       }
    }
 }
