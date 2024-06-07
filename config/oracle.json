@@ -91,7 +91,7 @@
 		"proxyuser": true,
 		"defaultuser": "hr",
 
-		"replication-latency": 10000,
+		"replication-latency": 30000,
 		"savepoint": ["read","write"],
 
 		"pool-properties":

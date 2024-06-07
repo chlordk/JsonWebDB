@@ -55,7 +55,12 @@ public class BindValue
       bv.name        = json.getString("name");
       bv.ampersand   = json.getBoolean("ampersand");
 
-      if (SQLTypes.getType(bv.type).equals("DATE"))
+      if (SQLTypes.getType(bv.type).indexOf("DATE") >= 0)
+         bv.value = new Date((long) bv.value);
+
+      else
+
+      if (SQLTypes.getType(bv.type).indexOf("TIME") >= 0)
          bv.value = new Date((long) bv.value);
 
       return(bv);
