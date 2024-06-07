@@ -77,9 +77,8 @@ public class Session
       {
          session = new Session(info);
 
-         if (info.owner && !info.online && session.hasTrx())
+         if (!internal && info.owner && !info.online && session.hasTrx())
          {
-            if (internal) return(null);
             StatePersistency.removeTransaction(guid);
             throw new TransactionLost(Messages.get("TRANSACTION_LOST"));
          }
