@@ -58,9 +58,7 @@ public class Session
    private Date trxused = null;
    private Date connused = null;
    private boolean forcewrt = false;
-
-   private long trxend = 0;
-   private boolean intrx = false;
+   private Primary primary = new Primary();
 
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
@@ -238,8 +236,6 @@ public class Session
 
    public synchronized TransactionInfo touchTrx() throws Exception
    {
-      this.trxend = 0;
-      this.intrx = true;
       this.trxused = new Date();
       TransactionInfo info = StatePersistency.touchTransaction(guid,trxused);
       return(info);
@@ -391,12 +387,7 @@ public class Session
          used = now;
          connused = now;
          trxused = null;
-
-         if (intrx)
-         {
-            intrx = false;
-            trxend = now.getTime();
-         }
+         primary.endtrx();
       }
 
       if (wconn != null)
@@ -420,12 +411,7 @@ public class Session
          used = now;
          connused = now;
          trxused = null;
-
-         if (intrx)
-         {
-            intrx = false;
-            trxend = now.getTime();
-         }
+         primary.endtrx();
       }
 
       if (wconn != null)
@@ -484,6 +470,8 @@ public class Session
          bv.validate();
 
       if (stateful) touchTrx();
+      if (usesec) primary.dirty(stateful);
+
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
@@ -535,15 +523,7 @@ public class Session
       if (!usesec) write = true;
       else if (forceread) write = false;
 
-      if (trxend > 0)
-      {
-         long now = new Date().getTime();
-
-         if (now - trxend > latency)
-            trxend = 0;
-      }
-
-      if (usesec && (intrx || trxend > 0))
+      if (!forceread && usesec && primary.force(latency))
       {
          write = true;
          forcewrt = true;
@@ -578,5 +558,48 @@ public class Session
       int age = (int) ((new Date()).getTime() - used.getTime())/1000;
 
       return(this.guid+", age: "+age+"secs, conn: "+connected);
+   }
+
+
+   /**
+    * If any updates is made on the primary database (autocommit or not)
+    * All queries must be made against the primary database to ensure that
+    * data is consistent.
+    *
+    * When data is committed (dirty = false), and the latency period has ended
+    * we can resume to query the secondary database
+    */
+   private static class Primary
+   {
+      long lastused = 0;
+      boolean dirty = false;
+
+      void dirty(boolean stateful)
+      {
+         dirty = stateful;
+         lastused = now();
+      }
+
+      void endtrx()
+      {
+         dirty = false;
+         lastused = now();
+      }
+
+      boolean force(int latency)
+      {
+         if (!dirty && lastused > 0)
+         {
+            if ((now() - lastused) > latency)
+               lastused = 0;
+         }
+
+         return(dirty || lastused > 0);
+      }
+
+      private long now()
+      {
+         return(new Date().getTime());
+      }
    }
 }
