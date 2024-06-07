@@ -65,11 +65,22 @@ public class Forward
       }
       catch (Throwable t)
       {
+         JSONOObject response = null;
+
+         if (session.hasTrx())
+         {
+            response = new JSONOObject();
+            response.put("success",false);
+            response.put("TRXFatal",true);
+            response.put("session",session.guid());
+            StatePersistency.removeTransaction(session.guid());
+         }
+
          Config.logger().log(Level.WARNING,t.toString(),t);
          session.transfer();
-      }
 
-      return(null);
+         return(response);
+      }
    }
 
 
