@@ -251,7 +251,7 @@ public class Session
          cursor = Cursor.load(this,cursid);
          if (cursor == null) return(null);
 
-         JdbcInterface read = ensure(false);
+         JdbcInterface read = ensure(false,!cursor.primary());
          read.executeQuery(cursor,false);
          cursor.primary(forcewrt);
 

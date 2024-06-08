@@ -121,11 +121,12 @@ public class StatePersistency
             SessionInfo sinfo = new SessionInfo(session,inst);
 
             entry.put("pid",sinfo.pid);
+            entry.put("online",sinfo.online);
             entry.put("session",sinfo.guid);
             entry.put("accessed",sinfo.age+" secs");
             entry.put("instance",sinfo.inst);
             entry.put("username",sinfo.user);
-            entry.put("online",sinfo.online);
+            entry.put("stateful",sinfo.stateful);
 
             File[] cursors = file.listFiles(FileType.get(CUR));
 
