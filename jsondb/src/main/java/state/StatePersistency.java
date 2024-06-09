@@ -250,25 +250,55 @@ public class StatePersistency
 
    public static HashMap<String,BindValue> getVPDInfo(String session) throws Exception
    {
+      JSONObject nvp = null;
       File file = vpdFile(session);
       if (!file.exists()) return(null);
+      HashMap<String,BindValue> values = new HashMap<String,BindValue>();
 
       FileInputStream in = new FileInputStream(file);
       byte[] bytes = in.readAllBytes(); in.close();
 
       JSONArray vars = new JSONArray(new String(bytes));
-      System.out.println(vars.toString(2));
 
-      return(null);
+      for (int i = 0; i < vars.length(); i++)
+      {
+         nvp = vars.getJSONObject(i);
+
+         Object val = nvp.get("value");
+         String name = nvp.getString("name");
+
+         BindValue bv = new BindValue(name).value(val);
+         values.put(name.toLowerCase(),bv);
+      }
+
+      return(values);
    }
 
 
    public static HashMap<String,BindValue> getClientInfo(String session) throws Exception
    {
+      JSONObject nvp = null;
       File file = cliFile(session);
       if (!file.exists()) return(null);
+      HashMap<String,BindValue> values = new HashMap<String,BindValue>();
 
-      return(null);
+      FileInputStream in = new FileInputStream(file);
+      byte[] bytes = in.readAllBytes(); in.close();
+
+      JSONArray vars = new JSONArray(new String(bytes));
+
+      for (int i = 0; i < vars.length(); i++)
+      {
+         nvp = vars.getJSONObject(i);
+
+         Object val = nvp.get("value");
+         String name = nvp.getString("name");
+
+         BindValue bv = new BindValue(name).value(val);
+         values.put(name.toLowerCase(),bv);
+      }
+
+      return(values);
    }
 
 

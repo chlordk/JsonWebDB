@@ -282,9 +282,6 @@ public class Table
       if (!source.described())
          this.describe(session,source);
 
-      HashMap<String,BindValue> bindvalues =
-         Utils.getBindValues(definition);
-
       String list = null;
       JSONObject args = definition.getJSONObject(UPDATE);
 
@@ -327,7 +324,7 @@ public class Table
 
       if (source.vpd != null && source.vpd.appliesTo("update"))
       {
-         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         SQLPart vpdflt = source.vpd.bind(session.getVPDInfo());
          if (whcl.exists()) update.append("\nand",vpdflt);
          else update.append("\nwhere",vpdflt);
       }
@@ -394,9 +391,6 @@ public class Table
       if (!source.described())
          this.describe(session,source);
 
-      HashMap<String,BindValue> bindvalues =
-         Utils.getBindValues(definition);
-
       JSONObject args = definition.getJSONObject(DELETE);
 
       String stmt = "delete from "+source.object;
@@ -420,7 +414,7 @@ public class Table
 
       if (source.vpd != null && source.vpd.appliesTo("update"))
       {
-         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         SQLPart vpdflt = source.vpd.bind(session.getVPDInfo());
          if (whcl.exists()) delete.append("\nand",vpdflt);
          else delete.append("\nwhere",vpdflt);
       }
@@ -529,7 +523,7 @@ public class Table
 
       if (source.vpd != null && source.vpd.appliesTo("select"))
       {
-         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         SQLPart vpdflt = source.vpd.bind(session.getVPDInfo());
          if (whcl.exists()) select.append("\nand",vpdflt);
          else select.append("\nwhere",vpdflt);
       }
@@ -636,7 +630,7 @@ public class Table
 
       if (source.vpd != null && source.vpd.appliesTo("select"))
       {
-         SQLPart vpdflt = source.vpd.bind(bindvalues);
+         SQLPart vpdflt = source.vpd.bind(context.session.getVPDInfo());
          if (whcl.exists()) select.append("\nand",vpdflt);
          else select.append("\nwhere",vpdflt);
       }

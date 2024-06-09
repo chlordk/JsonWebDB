@@ -231,26 +231,44 @@ public class Session
       {return(connused);}
    }
 
+   public HashMap<String,BindValue> getVPDInfo()
+   {
+      synchronized(SYNC)
+      {return(vpdinfo);}
+   }
+
+   public HashMap<String,BindValue> getClientInfo()
+   {
+      synchronized(SYNC)
+      {return(coninfo);}
+   }
+
    public Session setVPDInfo(HashMap<String,BindValue> values) throws Exception
    {
-      if (this.vpdinfo == null)
+      synchronized(SYNC)
+      {
+         if (this.vpdinfo == null)
          this.vpdinfo = new HashMap<String,BindValue>();
 
-      this.vpdinfo.putAll(values);
-      StatePersistency.setVPDInfo(guid,vpdinfo);
+         this.vpdinfo.putAll(values);
+         StatePersistency.setVPDInfo(guid,vpdinfo);
 
-      return(this);
+         return(this);
+      }
    }
 
    public Session setClientInfo(HashMap<String,BindValue> values) throws Exception
    {
-      if (this.coninfo == null)
+      synchronized(SYNC)
+      {
+         if (this.coninfo == null)
          this.coninfo = new HashMap<String,BindValue>();
 
-      this.coninfo.putAll(values);
-      StatePersistency.setClientInfo(guid,coninfo);
-      
-      return(this);
+         this.coninfo.putAll(values);
+         StatePersistency.setClientInfo(guid,coninfo);
+
+         return(this);
+      }
    }
 
    public synchronized void transfer() throws Exception
