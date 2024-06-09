@@ -22,10 +22,12 @@
 package database;
 
 import jsondb.Config;
+import java.util.HashMap;
 import java.sql.Statement;
 import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.sql.Connection;
+import java.util.Properties;
 import java.sql.PreparedStatement;
 import database.definitions.AdvancedPool;
 
@@ -101,6 +103,25 @@ public abstract class JdbcInterface
       if (rollback) conn.rollback(savepoint);
       else conn.releaseSavepoint(savepoint);
    }
+
+  public void setClientInfo(HashMap<String,BindValue> clientinfo) throws Exception
+  {
+    if (clientinfo != null)
+    {
+      Properties props = new Properties();
+
+      for(BindValue bv : clientinfo.values())
+        props.setProperty(bv.name(),bv.value()+"");
+
+      conn.setClientInfo(props);
+    }
+  }
+
+  public void clearClientInfo(HashMap<String,BindValue> clientinfo) throws Exception
+  {
+    if (clientinfo != null)
+      conn.setClientInfo(new Properties());
+  }
 
 
    public boolean execute(String sql, boolean savepoint) throws Exception

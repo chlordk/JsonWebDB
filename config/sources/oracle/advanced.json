@@ -25,7 +25,7 @@
 
          "vpd":
          {
-            "where-clause": "country_id = :COUNTRY",
+            "where-clause": "country_id = :country",
             "datatypes":
             [
               {"name": "country", "type": "string"}

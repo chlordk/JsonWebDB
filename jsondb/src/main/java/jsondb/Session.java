@@ -267,6 +267,12 @@ public class Session
          this.coninfo.putAll(values);
          StatePersistency.setClientInfo(guid,coninfo);
 
+         if (this.rconn != null)
+            this.rconn.setClientInfo(this.coninfo);
+
+         if (this.wconn != null)
+            this.wconn.setClientInfo(this.coninfo);
+
          return(this);
       }
    }
@@ -390,12 +396,14 @@ public class Session
 
       if (wconn != null && wconn.isConnected())
       {
+         wconn.clearClientInfo(coninfo);
          try {wconn.disconnect();} catch (Exception e)
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
 
       if (rconn != null && rconn.isConnected())
       {
+         rconn.clearClientInfo(coninfo);
          try {rconn.disconnect();} catch (Exception e)
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
@@ -405,7 +413,7 @@ public class Session
    }
 
 
-   public synchronized boolean disconnect()
+   public synchronized boolean disconnect() throws Exception
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
@@ -420,6 +428,7 @@ public class Session
 
       if (wconn != null)
       {
+         wconn.clearClientInfo(coninfo);
          try {wconn.disconnect();} catch (Exception e)
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
          wconn = null;
@@ -427,6 +436,7 @@ public class Session
 
       if (rconn != null)
       {
+         rconn.clearClientInfo(coninfo);
          try {rconn.disconnect();} catch (Exception e)
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
          rconn = null;
@@ -605,8 +615,19 @@ public class Session
       if (!write && rconn.isConnected())
          return(rconn);
 
-      if (write)  return(wconn.connect(this.user,write,stateful));
-      else        return(rconn.connect(this.user,write,stateful));
+      if (write)
+      {
+         wconn.connect(this.user,write,stateful);
+         wconn.setClientInfo(coninfo);
+      }
+      else
+      {
+         rconn.connect(this.user,write,stateful);
+         rconn.setClientInfo(coninfo);
+      }
+
+      if (write) return(wconn);
+      return(rconn);
    }
 
 
