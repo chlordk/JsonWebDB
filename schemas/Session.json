@@ -50,6 +50,13 @@
                   "stateful": {"type": "boolean"},
                   "signature": {"type": "string"}
                   ,
+                  "vpd":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/NameValuePair"},
+                     "description": "All bindvalues to use with Virtual Private Database"
+                  }
+                  ,
                   "client-info":
                   {
                      "type": "array",
@@ -74,10 +81,23 @@
    ,
    "types":
    {
+      "NameValuePair":
+      {
+         "type": "object",
+         "required": ["name","value"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
+            "value": {"type": ["string","number","integer","boolean"]}
+         }
+      }
+      ,
       "Method":
       {
          "type": "string",
-         "enum": ["connect()", "disconnect()", "commit()", "rollback()", "keepalive()"]
+         "enum": ["connect()", "properties()", "disconnect()", "commit()", "rollback()", "keepalive()"]
       }
    }
 }

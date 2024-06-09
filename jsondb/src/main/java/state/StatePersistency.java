@@ -29,6 +29,7 @@ import utils.Bytes;
 import java.io.File;
 import jsondb.Config;
 import java.util.Date;
+import java.util.HashMap;
 import utils.JSONOObject;
 import database.BindValue;
 import org.json.JSONArray;
@@ -48,6 +49,7 @@ public class StatePersistency
 
    private static final String PID = "pid";
    private static final String SES = "ses";
+   private static final String VPD = "vpd";
    private static final String TRX = "trx";
    private static final String CUR = "cur";
    private static final String STATE = "state";
@@ -202,6 +204,44 @@ public class StatePersistency
       }
 
       return(guid);
+   }
+
+
+   public static void setSessionInfo(String session, HashMap<String,BindValue> vpdinfo, HashMap<String,BindValue> coninfo) throws Exception
+   {
+      JSONArray arr = null;
+      JSONObject nvp = null;
+
+      File file = vpdFile(session);
+      JSONObject data = new JSONObject();
+
+      arr = new JSONArray();
+
+      for(BindValue bv : vpdinfo.values())
+      {
+         nvp = new JSONObject();
+         nvp.put("name",bv.name());
+         nvp.put("value",bv.value());
+         arr.put(nvp);
+      }
+
+      data.put("vpd",arr);
+
+      arr = new JSONArray();
+
+      for(BindValue bv : coninfo.values())
+      {
+         nvp = new JSONObject();
+         nvp.put("name",bv.name());
+         nvp.put("value",bv.value());
+         arr.put(nvp);
+      }
+
+      data.put("cli",arr);
+
+      FileOutputStream out = new FileOutputStream(file);
+      out.write(data.toString().getBytes());
+      out.close();
    }
 
 
@@ -362,6 +402,12 @@ public class StatePersistency
    private static File sesFile(String session)
    {
       return(new File(Config.path(STATE,session,session+"."+SES)));
+   }
+
+
+   private static File vpdFile(String session)
+   {
+      return(new File(Config.path(STATE,session,session+"."+VPD)));
    }
 
 

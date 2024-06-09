@@ -27,6 +27,7 @@ package jsondb;
 import state.State;
 import java.util.Date;
 import database.Cursor;
+import java.util.HashMap;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
@@ -63,7 +64,11 @@ public class Session
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
+   private final HashMap<String,BindValue> clinfo;
+   private final HashMap<String,BindValue> vpdinfo;
+
    private final static AdvancedPool pool = Config.pool();
+   private final static int contmout = Config.conTimeout();
    private final static int latency = Config.dbconfig().latency();
    private final static boolean usesec = Config.pool().secondary();
 
@@ -130,6 +135,9 @@ public class Session
 
       this.stateful = info.stateful;
       this.forward = info.online && !info.owner;
+
+      this.clinfo = new HashMap<String,BindValue>();
+      this.vpdinfo = new HashMap<String,BindValue>();
    }
 
 
@@ -143,6 +151,9 @@ public class Session
 
       this.used = new Date();
       this.inst = Config.inst();
+
+      this.clinfo = new HashMap<String,BindValue>();
+      this.vpdinfo = new HashMap<String,BindValue>();
    }
 
    public Session up()
@@ -162,6 +173,17 @@ public class Session
    {
       synchronized(SYNC)
       { clients--; }
+
+      try
+      {
+         if (contmout <= 0)
+            this.release(Integer.MAX_VALUE);
+      }
+      catch (Throwable t)
+      {
+         Config.logger().log(Level.SEVERE,t.toString(),t);
+      }
+
       return(this);
    }
 
@@ -207,6 +229,20 @@ public class Session
    {
       synchronized(SYNC)
       {return(connused);}
+   }
+
+   public Session setVPDInfo(HashMap<String,BindValue> values) throws Exception
+   {
+      this.vpdinfo.putAll(values);
+      StatePersistency.setSessionInfo(guid,vpdinfo,clinfo);
+      return(this);
+   }
+
+   public Session setClientInfo(HashMap<String,BindValue> values) throws Exception
+   {
+      this.clinfo.putAll(values);
+      StatePersistency.setSessionInfo(guid,vpdinfo,clinfo);
+      return(this);
    }
 
    public synchronized void transfer() throws Exception
