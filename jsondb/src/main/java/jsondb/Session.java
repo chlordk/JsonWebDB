@@ -64,8 +64,8 @@ public class Session
    private JdbcInterface rconn = null;
    private JdbcInterface wconn = null;
 
-   private final HashMap<String,BindValue> clinfo;
-   private final HashMap<String,BindValue> vpdinfo;
+   private HashMap<String,BindValue> coninfo = null;
+   private HashMap<String,BindValue> vpdinfo = null;
 
    private final static AdvancedPool pool = Config.pool();
    private final static int contmout = Config.conTimeout();
@@ -81,6 +81,12 @@ public class Session
       if (info != null && session == null)
       {
          session = new Session(info);
+
+         if (session != null)
+         {
+            session.vpdinfo = StatePersistency.getVPDInfo(guid);
+            session.coninfo = StatePersistency.getClientInfo(guid);
+         }
 
          if (!internal && info.owner && !info.online && session.hasTrx())
          {
@@ -135,9 +141,6 @@ public class Session
 
       this.stateful = info.stateful;
       this.forward = info.online && !info.owner;
-
-      this.clinfo = new HashMap<String,BindValue>();
-      this.vpdinfo = new HashMap<String,BindValue>();
    }
 
 
@@ -151,9 +154,6 @@ public class Session
 
       this.used = new Date();
       this.inst = Config.inst();
-
-      this.clinfo = new HashMap<String,BindValue>();
-      this.vpdinfo = new HashMap<String,BindValue>();
    }
 
    public Session up()
@@ -233,15 +233,23 @@ public class Session
 
    public Session setVPDInfo(HashMap<String,BindValue> values) throws Exception
    {
+      if (this.vpdinfo == null)
+         this.vpdinfo = new HashMap<String,BindValue>();
+
       this.vpdinfo.putAll(values);
-      StatePersistency.setSessionInfo(guid,vpdinfo,clinfo);
+      StatePersistency.setVPDInfo(guid,vpdinfo);
+
       return(this);
    }
 
    public Session setClientInfo(HashMap<String,BindValue> values) throws Exception
    {
-      this.clinfo.putAll(values);
-      StatePersistency.setSessionInfo(guid,vpdinfo,clinfo);
+      if (this.coninfo == null)
+         this.coninfo = new HashMap<String,BindValue>();
+
+      this.coninfo.putAll(values);
+      StatePersistency.setClientInfo(guid,coninfo);
+      
       return(this);
    }
 

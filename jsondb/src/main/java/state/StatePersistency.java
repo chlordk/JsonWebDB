@@ -50,6 +50,7 @@ public class StatePersistency
    private static final String PID = "pid";
    private static final String SES = "ses";
    private static final String VPD = "vpd";
+   private static final String CLI = "cli";
    private static final String TRX = "trx";
    private static final String CUR = "cur";
    private static final String STATE = "state";
@@ -207,41 +208,67 @@ public class StatePersistency
    }
 
 
-   public static void setSessionInfo(String session, HashMap<String,BindValue> vpdinfo, HashMap<String,BindValue> coninfo) throws Exception
+   public static void setVPDInfo(String session, HashMap<String,BindValue> vpdinfo) throws Exception
    {
-      JSONArray arr = null;
       JSONObject nvp = null;
-
       File file = vpdFile(session);
-      JSONObject data = new JSONObject();
-
-      arr = new JSONArray();
+      JSONArray vars = new JSONArray();
 
       for(BindValue bv : vpdinfo.values())
       {
          nvp = new JSONObject();
          nvp.put("name",bv.name());
          nvp.put("value",bv.value());
-         arr.put(nvp);
+         vars.put(nvp);
       }
 
-      data.put("vpd",arr);
+      FileOutputStream out = new FileOutputStream(file);
+      out.write(vars.toString().getBytes());
+      out.close();
+   }
 
-      arr = new JSONArray();
+
+   public static void setClientInfo(String session, HashMap<String,BindValue> coninfo) throws Exception
+   {
+      JSONObject nvp = null;
+      File file = cliFile(session);
+      JSONArray vars = new JSONArray();
 
       for(BindValue bv : coninfo.values())
       {
          nvp = new JSONObject();
          nvp.put("name",bv.name());
          nvp.put("value",bv.value());
-         arr.put(nvp);
+         vars.put(nvp);
       }
 
-      data.put("cli",arr);
-
       FileOutputStream out = new FileOutputStream(file);
-      out.write(data.toString().getBytes());
+      out.write(vars.toString().getBytes());
       out.close();
+   }
+
+
+   public static HashMap<String,BindValue> getVPDInfo(String session) throws Exception
+   {
+      File file = vpdFile(session);
+      if (!file.exists()) return(null);
+
+      FileInputStream in = new FileInputStream(file);
+      byte[] bytes = in.readAllBytes(); in.close();
+
+      JSONArray vars = new JSONArray(new String(bytes));
+      System.out.println(vars.toString(2));
+
+      return(null);
+   }
+
+
+   public static HashMap<String,BindValue> getClientInfo(String session) throws Exception
+   {
+      File file = cliFile(session);
+      if (!file.exists()) return(null);
+
+      return(null);
    }
 
 
@@ -408,6 +435,12 @@ public class StatePersistency
    private static File vpdFile(String session)
    {
       return(new File(Config.path(STATE,session,session+"."+VPD)));
+   }
+
+
+   private static File cliFile(String session)
+   {
+      return(new File(Config.path(STATE,session,session+"."+CLI)));
    }
 
 
