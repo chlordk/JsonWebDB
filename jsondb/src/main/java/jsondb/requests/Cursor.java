@@ -91,12 +91,10 @@ public class Cursor
 
       response.put("success",true);
       response.put("method","fetch()");
+      response.put("more",cursor.next());
 
       if (cursor.primary())
          response.put("primary",true);
-
-      if (cursor.next())
-         response.put("more",true);
 
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);

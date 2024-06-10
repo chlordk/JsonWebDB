@@ -121,8 +121,8 @@ public class Session
       boolean authenticated = false;
       jsondb.Session session = jsondb.Session.create(username,stateful);
 
-      if (vpdinfo.size() > 0) session.setVPDInfo(vpdinfo);
-      if (coninfo.size() > 0) session.setClientInfo(coninfo);
+      if (vpdinfo != null && vpdinfo.size() > 0) session.setVPDInfo(vpdinfo);
+      if (coninfo != null && coninfo.size() > 0) session.setClientInfo(coninfo);
 
       try
       {
