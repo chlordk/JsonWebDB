@@ -10,7 +10,7 @@
       "Session":
       {
          "type": "object",
-         "description": "Object that handles connect, disconnect, commit, rollback, and keepalive",
+         "description": "Object that handles connect, disconnect, commit, rollback, properties, and keepalive",
 
          "required": ["invoke"],
          "additionalProperties": false,
@@ -72,6 +72,110 @@
                            "value": {"type": "string"}
                         }
                      }
+                  }
+               }
+            }
+            ,
+            "disconnect()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "Information required for disconnecting",
+
+               "properties":
+               {
+                  "session":
+                  {
+                     "type": "string",
+                     "description": "Valid session id"
+                  }
+               }
+            }
+            ,
+            "commit()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "Information required to commit",
+
+               "properties":
+               {
+                  "session":
+                  {
+                     "type": "string",
+                     "description": "Valid session id"
+                  }
+               }
+            }
+            ,
+            "rollback()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "Information required to rollback",
+
+               "properties":
+               {
+                  "session":
+                  {
+                     "type": "string",
+                     "description": "Valid session id"
+                  }
+               }
+            }
+            ,
+            "properties()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "Set VPD and ClientInfo",
+
+               "properties":
+               {
+                  "session":
+                  {
+                     "type": "string",
+                     "description": "Valid session id"
+                  }
+                  ,
+                  "vpd":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/NameValuePair"},
+                     "description": "All bindvalues to use with Virtual Private Database"
+                  }
+                  ,
+                  "client-info":
+                  {
+                     "type": "array",
+                     "description": "Name value pairs to apply when connecting",
+                     "data":
+                     {
+                        "required": ["name","value"],
+                        "additionalProperties": false,
+
+                        "properties":
+                        {
+                           "name": {"type": "string"},
+                           "value": {"type": "string"}
+                        }
+                     }
+                  }
+               }
+            }
+            ,
+            "keepalive()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "Information required send keepalive signal",
+
+               "properties":
+               {
+                  "session":
+                  {
+                     "type": "string",
+                     "description": "Valid session id"
                   }
                }
             }
