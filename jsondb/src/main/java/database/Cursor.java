@@ -84,7 +84,7 @@ public class Cursor
       for (int i = 0; i < bind.length(); i++)
          bindvalues.add(BindValue.from(bind.getJSONObject(i)));
 
-      Cursor cursor = new Cursor(cursid,session,sql,bindvalues,info.pgz);
+      Cursor cursor = new Cursor(cursid,session,sql,bindvalues,info);
       cursor.pos = info.pos;
 
       return(cursor);
@@ -102,14 +102,15 @@ public class Cursor
       this.guid = pagesize <= 0 ? Guid.generate() : this.save();
    }
 
-   private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues, int pagesize) throws Exception
+   private Cursor(String guid, Session session, String sql, ArrayList<BindValue> bindvalues, CursorInfo info) throws Exception
    {
       this.pos = 0;
       this.sql = sql;
       this.guid = guid;
-      this.excost = 0;
       this.session = session;
-      this.pagesize = pagesize;
+      this.excost = info.exc;
+      this.ftccost = info.ftc;
+      this.pagesize = info.pgz;
       this.bindvalues = bindvalues;
    }
 

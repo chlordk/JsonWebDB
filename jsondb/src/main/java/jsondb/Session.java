@@ -320,11 +320,17 @@ public class Session
          if (cursor == null) return(null);
 
          JdbcInterface read = ensure(false,!cursor.primary());
-         read.executeQuery(cursor,false);
-         cursor.primary(forcewrt);
 
+         long time = System.nanoTime();
+         read.executeQuery(cursor,false);
+         cursor.excost(System.nanoTime()-time);
+
+         cursor.primary(forcewrt);
          State.addCursor(cursor);
+
+         time = System.nanoTime();
          cursor.position();
+         cursor.ftccost(System.nanoTime()-time);
       }
 
       synchronized(SYNC)
@@ -346,9 +352,15 @@ public class Session
 
       if (!forcewrt)
       {
+         long time = System.nanoTime();
          read.executeQuery(cursor,false);
+         cursor.excost(System.nanoTime()-time);
+
          cursor.primary(false);
+
+         time = System.nanoTime();
          cursor.position();
+         cursor.ftccost(System.nanoTime()-time);
       }
    }
 
