@@ -177,7 +177,7 @@ public class Session
       try
       {
          if (contmout <= 0)
-            this.release(Integer.MAX_VALUE);
+            this.release(-1);
       }
       catch (Throwable t)
       {
@@ -388,8 +388,11 @@ public class Session
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
 
-      if (this.trxused != null) return(false);
-      if (curr - used < idle*1000) return(false);
+      if (this.trxused != null)
+         return(false);
+
+      if (idle >= 0 && curr - used < idle*1000)
+         return(false);
 
       for (Cursor cursor : cursors)
          cursor.offline();

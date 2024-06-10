@@ -15,7 +15,7 @@
                "select l.*, c.country_name",
                "from locations l, countries c",
                "where l.country_id = c.country_id",
-               "and l.city like :CITY"
+               "and l.city like :city"
             ],
             "datatypes":
             [
