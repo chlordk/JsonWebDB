@@ -446,7 +446,10 @@ public class Session
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
       for (Cursor cursor : cursors)
-         cursor.offline();
+      {
+         if (cursor.primary())
+            cursor.offline();
+      }
 
       CloseAsap.remove(this);
       return(true);
