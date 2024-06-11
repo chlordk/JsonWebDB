@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import database.JdbcInterface;
 import state.StatePersistency;
 import java.util.logging.Level;
+import jsondb.Monitor.CloseAsap;
 import database.definitions.AdvancedPool;
 import state.StatePersistency.SessionInfo;
 import database.JdbcInterface.UpdateResponse;
@@ -428,6 +429,31 @@ public class Session
    }
 
 
+   public synchronized boolean releaseWrite() throws Exception
+   {
+      long now = (new Date()).getTime();
+
+      if (now - this.primary.lastused <= latency)
+         return(false);
+
+      if (wconn == null || !wconn.isConnected())
+         return(false);
+
+      System.out.println("disc write");
+      wconn.clearClientInfo(coninfo);
+      try {wconn.disconnect();} catch (Exception e)
+      {Config.logger().log(Level.SEVERE,e.toString(),e);}
+
+      ArrayList<Cursor> cursors = State.getAllCursors(guid);
+
+      for (Cursor cursor : cursors)
+         cursor.offline();
+
+      CloseAsap.remove(this);
+      return(true);
+   }
+
+
    public synchronized boolean disconnect() throws Exception
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
@@ -634,6 +660,7 @@ public class Session
       {
          wconn.connect(this.user,write,stateful);
          wconn.setClientInfo(coninfo);
+         CloseAsap.add(this);
       }
       else
       {

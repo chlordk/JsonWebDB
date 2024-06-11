@@ -50,6 +50,9 @@ public class Utils
       if (def.has(method))
          return(def.getJSONObject(method));
 
+      if (def.has(method+"()"))
+         return(def.getJSONObject(method+"()"));
+
       return(null);
    }
 

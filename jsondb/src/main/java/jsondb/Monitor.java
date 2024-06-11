@@ -22,6 +22,7 @@
 package jsondb;
 
 import java.util.Date;
+import java.util.ArrayList;
 import state.StatePersistency;
 import java.util.logging.Level;
 
@@ -124,6 +125,80 @@ public class Monitor extends Thread
                finally {session.down();}
             }
          }
+      }
+   }
+
+
+   public static class CloseAsap extends Thread
+   {
+      private static CloseAsap running = null;
+      private static final int latency = Config.dbconfig().latency();
+
+      private final static ArrayList<Session> sessions =
+         new ArrayList<Session>();
+
+
+      public static synchronized void done()
+      {
+         running = null;
+
+         if (sessions.size() > 0)
+            running = new CloseAsap();
+      }
+
+
+      public static synchronized void add(Session session)
+      {
+         if (contmout <= 0) return;
+         if (session.isStateful()) return;
+
+         sessions.add(session);
+         if (running == null) running = new CloseAsap();
+      }
+
+
+      public static synchronized void remove(Session session)
+      {
+         sessions.remove(session);
+      }
+
+
+      @SuppressWarnings("unchecked")
+      private static synchronized ArrayList<Session> getSessions()
+      {
+         return((ArrayList<Session>) sessions.clone());
+      }
+
+
+      private CloseAsap()
+      {
+         this.setName(this.getClass().getName());
+         this.setDaemon(true); this.start();
+      }
+
+
+      public void run()
+      {
+         try
+         {
+            while (true)
+            {
+               sleep(latency+1000);
+               ArrayList<Session> sessions = getSessions();
+
+               if (sessions.size() == 0)
+                  break;
+
+               for(Session session : sessions)
+                  session.releaseWrite();
+            }
+         }
+         catch (Throwable t)
+         {
+            Config.logger().log(Level.SEVERE,t.toString(),t);
+         }
+
+         done();
       }
    }
 }
