@@ -33,6 +33,7 @@ public class Monitor extends Thread
    private static int trxtmout = 0;
    private static int sestmout = 0;
 
+   private static final int SLACK = 500;
    private static final int MAXINT = 60000;
 
 
@@ -183,7 +184,7 @@ public class Monitor extends Thread
          {
             while (true)
             {
-               sleep(latency+1000);
+               sleep(latency+SLACK);
                ArrayList<Session> sessions = getSessions();
 
                if (sessions.size() == 0)

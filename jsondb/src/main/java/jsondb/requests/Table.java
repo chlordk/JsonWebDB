@@ -558,7 +558,6 @@ public class Table
          cursor.remove();
 
       response.put("success",true);
-      if (heading) response.put("columns",columns);
 
       if (cursor.next())
       {
@@ -568,6 +567,9 @@ public class Table
 
       if (cursor.primary())
          response.put("primary",true);
+
+      if (heading)
+         response.put("columns",columns);
 
       response.put("rows",rows);
       for(Object[] row : table) rows.put(row);

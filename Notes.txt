@@ -1,9 +1,5 @@
 Presentation:
   Scalable
 
-Monitor:
-  close wconn asap
-
-
 KeepAlive:
   Session moved ?

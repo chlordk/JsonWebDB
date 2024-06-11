@@ -439,7 +439,6 @@ public class Session
       if (wconn == null || !wconn.isConnected())
          return(false);
 
-      System.out.println("disc write");
       wconn.clearClientInfo(coninfo);
       try {wconn.disconnect();} catch (Exception e)
       {Config.logger().log(Level.SEVERE,e.toString(),e);}
