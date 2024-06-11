@@ -15,10 +15,10 @@
 
             "anyOf":
             [
-               {"required": ["session","source","invoke","insert()"]},
-               {"required": ["session","source","invoke","update()"]},
-               {"required": ["session","source","invoke","delete()"]},
-               {"required": ["session","source","invoke","select()"]}
+               {"required": ["session","source","invoke","insert"]},
+               {"required": ["session","source","invoke","update"]},
+               {"required": ["session","source","invoke","delete"]},
+               {"required": ["session","source","invoke","select"]}
             ],
 
             "description": "The source object (table,view or query)",
@@ -350,7 +350,7 @@
          "Method":
          {
             "type": "string",
-            "enum": ["describe()","select()", "insert()", "update()", "delete()"]
+            "enum": ["describe","select", "insert", "update", "delete"]
          }
       }
    }

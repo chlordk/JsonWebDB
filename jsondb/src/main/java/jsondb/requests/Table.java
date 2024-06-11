@@ -62,14 +62,15 @@ public class Table
    private static final String CURSOR = "cursor";
    private static final String VALUES = "values";
    private static final String FILTER = "filter";
+   private static final String INSERT = "insert";
+   private static final String UPDATE = "update";
+   private static final String DELETE = "delete";
+   private static final String SELECT = "select";
    private static final String HEADING = "heading";
-   private static final String INSERT = "insert()";
-   private static final String UPDATE = "update()";
-   private static final String DELETE = "delete()";
-   private static final String SELECT = "select()";
    private static final String COLUMNS = "columns";
    private static final String FILTERS = "filters";
    private static final String SESSION = "session";
+   private static final String DESCRIBE = "describe";
    private static final String PAGESIZE = "page-size";
    private static final String RETURNING = "returning";
    private static final String SAVEPOINT = "savepoint";
@@ -89,7 +90,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"describe()");
+      Session session = Utils.getSession(response,sessid,DESCRIBE);
       if (session == null) return(new Response(response));
 
       try {return(describe(session));}
@@ -153,7 +154,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"insert()");
+      Session session = Utils.getSession(response,sessid,INSERT);
       if (session == null) return(new Response(response));
 
       try
@@ -191,7 +192,7 @@ public class Table
       if (!source.described())
          this.describe(session,source);
 
-      JSONObject args = definition.getJSONObject(INSERT);
+      JSONObject args = Utils.getMethod(definition,INSERT);
 
       String list = null;
       String values = null;
@@ -244,7 +245,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"insert()");
+      Session session = Utils.getSession(response,sessid,UPDATE);
       if (session == null) return(new Response(response));
 
       try
@@ -283,7 +284,7 @@ public class Table
          this.describe(session,source);
 
       String list = null;
-      JSONObject args = definition.getJSONObject(UPDATE);
+      JSONObject args = Utils.getMethod(definition,UPDATE);
 
       JSONArray colspec = args.getJSONArray(SET);
       ArrayList<BindValue> values = new ArrayList<BindValue>();
@@ -353,7 +354,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"insert()");
+      Session session = Utils.getSession(response,sessid,DELETE);
       if (session == null) return(new Response(response));
 
       try
@@ -391,7 +392,7 @@ public class Table
       if (!source.described())
          this.describe(session,source);
 
-      JSONObject args = definition.getJSONObject(DELETE);
+      JSONObject args = Utils.getMethod(definition,DELETE);
 
       String stmt = "delete from "+source.object;
       SQLPart delete = new SQLPart(stmt);
@@ -446,7 +447,7 @@ public class Table
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"select()");
+      Session session = Utils.getSession(response,sessid,SELECT);
       if (session == null) return(new Response(response));
 
       try
@@ -486,7 +487,7 @@ public class Table
       HashMap<String,BindValue> bindvalues =
          Utils.getBindValues(definition);
 
-      JSONObject args = definition.getJSONObject(SELECT);
+      JSONObject args = Utils.getMethod(definition,SELECT);
 
       Boolean heading = Misc.get(args,HEADING);
       if (heading == null) heading = false;
@@ -607,7 +608,7 @@ public class Table
       if (!source.described())
          new Table(def).describe(context.session,source);
 
-      JSONObject args = def.getJSONObject(SELECT);
+      JSONObject args = Utils.getMethod(def,SELECT);
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
       HashMap<String,BindValue> bindvalues = Utils.getBindValues(def);
 

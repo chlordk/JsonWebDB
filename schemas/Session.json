@@ -201,7 +201,7 @@
       "Method":
       {
          "type": "string",
-         "enum": ["connect()", "properties()", "disconnect()", "commit()", "rollback()", "keepalive()"]
+         "enum": ["connect", "properties", "disconnect", "commit", "rollback", "keepalive"]
       }
    }
 }

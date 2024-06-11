@@ -76,8 +76,6 @@ public class RequestHandler
             steps.put(resp.payload());
             merged.exception(resp.exception());
 
-            System.out.println(merged.toString(2));
-
             if (!resp.payload().getBoolean("success"))
                return(merged);
          }
@@ -85,13 +83,11 @@ public class RequestHandler
          return(merged);
       }
 
-
       if (names != null && names.length == 1)
       {
          try
          {
             invk = methods[methno];
-            invk = invk.substring(0,invk.indexOf("("));
             Object dbrq = getInstance(names[0],payload);
             Method method = dbrq.getClass().getMethod(invk);
             return((Response) method.invoke(dbrq));

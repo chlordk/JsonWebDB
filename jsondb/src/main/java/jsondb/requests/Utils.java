@@ -43,6 +43,16 @@ public class Utils
    private static final String SECTION = "bindvalues";
 
 
+   public static JSONObject getMethod(JSONObject def, String method) throws Exception
+   {
+      method = method.trim().toLowerCase();
+
+      if (def.has(method))
+         return(def.getJSONObject(method));
+
+      return(null);
+   }
+
 
    public static String getColumnList(String[] columns) throws Exception
    {

@@ -38,7 +38,8 @@ public class Cursor
    private final String cursid;
    private final JSONObject definition;
 
-   private static final String FETCH = "fetch()";
+   private static final String FETCH = "fetch";
+   private static final String CLOSE = "close";
    private static final String CURSOR = "cursor";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
@@ -56,7 +57,7 @@ public class Cursor
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"fetch()");
+      Session session = Utils.getSession(response,sessid,FETCH);
       if (session == null) return(new Response(response));
 
       Forward fw = Forward.redirect(session,"Cursor",definition);
@@ -79,12 +80,10 @@ public class Cursor
    public Response fetch(Session session, database.Cursor cursor) throws Exception
    {
       JSONObject response = new JSONOObject();
+      JSONObject fetch = Utils.getMethod(definition,FETCH);
 
       if (definition.has(FETCH))
-      {
-         JSONObject fetch = definition.getJSONObject(FETCH);
          if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
-      }
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
@@ -107,7 +106,7 @@ public class Cursor
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,"close()");
+      Session session = Utils.getSession(response,sessid,CLOSE);
       if (session == null) return(new Response(response));
 
       try

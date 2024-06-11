@@ -62,7 +62,7 @@
       "Method":
       {
          "type": "string",
-         "enum": ["describe()","select()", "insert()", "update()", "delete()"]
+         "enum": ["describe","select", "insert", "update", "delete"]
       }
    }
 }

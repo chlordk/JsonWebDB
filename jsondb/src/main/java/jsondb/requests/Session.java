@@ -40,12 +40,16 @@ public class Session
    private final JSONObject definition;
 
    private static final String VPD = "vpd";
+   private static final String COMMIT = "commit";
    private static final String SESSION = "session";
+   private static final String ROLLBACK = "rollback";
    private static final String USERNAME = "username";
    private static final String PASSWORD = "password";
    private static final String STATEFUL = "stateful";
+   private static final String CONNPROPS = "connect";
    private static final String SIGNATURE = "signature";
-   private static final String PARAMETERS = "connect()";
+   private static final String PROPERTIES = "properties";
+   private static final String DISCONNECT = "disconnect";
    private static final String CLIENTINFO = "client-info";
 
 
@@ -67,7 +71,7 @@ public class Session
       JSONObject response = new JSONOObject();
 
       String username = Config.dbconfig().defaultuser();
-      JSONObject data = definition.getJSONObject(PARAMETERS);
+      JSONObject data = Utils.getMethod(definition,CONNPROPS);
 
       if (data.has(USERNAME))
          username = data.getString(USERNAME);
@@ -163,7 +167,7 @@ public class Session
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
 
-      jsondb.Session session = Utils.getSession(response,sessid,"disconnect()");
+      jsondb.Session session = Utils.getSession(response,sessid,DISCONNECT);
       if (session == null) return(new Response(response));
 
       try
@@ -203,7 +207,7 @@ public class Session
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
 
-      jsondb.Session session = Utils.getSession(response,sessid,"commit()");
+      jsondb.Session session = Utils.getSession(response,sessid,COMMIT);
       if (session == null) return(new Response(response));
 
       try
@@ -245,7 +249,7 @@ public class Session
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
 
-      jsondb.Session session = Utils.getSession(response,sessid,"rollback()");
+      jsondb.Session session = Utils.getSession(response,sessid,ROLLBACK);
       if (session == null) return(new Response(response));
 
       try
@@ -287,7 +291,7 @@ public class Session
       JSONObject response = new JSONOObject();
       String sessid = definition.optString(SESSION);
 
-      jsondb.Session session = Utils.getSession(response,sessid,"properties()");
+      jsondb.Session session = Utils.getSession(response,sessid,PROPERTIES);
       if (session == null) return(new Response(response));
 
       try
@@ -307,6 +311,48 @@ public class Session
    {
       String sessid = session.guid();
       JSONObject response = new JSONOObject();
+
+      HashMap<String,BindValue> coninfo = null;
+      HashMap<String,BindValue> vpdinfo = null;
+
+      JSONObject data = Utils.getMethod(definition,PROPERTIES);
+
+      if (data.has(VPD))
+      {
+         vpdinfo = new HashMap<String,BindValue>();
+         JSONArray nvpairs = data.getJSONArray(VPD);
+
+         for (int i = 0; i < nvpairs.length(); i++)
+         {
+            JSONObject nvp = nvpairs.getJSONObject(i);
+
+            Object val = nvp.get("value");
+            String name = nvp.getString("name");
+
+            BindValue bv = new BindValue(name).value(val);
+            vpdinfo.put(name.toLowerCase(),bv);
+         }
+      }
+
+      if (data.has(CLIENTINFO))
+      {
+         coninfo = new HashMap<String,BindValue>();
+         JSONArray nvpairs = data.getJSONArray(CLIENTINFO);
+
+         for (int i = 0; i < nvpairs.length(); i++)
+         {
+            JSONObject nvp = nvpairs.getJSONObject(i);
+
+            Object val = nvp.get("value");
+            String name = nvp.getString("name");
+
+            BindValue bv = new BindValue(name).value(val);
+            coninfo.put(name.toLowerCase(),bv);
+         }
+      }
+
+      if (vpdinfo != null && vpdinfo.size() > 0) session.setVPDInfo(vpdinfo);
+      if (coninfo != null && coninfo.size() > 0) session.setClientInfo(coninfo);
 
       response.put("success",true);
       response.put("session",sessid);
