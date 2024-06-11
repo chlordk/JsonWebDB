@@ -1,18 +1,9 @@
 Presentation:
   Scalable
 
-
-Forward:
- not if con timeout <= 0
-
-
 Monitor:
   close wconn asap
 
 
 KeepAlive:
   Session moved ?
-
-
-Invoke:
-  method() parenthesis

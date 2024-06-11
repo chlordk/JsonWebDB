@@ -40,7 +40,7 @@ public class Forward
 
    public static Forward redirect(Session session, String object, JSONObject definition) throws Exception
    {
-      if (session.forward())
+      if (Config.conTimeout() > 0 && session.forward())
       {
          JSONObject response = invoke(session,object,definition);
          if (response != null) return(new Forward(response));
