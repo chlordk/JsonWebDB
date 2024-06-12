@@ -24,20 +24,32 @@ SOFTWARE.
 package sources;
 
 import org.json.JSONObject;
+import static utils.Misc.*;
 
 
 public class SQLSource implements Source
 {
-   public final String id;
+   private static final String ID = "id";
+   private static final String SQL = "sql";
+   private static final String EXE = "type";
+   private static final String UPD = "update";
 
-   public SQLSource(JSONObject definition)
+   public final String sid;
+   public final String sql;
+   public final String exe;
+   public final Boolean upd;
+
+
+   public SQLSource(JSONObject definition) throws Exception
    {
-      id = "sql";
-      System.out.println("SQL");
+      upd = get(definition,UPD,false);
+      sid = getString(definition,ID,true,true);
+      exe = getString(definition,EXE,true,true);
+      sql = getString(definition,SQL,true,false);
    }
 
    public String id()
    {
-      return(id);
+      return(sid);
    }
 }
