@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import static utils.Misc.*;
 
 
-public class TableSource extends Source
+public class TableSource implements Source
 {
    private static final String ID = "id";
    private static final String SQL = "sql";
@@ -94,6 +94,11 @@ public class TableSource extends Source
 
       if (object == null && query == null)
          throw new Exception(Messages.get("INCOMPLETE_SOURCE",id));
+   }
+
+   public String id()
+   {
+      return(id);
    }
 
    public AccessType getAccessLimit(String operation)

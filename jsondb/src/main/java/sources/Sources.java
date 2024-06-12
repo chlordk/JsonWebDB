@@ -236,20 +236,26 @@ public class Sources extends Thread
 
          if (def.has(SQL))
          {
-            System.out.println("SQL");
+            SQLSource source = new SQLSource(def);
+            sources.put(source.id().toLowerCase(),source);
+            Config.logger().info(source.toString());
          }
          else if (def.has(FUNC))
          {
-            System.out.println("FUNC");
+            ProcedureSource source = new ProcedureSource(def,true);
+            sources.put(source.id().toLowerCase(),source);
+            Config.logger().info(source.toString());
          }
          else if (def.has(PROC))
          {
-            System.out.println("PROC");
+            ProcedureSource source = new ProcedureSource(def,false);
+            sources.put(source.id().toLowerCase(),source);
+            Config.logger().info(source.toString());
          }
          else
          {
             TableSource source = new TableSource(def);
-            sources.put(source.id.toLowerCase(),source);
+            sources.put(source.id().toLowerCase(),source);
             Config.logger().info(source.toString());
          }
       }

@@ -21,11 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 package sources;
 
+import org.json.JSONObject;
 
-public interface Source
+
+public class SQLSource implements Source
 {
-   String id();
+   public final String id;
+
+   public SQLSource(JSONObject definition)
+   {
+      id = "sql";
+      System.out.println("SQL");
+   }
+
+   public String id()
+   {
+      return(id);
+   }
 }

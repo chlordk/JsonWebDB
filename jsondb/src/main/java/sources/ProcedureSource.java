@@ -21,11 +21,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 package sources;
 
+import org.json.JSONObject;
 
-public interface Source
+
+public class ProcedureSource implements Source
 {
-   String id();
+   public final String id;
+
+   public ProcedureSource(JSONObject definition, boolean func)
+   {
+      id = "procedure";
+      System.out.println("Procedure, returning ? "+func);
+   }
+
+   public String id()
+   {
+      return(id);
+   }
 }
