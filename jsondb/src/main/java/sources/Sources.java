@@ -50,11 +50,14 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class Sources extends Thread
 {
+   private static final String SQL = "sql";
    private static final String TYPE = "type";
    private static final String CONF = "config";
    private static final String DBSC = "database";
+   private static final String FUNC = "function";
+   private static final String PROC = "procedure";
    private static final String SOURCES = "sources";
-   private static final String TABLES = "datasources";
+   private static final String ENTRIES = "datasources";
    private static final String TRIGGER = ".reload.trg";
 
    private static Path path = null;
@@ -225,13 +228,30 @@ public class Sources extends Thread
       JSONArray arr = null;
       HashMap<String,Source> sources = new HashMap<String,Source>();
 
-      arr = defs.optJSONArray(TABLES);
+      arr = defs.getJSONArray(ENTRIES);
 
       for (int i = 0; i < arr.length(); i++)
       {
-         TableSource source = new TableSource(arr.getJSONObject(i));
-         sources.put(source.id.toLowerCase(),source);
-         Config.logger().info(source.toString());
+         JSONObject def = arr.getJSONObject(i);
+
+         if (def.has(SQL))
+         {
+            System.out.println("SQL");
+         }
+         else if (def.has(FUNC))
+         {
+            System.out.println("FUNC");
+         }
+         else if (def.has(PROC))
+         {
+            System.out.println("PROC");
+         }
+         else
+         {
+            TableSource source = new TableSource(def);
+            sources.put(source.id.toLowerCase(),source);
+            Config.logger().info(source.toString());
+         }
       }
 
       return(sources);
