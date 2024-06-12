@@ -3,8 +3,8 @@
    [
       {
          "id": "Dates",
-         "query": {"sql": "select now() as date"},
+         "query": {"sql": "select sysdate as date from dual"},
          "select": "allowed"
-      }     
+      }
    ]
 }

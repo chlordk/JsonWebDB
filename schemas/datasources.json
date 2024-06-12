@@ -5,7 +5,7 @@
    "type": "object",
    "additionalProperties": false,
 
-   "description": "This schema defines the different types of datasources",
+   "description": "This schema defines the different types of datasources ie Table, SQL, Procedure and Function",
 
    "properties":
    {
@@ -16,6 +16,7 @@
          {
             "anyOf":
             [
+               {"$ref": "#/sources/SQL"},
                {"$ref": "#/sources/Table"}
             ]
          }
@@ -107,6 +108,45 @@
             }
          }
       }
+      ,
+      "SQL":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["id","sql"],
+
+         "description": "Any sql statement",
+
+         "properties":
+         {
+            "id":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the object"
+            },
+            "sql":
+            {
+               "$ref": "#/types/Text",
+               "description": "sql statement"
+            },
+            "update":
+            {
+               "type": "boolean",
+               "description": "Does the sql update data in the database"
+            },
+            "type":
+            {
+               "$ref": "#/types/JDBCType",
+               "description": "Which jdbc call to use when executing the sql"
+            },
+            "datatypes":
+            {
+               "object": "array",
+               "items": {"$ref": "#/types/DataType"},
+               "description": "All bindvalues must be defined"
+            }
+         }
+      }
    }
    ,
    "types":
@@ -142,7 +182,7 @@
          "properties":
          {
             "name": {"type": "string"},
-            "type": {"$ref": "#/types/Type"}
+            "type": {"$ref": "#/types/SQLType"}
          }
       }
       ,
@@ -172,11 +212,11 @@
             "description": {"$ref": "#/types/Text"},
             "where-clause": {"$ref": "#/types/Text"},
             "datatypes": {"object": "array", "items": {"$ref": "#/types/DataType"}},
-            "apply":{"type": "array", "items": {"$ref": "#/types/Operation"}}
+            "apply":{"type": "array", "items": {"$ref": "#/types/TableOperation"}}
          }
       }
       ,
-      "Operation":
+      "TableOperation":
       {
          "type": "string",
          "enum": ["insert","update","delete","select"]
@@ -188,10 +228,17 @@
          "enum": ["denied","allowed","if-where-clause","by-primary-key"]
       }
       ,
-      "Type":
+      "SQLType":
       {
          "type": ["integer", "string"],
          "description": "Either the datatype as in varchar, numeric... or the jdbc Types id"
+      }
+      ,
+      "JDBCType":
+      {
+         "type": "string",
+         "enum": ["query", "update", "others"],
+         "description": "Use jdbc executeQuery, executeUpdate, or just execute"
       }
       ,
       "Text":

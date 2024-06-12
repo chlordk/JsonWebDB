@@ -584,12 +584,15 @@ public class Session
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      if (stateful) touchTrx();
-      if (usesec) primary.dirty(stateful);
-
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
       response = new JSONObject().put("affected",resp.affected);
+
+      if (resp.affected > 0)
+      {
+         if (stateful) touchTrx();
+         if (usesec) primary.dirty(stateful);
+      }
 
       if (resp.returning != null)
       {

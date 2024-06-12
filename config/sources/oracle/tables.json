@@ -97,7 +97,7 @@
             "where-clause": "employee_id > :id",
             "datatypes":
             [
-              {"name": "id", "type": "numeric", "sqlid": 2}
+              {"name": "id", "type": "numeric"}
             ],
             "apply": ["update","delete"]
          },
