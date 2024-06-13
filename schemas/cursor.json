@@ -4,12 +4,13 @@
 
    "type": "object",
    "title": "Cursor-schema",
+   "additionalProperties": false,
 
    "properties":
    {
       "Cursor":
       {
-         "description": "Object that handles fetching more data from a query",
+         "description": "Object that handles cursor operations",
 
          "required": ["invoke","session","cursor"],
          "additionalProperties": false,
@@ -50,7 +51,7 @@
                   {
                      "type": "number",
                      "description": "The number of rows to fetch per call aka. array-fetch"
-               }
+                  }
                }
             }
          }
@@ -62,7 +63,7 @@
       "Method":
       {
          "type": "string",
-         "enum": ["describe","select", "insert", "update", "delete"]
+         "enum": ["fetch","close"]
       }
    }
 }

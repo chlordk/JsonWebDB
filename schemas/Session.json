@@ -4,6 +4,7 @@
 
    "type": "object",
    "title": "Session-schema",
+   "additionalProperties": false,
 
    "properties":
    {

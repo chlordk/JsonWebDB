@@ -1,0 +1,196 @@
+{
+   "$id": "Sql.json",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+
+   "type": "object",
+   "title": "Any-sql-schema",
+   "additionalProperties": false,
+
+   "properties":
+   {
+      "Sql":
+      {
+         "description": "Execute any sql",
+
+         "required": ["invoke","session"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "session":
+            {
+               "type": "string",
+               "description": "Unique identifier. Handed out after successful connect"
+            }
+            ,
+            "invoke":
+            {
+               "description": "Method(s) to invoke",
+
+               "anyOf":
+               [
+                  {"$ref": "#/types/Method"},
+                  {"type": "array", "items": {"$ref": "#/types/Method"}}
+               ]
+            }
+            ,
+            "insert()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "bindvalues":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/BindValue"}
+                  }
+                  ,
+                  "savepoint":
+                  {
+                     "type": "boolean",
+                     "description": "Use savepoint"
+                  }
+                  ,
+                  "returning":
+                  {
+                     "type": "array",
+                     "items": {"type": "string"}
+                  }
+               }
+            }
+            ,
+            "update()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "bindvalues":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/BindValue"}
+                  }
+                  ,
+                  "savepoint":
+                  {
+                     "type": "boolean",
+                     "description": "Use savepoint"
+                  }
+                  ,
+                  "returning":
+                  {
+                     "type": "array",
+                     "items": {"type": "string"}
+                  }
+               }
+            }
+            ,
+            "delete()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "bindvalues":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/BindValue"}
+                  }
+                  ,
+                  "savepoint":
+                  {
+                     "type": "boolean",
+                     "description": "Use savepoint"
+                  }
+                  ,
+                  "returning":
+                  {
+                     "type": "array",
+                     "items": {"type": "string"}
+                  }
+               }
+            }
+            ,
+            "select()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "bindvalues":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/BindValue"}
+                  }
+                  ,
+                  "cursor":
+                  {
+                     "type": "boolean",
+                     "description": "Keep cursor for subsequent fetch"
+                  }
+                  ,
+                  "page-size":
+                  {
+                     "type": "number",
+                     "description": "The number of rows to fetch per call aka. array-fetch"
+                  }
+                  ,
+                  "savepoint":
+                  {
+                     "type": "boolean",
+                     "description": "Use savepoint"
+                  }
+               }
+            }
+            ,
+            "execute()":
+            {
+               "type": "object",
+               "additionalProperties": false,
+
+               "properties":
+               {
+                  "bindvalues":
+                  {
+                     "type": "array",
+                     "items": {"$ref": "#/types/BindValue"}
+                  }
+                  ,
+                  "savepoint":
+                  {
+                     "type": "boolean",
+                     "description": "Use savepoint"
+                  }
+               }
+            }
+         }
+      }
+   }
+   ,
+   "types":
+   {
+      "Method":
+      {
+         "type": "string",
+         "enum": ["select", "insert", "update", "delete", "execute"]
+      }
+      ,
+      "BindValue":
+      {
+         "type": "object",
+         "required": ["name","value"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
+            "value": {"type": ["string","number","integer","boolean"]}
+         }
+      }
+   }
+}

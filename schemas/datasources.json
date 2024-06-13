@@ -134,11 +134,6 @@
                "type": "boolean",
                "description": "Does the sql update data in the database"
             },
-            "type":
-            {
-               "$ref": "#/types/JDBCType",
-               "description": "Which jdbc call to use when executing the sql"
-            },
             "datatypes":
             {
                "object": "array",
@@ -232,13 +227,6 @@
       {
          "type": ["integer", "string"],
          "description": "Either the datatype as in varchar, numeric... or the jdbc Types id"
-      }
-      ,
-      "JDBCType":
-      {
-         "type": "string",
-         "enum": ["query", "update", "others"],
-         "description": "Use jdbc executeQuery, executeUpdate, or just execute"
       }
       ,
       "Text":
