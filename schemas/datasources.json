@@ -1,11 +1,12 @@
 {
+   "type": "object",
    "$id": "Datasources.json",
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-   "type": "object",
-   "additionalProperties": false,
-
+   "title": "Cursor-schema",
    "description": "This schema defines the different types of datasources ie Table, SQL, Procedure and Function",
+
+   "additionalProperties": false,
 
    "properties":
    {

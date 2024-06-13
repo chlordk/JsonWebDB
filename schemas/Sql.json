@@ -1,9 +1,9 @@
 {
+   "type": "object",
    "$id": "Sql.json",
    "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-   "type": "object",
-   "title": "Any-sql-schema",
+   "title": "SQL-schema",
    "additionalProperties": false,
 
    "properties":
@@ -44,7 +44,7 @@
                   "bindvalues":
                   {
                      "type": "array",
-                     "items": {"$ref": "#/types/BindValue"}
+                     "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
                   "savepoint":
@@ -71,7 +71,7 @@
                   "bindvalues":
                   {
                      "type": "array",
-                     "items": {"$ref": "#/types/BindValue"}
+                     "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
                   "savepoint":
@@ -98,7 +98,7 @@
                   "bindvalues":
                   {
                      "type": "array",
-                     "items": {"$ref": "#/types/BindValue"}
+                     "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
                   "savepoint":
@@ -125,7 +125,7 @@
                   "bindvalues":
                   {
                      "type": "array",
-                     "items": {"$ref": "#/types/BindValue"}
+                     "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
                   "cursor":
@@ -158,7 +158,7 @@
                   "bindvalues":
                   {
                      "type": "array",
-                     "items": {"$ref": "#/types/BindValue"}
+                     "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
                   "savepoint":
@@ -180,7 +180,7 @@
          "enum": ["select", "insert", "update", "delete", "execute"]
       }
       ,
-      "BindValue":
+      "NameValuePair":
       {
          "type": "object",
          "required": ["name","value"],

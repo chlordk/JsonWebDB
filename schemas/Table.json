@@ -3,7 +3,7 @@
       "$id": "Table.json",
       "$schema": "https://json-schema.org/draft/2020-12/schema",
 
-      "description": "Table object that handles select, insert, update and delete",
+      "title": "Table-schema",
       "additionalProperties": false,
 
       "properties":
@@ -12,6 +12,7 @@
          {
             "type": "object",
             "additionalProperties": false,
+            "description": "Table object that handles select, insert, update and delete",
 
             "anyOf":
             [
@@ -20,8 +21,6 @@
                {"required": ["session","source","invoke","delete"]},
                {"required": ["session","source","invoke","select"]}
             ],
-
-            "description": "The source object (table,view or query)",
 
             "properties":
             {
