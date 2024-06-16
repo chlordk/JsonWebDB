@@ -24,6 +24,9 @@ SOFTWARE.
 package sources;
 
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import database.DataType;
 import static utils.Misc.*;
 
 
@@ -31,21 +34,21 @@ public class SQLSource implements Source
 {
    private static final String ID = "id";
    private static final String SQL = "sql";
-   private static final String EXE = "type";
    private static final String UPD = "update";
 
    public final String sid;
    public final String sql;
-   public final String exe;
    public final Boolean upd;
+   public final HashMap<String,DataType> types;
 
 
    public SQLSource(JSONObject definition) throws Exception
    {
       upd = get(definition,UPD,false);
       sid = getString(definition,ID,true,true);
-      exe = getString(definition,EXE,true,true);
       sql = getString(definition,SQL,true,false);
+
+      types = DataType.parse(definition);
    }
 
    public String id()

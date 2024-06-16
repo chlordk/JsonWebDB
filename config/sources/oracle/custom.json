@@ -1,0 +1,13 @@
+{
+   "datasources":
+   [
+      {
+         "id": "employees",
+         "sql": "select * from employees where first_name like :fname",
+         "datatypes":
+         [
+           {"name": "fname", "type": 12}
+         ]
+      }
+   ]
+}
