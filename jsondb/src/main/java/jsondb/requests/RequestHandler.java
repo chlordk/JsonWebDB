@@ -88,6 +88,10 @@ public class RequestHandler
          try
          {
             invk = methods[methno];
+
+            if (invk.indexOf("()") > 0)
+               invk = invk.substring(0,invk.length()-2);
+
             Object dbrq = getInstance(names[0],payload);
             Method method = dbrq.getClass().getMethod(invk);
             return((Response) method.invoke(dbrq));
@@ -96,13 +100,21 @@ public class RequestHandler
          {
             t = t.getCause();
             Config.logger().log(Level.WARNING,t.toString(),t);
-            return(new Response().exception(t));
+
+            Response response = new Response().exception(t);
+            response.exception(t).put("method",invk+"()");
+
+            return(response);
          }
       }
       else
       {
          Exception t = new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
-         return(new Response().exception(t));
+
+         Response response = new Response().exception(t);
+         response.exception(t).put("method",invk+"()");
+
+         return(response);
       }
    }
 

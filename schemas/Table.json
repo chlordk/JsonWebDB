@@ -16,10 +16,10 @@
 
             "anyOf":
             [
-               {"required": ["session","source","invoke","insert"]},
-               {"required": ["session","source","invoke","update"]},
-               {"required": ["session","source","invoke","delete"]},
-               {"required": ["session","source","invoke","select"]}
+               {"required": ["session","source","invoke","insert()"]},
+               {"required": ["session","source","invoke","update()"]},
+               {"required": ["session","source","invoke","delete()"]},
+               {"required": ["session","source","invoke","select()"]}
             ],
 
             "properties":
@@ -324,13 +324,26 @@
          {
             "type": "object",
             "additionalProperties": false,
-            "required": ["filter","column","value"],
+
+
+            "anyOf":
+            [
+               {"required": ["filter","column","value"]},
+               {"required": ["filter","column","values"]}
+            ],
+
+
 
             "properties":
             {
                "filter"  : {"type": "string"},
                "column"  : {"type": "string"},
-               "value"   : {"type": ["string","number","integer","boolean"]}
+               "value"   : {"type": ["string","number","integer","boolean"]},
+               "values"   :
+               {
+                  "type": "array",
+                  "items": {"type": ["string","number","integer","boolean"]}
+               }
             }
          }
          ,
@@ -349,7 +362,12 @@
          "Method":
          {
             "type": "string",
-            "enum": ["describe","select", "insert", "update", "delete"]
+
+            "enum":
+            [
+               "describe","select", "insert", "update", "delete",
+               "describe()","select()", "insert()", "update()", "delete()"
+            ]
          }
       }
    }

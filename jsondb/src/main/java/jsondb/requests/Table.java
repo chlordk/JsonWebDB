@@ -114,6 +114,8 @@ public class Table
       JSONObject response = new JSONOObject();
 
       response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","describe()");
 
       if (!source.described())
       {
@@ -237,6 +239,11 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","insert()");
+
       return(new Response(response));
    }
 
@@ -346,6 +353,11 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(update.snippet(),update.bindValues(),returning,savepoint);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","update()");
+
       return(new Response(response));
    }
 
@@ -439,6 +451,11 @@ public class Table
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(delete.snippet(),delete.bindValues(),returning,savepoint);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","update()");
+
       return(new Response(response));
    }
 
@@ -558,6 +575,9 @@ public class Table
          cursor.remove();
 
       response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","select()");
+
 
       if (cursor.next())
       {

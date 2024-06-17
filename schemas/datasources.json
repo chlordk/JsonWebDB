@@ -133,7 +133,7 @@
             "update":
             {
                "type": "boolean",
-               "description": "Does the sql update data in the database"
+               "description": "When 'execute', does the sql update data in the database"
             },
             "datatypes":
             {

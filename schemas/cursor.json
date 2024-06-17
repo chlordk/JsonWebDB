@@ -10,10 +10,14 @@
    {
       "Cursor":
       {
+         "additionalProperties": false,
          "description": "Object that handles cursor operations",
 
-         "required": ["invoke","session","cursor"],
-         "additionalProperties": false,
+         "anyOf":
+         [
+            {"required": ["session","cursor","invoke","fetch()"]},
+            {"required": ["session","cursor","invoke","close()"]}
+         ],
 
          "properties":
          {
@@ -63,7 +67,12 @@
       "Method":
       {
          "type": "string",
-         "enum": ["fetch","close"]
+
+         "enum":
+         [
+            "fetch","close",
+            "fetch()","close()"
+         ]
       }
    }
 }

@@ -10,10 +10,17 @@
    {
       "Sql":
       {
+         "additionalProperties": false,
          "description": "Execute any sql",
 
-         "required": ["invoke","session"],
-         "additionalProperties": false,
+         "anyOf":
+         [
+            {"required": ["session","source","invoke","insert()"]},
+            {"required": ["session","source","invoke","update()"]},
+            {"required": ["session","source","invoke","delete()"]},
+            {"required": ["session","source","invoke","select()"]},
+            {"required": ["session","source","invoke","execute()"]}
+         ],
 
          "properties":
          {
@@ -183,7 +190,12 @@
       "Method":
       {
          "type": "string",
-         "enum": ["select", "insert", "update", "delete", "execute"]
+         
+         "enum":
+         [
+            "select", "insert", "update", "delete", "execute",
+            "select()", "insert()", "update()", "delete()", "execute()"
+         ]
       }
       ,
       "NameValuePair":
