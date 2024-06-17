@@ -2,7 +2,7 @@
    "datasources":
    [
       {
-         "id": "employees",
+         "id": "employee-sql",
          "sql": "select * from employees where first_name like :fname",
          "datatypes":
          [
