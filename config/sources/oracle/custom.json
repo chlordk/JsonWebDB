@@ -18,5 +18,23 @@
            {"name": "fname", "type": "string"}
          ]
       }
+      ,
+      {
+         "id": "custom-3",
+         "sql": "create table &table (id int, txt varchar2(20))",
+         "datatypes":
+         [
+           {"name": "table", "type": "string"}
+         ]
+      }
+      ,
+      {
+         "id": "custom-4",
+         "sql": "drop table &table",
+         "datatypes":
+         [
+           {"name": "table", "type": "string"}
+         ]
+      }
    ]
 }

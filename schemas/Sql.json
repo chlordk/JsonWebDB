@@ -167,12 +167,6 @@
                      "type": "array",
                      "items": {"$ref": "#/types/NameValuePair"}
                   }
-                  ,
-                  "savepoint":
-                  {
-                     "type": "boolean",
-                     "description": "Use savepoint"
-                  }
                }
             }
          }

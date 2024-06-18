@@ -52,6 +52,7 @@ public class Sql
    private static final String UPDATE = "update";
    private static final String DELETE = "delete";
    private static final String SELECT = "select";
+   private static final String EXECUTE = "execute";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
@@ -286,6 +287,66 @@ public class Sql
       response.put("success",true);
       response.put("session",sessid);
       response.put("method",method+"()");
+
+      return(new Response(response));
+   }
+
+
+   public Response execute() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,EXECUTE);
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Sql",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(execute(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response execute(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      SQLSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(execute(session,source));
+   }
+
+
+   public Response execute(Session session, SQLSource source) throws Exception
+   {
+      BindValue used = null;
+      SQLPart sql = source.sql();
+      JSONObject response = new JSONOObject();
+      JSONObject args = Utils.getMethod(definition,EXECUTE);
+      HashMap<String,BindValue> values = Utils.getBindValues(args);
+
+      for(BindValue def : sql.bindValues())
+      {
+         used = values.get(def.name().toLowerCase());
+         if (used != null) def.value(used.value());
+      }
+
+      sql.bindByValue();
+
+      Boolean update = source.update();
+      if (update == null) update = false;
+
+      boolean success = session.execute(sql.snippet(),update);
+
+      response.put("success",success);
+      response.put("session",sessid);
+      response.put("method","execute()");
 
       return(new Response(response));
    }

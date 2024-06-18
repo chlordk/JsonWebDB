@@ -551,6 +551,13 @@ public class Session
    }
 
 
+   public synchronized boolean execute(String sql, boolean write) throws Exception
+   {
+      JdbcInterface conn = ensure(write);
+      return(conn.execute(sql));
+   }
+
+
    public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean forceread, boolean savepoint, int pagesize) throws Exception
    {
       JdbcInterface read = ensure(false,forceread);

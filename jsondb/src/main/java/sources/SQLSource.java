@@ -73,7 +73,7 @@ public class SQLSource implements Source
       return(sid);
    }
 
-   public boolean update()
+   public Boolean update()
    {
       return(upd);
    }

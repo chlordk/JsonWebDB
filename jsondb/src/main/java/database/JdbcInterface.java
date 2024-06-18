@@ -124,34 +124,10 @@ public abstract class JdbcInterface
   }
 
 
-   public boolean execute(String sql, boolean savepoint) throws Exception
+   public boolean execute(String sql) throws Exception
    {
-      Savepoint sp = null;
-
-      if (conn.getAutoCommit())
-         savepoint = false;
-
       Statement stmt = conn.createStatement();
-
-      if (savepoint)
-      {
-         try
-         {
-            synchronized(conn)
-            {
-               sp = conn.setSavepoint();
-               boolean success = stmt.execute(sql);
-               releaseSavePoint(sp,false);
-               return(success);
-            }
-         }
-         catch (Exception e)
-         {
-            releaseSavePoint(sp,true);
-            throw new Exception(e);
-         }
-      }
-
+      Config.logger().severe(logentry(sql));
       return(stmt.execute(sql));
    }
 
@@ -268,6 +244,12 @@ public abstract class JdbcInterface
    }
 
 
+   private String logentry(String sql)
+   {
+      return(logentry(sql,null));
+   }
+
+
    private String logentry(Cursor cursor)
    {
       return(logentry(cursor,null));
@@ -293,11 +275,14 @@ public abstract class JdbcInterface
       String logentry = del;
       logentry += sql;
 
-      if (bindvalues.size() > 0)
-         logentry += "\n\nbindings:";
+      if (bindvalues != null)
+      {
+         if (bindvalues.size() > 0)
+            logentry += "\n\nbindings:";
 
-      for (int i = 0; i < bindvalues.size(); i++)
-         logentry += "\n"+bindvalues.get(i).desc();
+         for (int i = 0; i < bindvalues.size(); i++)
+            logentry += "\n"+bindvalues.get(i).desc();
+      }
 
       if (e != null)
          logentry += "\n\n" + e.toString() + "\n";
