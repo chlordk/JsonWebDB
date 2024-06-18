@@ -205,6 +205,8 @@ public class Sql
          if (used != null) def.value(used.value());
       }
 
+      select.bindByValue();
+
       boolean savepoint = Config.dbconfig().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
