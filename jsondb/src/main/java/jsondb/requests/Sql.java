@@ -55,6 +55,7 @@ public class Sql
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
+   private static final String RETURNING = "returning";
 
 
    public Sql(JSONObject definition) throws Exception
@@ -110,7 +111,7 @@ public class Sql
          return(update(session));
       }
       finally
-      {
+         {
          session.down();
       }
    }
@@ -243,6 +244,49 @@ public class Sql
 
    public Response exeupdate(String method, Session session, SQLSource source) throws Exception
    {
-      return(null);
+      BindValue used = null;
+      JSONObject response = new JSONOObject();
+      JSONObject args = Utils.getMethod(definition,method);
+      HashMap<String,BindValue> values = Utils.getBindValues(args);
+      ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
+
+      SQLPart sql = source.sql();
+
+      for(BindValue def : sql.bindValues())
+      {
+         // Only use the ones actually used
+         used = values.get(def.name().toLowerCase());
+         if (used != null) bindvalues.add(def.value(used.value()));
+      }
+
+      SQLPart update = new SQLPart(sql.snippet(),bindvalues).bindByValue();
+
+      ArrayList<BindValue> retvals = new ArrayList<BindValue>();
+      String[] returning = Misc.getJSONList(args,RETURNING,String.class);
+
+      if (returning != null)
+      {
+         HashMap<String,Integer> types = new HashMap<String,Integer>();
+         for(BindValue def : update.bindValues()) types.put(def.name(),def.type());
+
+         for (int i = 0; i < returning.length; i++)
+         {
+            BindValue bv = new BindValue(returning[i]);
+            bv.type(types.get((bv.name().toLowerCase())));
+         }
+
+         update.append(retvals);
+      }
+
+      boolean savepoint = Config.dbconfig().savepoint(true);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      response = session.executeUpdate(update.snippet(),update.bindValues(),returning,savepoint);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method",method+"()");
+
+      return(new Response(response));
    }
 }

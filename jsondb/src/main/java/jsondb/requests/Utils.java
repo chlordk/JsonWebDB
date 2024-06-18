@@ -53,7 +53,7 @@ public class Utils
       if (def.has(method+"()"))
          return(def.getJSONObject(method+"()"));
 
-      return(null);
+      throw new Exception(Messages.get("MANDATORY_SECTION_MISSING",method));
    }
 
 

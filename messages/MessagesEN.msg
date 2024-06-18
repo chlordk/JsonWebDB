@@ -12,6 +12,7 @@ INSTANCE_NOT_REGISTERED    = Instance {%1} must be configured in the cluster sec
 MANDATORY_ATTR_MISSING     = Mandatory attribute {%1} is missing in {%2}
 UNKNOWN_SOURCE             = Unknown source '{%1}'
 INCOMPLETE_SOURCE          = Source '{%1}' neither defines a table/view or a query
+MANDATORY_SECTION_MISSING  = Mandatory section {%1} is missing request
 MISSING_COLUNM_SPEC        = Mising column specification
 BAD_COLUNM_SPEC            = Column specification is potentially dangerous
 NOT_CONNECTED              = There is no database connection

@@ -235,7 +235,7 @@ public class Table
       String stmt = "insert into "+source.object+" (" + list + ") values (" + values + ")";
       SQLPart insert = new SQLPart(stmt,bindvalues);
 
-      boolean savepoint = Config.dbconfig().savepoint(false);
+      boolean savepoint = Config.dbconfig().savepoint(true);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(insert.snippet(),insert.bindValues(),returning,savepoint);
@@ -349,7 +349,7 @@ public class Table
          }
       }
 
-      boolean savepoint = Config.dbconfig().savepoint(false);
+      boolean savepoint = Config.dbconfig().savepoint(true);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(update.snippet(),update.bindValues(),returning,savepoint);
@@ -447,7 +447,7 @@ public class Table
          delete.append(retvals);
       }
 
-      boolean savepoint = Config.dbconfig().savepoint(false);
+      boolean savepoint = Config.dbconfig().savepoint(true);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
 
       JSONObject response = session.executeUpdate(delete.snippet(),delete.bindValues(),returning,savepoint);

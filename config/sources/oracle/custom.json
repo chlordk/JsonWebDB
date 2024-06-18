@@ -9,5 +9,14 @@
            {"name": "fname", "type": 12}
          ]
       }
+      ,
+      {
+         "id": "custom-2",
+         "sql": "update employees set first_name = :fname where first_name = :fname",
+         "datatypes":
+         [
+           {"name": "fname", "type": "string"}
+         ]
+      }
    ]
 }
