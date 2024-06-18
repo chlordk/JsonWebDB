@@ -133,7 +133,12 @@
             "update":
             {
                "type": "boolean",
-               "description": "When 'execute', does the sql update data in the database"
+               "description": "Does the sql update data in the database (only execute)"
+            },
+            "cursor":
+            {
+               "type": "boolean",
+               "description": "Keep cursor for subsequent fetch (only select)"
             },
             "datatypes":
             {

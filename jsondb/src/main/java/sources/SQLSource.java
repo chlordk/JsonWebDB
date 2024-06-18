@@ -31,6 +31,7 @@ import database.BindValue;
 import database.DataType;
 import database.Parser;
 import database.SQLPart;
+import utils.Misc;
 
 import static utils.Misc.*;
 
@@ -40,14 +41,20 @@ public class SQLSource implements Source
    private static final String ID = "id";
    private static final String SQL = "sql";
    private static final String UPD = "update";
+   private static final String CURSOR = "cursor";
 
    private final String sid;
    private final SQLPart sql;
    private final Boolean upd;
+   private final Boolean cur;
 
 
    public SQLSource(JSONObject definition) throws Exception
    {
+      Boolean usecurs = Misc.get(definition,CURSOR);
+      if (usecurs == null) usecurs = true;
+
+      cur = usecurs;
       upd = get(definition,UPD,false);
       sid = getString(definition,ID,true,true);
 
@@ -69,6 +76,11 @@ public class SQLSource implements Source
    public boolean update()
    {
       return(upd);
+   }
+
+   public boolean cursor()
+   {
+      return(cur);
    }
 
    public SQLPart sql()

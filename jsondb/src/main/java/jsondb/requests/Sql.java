@@ -25,16 +25,19 @@ SOFTWARE.
 package jsondb.requests;
 
 import jsondb.Session;
+import jsondb.Config;
 import jsondb.Response;
 import utils.JSONOObject;
+import database.Cursor;
+import utils.Misc;
 import sources.SQLSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import database.BindValue;
-import database.DataType;
 import database.SQLPart;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -50,6 +53,8 @@ public class Sql
    private static final String DELETE = "delete";
    private static final String SELECT = "select";
    private static final String SESSION = "session";
+   private static final String PAGESIZE = "page-size";
+   private static final String SAVEPOINT = "savepoint";
 
 
    public Sql(JSONObject definition) throws Exception
@@ -186,16 +191,51 @@ public class Sql
 
    public Response select(Session session, SQLSource source) throws Exception
    {
-      DataType dt = null;
+      BindValue used = null;
+      JSONObject response = new JSONOObject();
       JSONObject args = Utils.getMethod(definition,SELECT);
       HashMap<String,BindValue> values = Utils.getBindValues(args);
 
-      SQLPart sql = source.sql();
+      SQLPart select = source.sql();
+      boolean usecurs = source.cursor();
 
-      //SQLPart sql = new SQLPart(source.sql,bindvalues).bindByValue();
-      //System.out.println(sql.snippet());
+      for(BindValue def : select.bindValues())
+      {
+         used = values.get(def.name().toLowerCase());
+         if (used != null) def.value(used.value());
+      }
 
-      return(null);
+      boolean savepoint = Config.dbconfig().savepoint(false);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      Integer pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
+      Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint,pagesize);
+
+      JSONArray rows = new JSONArray();
+      ArrayList<Object[]> table = cursor.fetch();
+
+      if (!usecurs) cursor.close();
+
+      else if (Config.conTimeout() <= 0)
+         cursor.remove();
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","select()");
+
+      if (cursor.next())
+      {
+         response.put("more",true);
+         response.put("cursor",cursor.guid());
+      }
+
+      if (cursor.primary())
+         response.put("primary",true);
+
+      response.put("rows",rows);
+      for(Object[] row : table) rows.put(row);
+
+      return(new Response(response));
    }
 
 

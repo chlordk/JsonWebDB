@@ -141,12 +141,6 @@
                      "items": {"$ref": "#/types/NameValuePair"}
                   }
                   ,
-                  "cursor":
-                  {
-                     "type": "boolean",
-                     "description": "Keep cursor for subsequent fetch"
-                  }
-                  ,
                   "page-size":
                   {
                      "type": "number",
