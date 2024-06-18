@@ -190,7 +190,7 @@
       "Method":
       {
          "type": "string",
-         
+
          "enum":
          [
             "select", "insert", "update", "delete", "execute",

@@ -27,7 +27,14 @@ package jsondb.requests;
 import jsondb.Session;
 import jsondb.Response;
 import utils.JSONOObject;
-import sources.TableSource;
+import sources.SQLSource;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import database.BindValue;
+import database.DataType;
+import database.SQLPart;
+
 import org.json.JSONObject;
 
 
@@ -53,7 +60,7 @@ public class Sql
    }
 
 
-   public Response update() throws Exception
+   public Response insert() throws Exception
    {
       JSONObject response = new JSONOObject();
 
@@ -62,7 +69,38 @@ public class Sql
 
       try
       {
-         Forward fw = Forward.redirect(session,"Table",definition);
+         Forward fw = Forward.redirect(session,"Sql",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(insert(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response insert(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      SQLSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(exeupdate(INSERT,session,source));
+   }
+
+
+   public Response update() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,UPDATE);
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Sql",definition);
          if (fw != null) return(new Response(fw.response()));
          return(update(session));
       }
@@ -77,14 +115,91 @@ public class Sql
    {
       JSONObject response = new JSONOObject();
 
-      TableSource source = Utils.getSource(response,this.source);
+      SQLSource source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
 
-      return(update(session,source));
+      return(exeupdate(UPDATE,session,source));
    }
 
 
-   public Response update(Session session, TableSource source) throws Exception
+   public Response delete() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,DELETE);
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Sql",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(delete(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response delete(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      SQLSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(exeupdate(DELETE,session,source));
+   }
+
+
+   public Response select() throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      Session session = Utils.getSession(response,sessid,SELECT);
+      if (session == null) return(new Response(response));
+
+      try
+      {
+         Forward fw = Forward.redirect(session,"Sql",definition);
+         if (fw != null) return(new Response(fw.response()));
+         return(select(session));
+      }
+      finally
+      {
+         session.down();
+      }
+   }
+
+
+   public Response select(Session session) throws Exception
+   {
+      JSONObject response = new JSONOObject();
+
+      SQLSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+
+      return(select(session,source));
+   }
+
+
+   public Response select(Session session, SQLSource source) throws Exception
+   {
+      DataType dt = null;
+      JSONObject args = Utils.getMethod(definition,SELECT);
+      HashMap<String,BindValue> values = Utils.getBindValues(args);
+
+      SQLPart sql = source.sql();
+
+      //SQLPart sql = new SQLPart(source.sql,bindvalues).bindByValue();
+      //System.out.println(sql.snippet());
+
+      return(null);
+   }
+
+
+   public Response exeupdate(String method, Session session, SQLSource source) throws Exception
    {
       return(null);
    }

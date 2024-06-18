@@ -26,7 +26,12 @@ package sources;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+
+import database.BindValue;
 import database.DataType;
+import database.Parser;
+import database.SQLPart;
+
 import static utils.Misc.*;
 
 
@@ -36,23 +41,38 @@ public class SQLSource implements Source
    private static final String SQL = "sql";
    private static final String UPD = "update";
 
-   public final String sid;
-   public final String sql;
-   public final Boolean upd;
-   public final HashMap<String,DataType> types;
+   private final String sid;
+   private final SQLPart sql;
+   private final Boolean upd;
 
 
    public SQLSource(JSONObject definition) throws Exception
    {
       upd = get(definition,UPD,false);
       sid = getString(definition,ID,true,true);
-      sql = getString(definition,SQL,true,false);
 
-      types = DataType.parse(definition);
+      HashMap<String,DataType> types = DataType.parse(definition);
+      this.sql = Parser.parse(getString(definition,SQL,true,false));
+
+      for(BindValue bv : this.sql.bindValues())
+      {
+         DataType dt = types.get(bv.name().toLowerCase());
+         if (dt != null) bv.type(dt.sqlid);
+      }
    }
 
    public String id()
    {
       return(sid);
+   }
+
+   public boolean update()
+   {
+      return(upd);
+   }
+
+   public SQLPart sql()
+   {
+      return(sql.clone());
    }
 }

@@ -2,8 +2,8 @@
    "datasources":
    [
       {
-         "id": "employee-sql",
-         "sql": "select * from employees where first_name like :fname",
+         "id": "custom-1",
+         "sql": "select * from employees where first_name like '&fname'",
          "datatypes":
          [
            {"name": "fname", "type": 12}
