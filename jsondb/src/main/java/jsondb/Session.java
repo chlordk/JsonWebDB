@@ -539,15 +539,9 @@ public class Session
    }
 
 
-   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
+   public synchronized JSONObject call(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint, boolean write) throws Exception
    {
-      return(executeQuery(sql,bindvalues,true,false,0));
-   }
-
-
-   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
-   {
-      return(executeQuery(sql,bindvalues,false,savepoint,pagesize));
+      return(null);
    }
 
 
@@ -569,6 +563,18 @@ public class Session
       }
 
       return(success);
+   }
+
+
+   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues) throws Exception
+   {
+      return(executeQuery(sql,bindvalues,true,false,0));
+   }
+
+
+   public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean savepoint, int pagesize) throws Exception
+   {
+      return(executeQuery(sql,bindvalues,false,savepoint,pagesize));
    }
 
 
