@@ -554,7 +554,21 @@ public class Session
    public synchronized boolean execute(String sql, boolean write) throws Exception
    {
       JdbcInterface conn = ensure(write);
-      return(conn.execute(sql));
+      boolean success = conn.execute(sql);
+
+      if (write)
+      {
+         if (stateful) touchTrx();
+         if (usesec) primary.dirty(stateful);
+      }
+
+      synchronized(SYNC)
+      {
+         used = new Date();
+         connused = new Date();
+      }
+
+      return(success);
    }
 
 
