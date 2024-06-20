@@ -124,6 +124,14 @@ public abstract class JdbcInterface
   }
 
 
+  public UpdateResponse call(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
+  {
+     Statement stmt = conn.prepareCall(sql);
+     Config.logger().severe(logentry(sql));
+     return(null);
+  }
+
+
    public boolean execute(String sql) throws Exception
    {
       Statement stmt = conn.createStatement();

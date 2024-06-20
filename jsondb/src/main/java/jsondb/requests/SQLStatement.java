@@ -24,24 +24,22 @@ SOFTWARE.
 
 package jsondb.requests;
 
-import jsondb.Session;
-import jsondb.Config;
-import jsondb.Response;
-import utils.JSONOObject;
-import database.Cursor;
 import utils.Misc;
-import sources.SQLSource;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import database.BindValue;
+import jsondb.Config;
+import jsondb.Session;
+import jsondb.Response;
+import database.Cursor;
 import database.SQLPart;
-
+import utils.JSONOObject;
+import java.util.HashMap;
+import sources.SQLSource;
+import database.BindValue;
 import org.json.JSONArray;
+import java.util.ArrayList;
 import org.json.JSONObject;
 
 
-public class Sql
+public class SQLStatement
 {
    private final String sessid;
    private final String source;
@@ -59,7 +57,7 @@ public class Sql
    private static final String RETURNING = "returning";
 
 
-   public Sql(JSONObject definition) throws Exception
+   public SQLStatement(JSONObject definition) throws Exception
    {
       this.definition = definition;
       source = definition.getString(SOURCE);

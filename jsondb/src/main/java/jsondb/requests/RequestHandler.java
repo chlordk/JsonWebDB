@@ -29,17 +29,23 @@ import jsondb.Config;
 import jsondb.Response;
 import messages.Messages;
 import utils.JSONOObject;
+import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.logging.Level;
 import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public class RequestHandler
 {
-   private static final ConcurrentHashMap<String,Class<?>> classes =
-      new ConcurrentHashMap<String,Class<?>>();
+   private static final HashMap<String,Class<?>> classes =
+      new HashMap<String,Class<?>>()
+      {{
+         put("table",Table.class);
+         put("cursor",Cursor.class);
+         put("session",Session.class);
+         put("sql",SQLStatement.class);
+      }};
 
    private static final String location = RequestHandler.class.getPackage().getName();
 
@@ -121,15 +127,8 @@ public class RequestHandler
 
    private static Object getInstance(String name, JSONObject definition) throws Exception
    {
-      String cname = location+"."+name;
-      Class<?> clazz = classes.get(cname);
-
-      if (clazz == null)
-      {
-         clazz = (Class<?>) Class.forName(cname);
-         classes.put(cname,clazz);
-      }
-
+      name = name.toLowerCase();
+      Class<?> clazz = classes.get(name);
       return(clazz.getConstructor(JSONObject.class).newInstance(definition));
    }
 }

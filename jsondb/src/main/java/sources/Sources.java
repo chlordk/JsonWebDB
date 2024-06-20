@@ -242,13 +242,13 @@ public class Sources extends Thread
          }
          else if (def.has(FUNC))
          {
-            ProcedureSource source = new ProcedureSource(def,true);
+            Function source = new Function(def,true);
             sources.put(source.id().toLowerCase(),source);
             Config.logger().info(source.toString());
          }
          else if (def.has(PROC))
          {
-            ProcedureSource source = new ProcedureSource(def,false);
+            Function source = new Function(def,false);
             sources.put(source.id().toLowerCase(),source);
             Config.logger().info(source.toString());
          }

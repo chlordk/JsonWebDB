@@ -541,6 +541,8 @@ public class Session
 
    public synchronized JSONObject call(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint, boolean write) throws Exception
    {
+      JdbcInterface conn = ensure(write);
+
       return(null);
    }
 

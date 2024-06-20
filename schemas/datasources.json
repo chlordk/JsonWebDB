@@ -18,7 +18,9 @@
             "anyOf":
             [
                {"$ref": "#/sources/SQL"},
-               {"$ref": "#/sources/Table"}
+               {"$ref": "#/sources/Table"},
+               {"$ref": "#/sources/Function"},
+               {"$ref": "#/sources/Procedure"}
             ]
          }
       }
@@ -123,7 +125,7 @@
             "id":
             {
                "type": "string",
-               "description": "This is what is used to reference the object"
+               "description": "This is what is used to reference the sql definition"
             },
             "sql":
             {
@@ -145,6 +147,66 @@
                "object": "array",
                "items": {"$ref": "#/types/DataType"},
                "description": "All bindvalues must be defined"
+            }
+         }
+      }
+      ,
+      "Function":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["id","function"],
+
+         "description": "Execute function",
+
+         "properties":
+         {
+            "id":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the function definition"
+            },
+            "function":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the function definition"
+            },
+            "parameters":
+            {
+               "object": "array",
+               "items": {"$ref": "#/types/Parameter"}
+            },
+            "returns":
+            {
+               "$ref": "#/types/DataType"
+            }
+         }
+      }
+      ,
+      "Procedure":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["id","function"],
+
+         "description": "Execute procedure",
+
+         "properties":
+         {
+            "id":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the function definition"
+            },
+            "procedure":
+            {
+               "type": "string",
+               "description": "This is what is used to reference the function definition"
+            },
+            "parameters":
+            {
+               "object": "array",
+               "items": {"$ref": "#/types/Parameter"}
             }
          }
       }
@@ -184,6 +246,20 @@
          {
             "name": {"type": "string"},
             "type": {"$ref": "#/types/SQLType"}
+         }
+      }
+      ,
+      "Parameter":
+      {
+         "type": "object",
+         "required": ["name","type"],
+         "additionalProperties": false,
+
+         "properties":
+         {
+            "name": {"type": "string"},
+            "type": {"$ref": "#/types/SQLType"},
+            "out" : {"type": "boolean"}
          }
       }
       ,

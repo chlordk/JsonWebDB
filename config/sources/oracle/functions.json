@@ -1,0 +1,20 @@
+{
+  "datasources":
+  [
+    {
+      "id": "test",
+      "function": "getEmployee()"
+      ,
+      "parameters":
+      [
+        {"name": "fname", "type": 12, "out": true}
+      ]
+      ,
+      "returns":
+      {
+        "type": 12,
+        "name": "result"
+      }
+    }
+  ]
+}

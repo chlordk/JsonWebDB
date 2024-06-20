@@ -26,11 +26,11 @@ package sources;
 import org.json.JSONObject;
 
 
-public class ProcedureSource implements Source
+public class Function implements Source
 {
    public final String id;
 
-   public ProcedureSource(JSONObject definition, boolean func)
+   public Function(JSONObject definition, boolean func)
    {
       id = "procedure";
       System.out.println("Procedure, returning ? "+func);
