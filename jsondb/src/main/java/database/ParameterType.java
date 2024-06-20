@@ -30,20 +30,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-public class DataType
+public class ParameterType extends DataType
 {
+   private static final String OUT = "out";
    private static final String NAME = "name";
    private static final String TYPE = "type";
-   private static final String TYPES = "datatypes";
+   private static final String PARAMETERS = "parameters";
    private static final String[] ALLOWED = new String[] {"string","integer"};
 
-   public static HashMap<String,DataType> getDataTypes(JSONObject def) throws Exception
-   {
-      HashMap<String,DataType> types =
-         new HashMap<String,DataType>();
 
-      if (!def.has(TYPES)) return(types);
-      JSONArray arr = def.getJSONArray(TYPES);
+   public static HashMap<String,ParameterType> getParameters(JSONObject def) throws Exception
+   {
+      HashMap<String,ParameterType> types =
+         new HashMap<String,ParameterType>();
+
+      if (!def.has(PARAMETERS)) return(types);
+      JSONArray arr = def.getJSONArray(PARAMETERS);
 
       for (int i = 0; i < arr.length(); i++)
       {
@@ -51,14 +53,15 @@ public class DataType
 
          Object type = tdef.get(TYPE);
          String name = tdef.getString(NAME);
+         Boolean out = tdef.optBooleanObject(OUT,false);
 
          if (type instanceof String)
-            types.put(name.toLowerCase(),new DataType(name,(String) type));
+            types.put(name.toLowerCase(),new ParameterType(name,(String) type,out));
 
          else
 
          if (type instanceof Integer)
-            types.put(name.toLowerCase(),new DataType(name,(Integer) type));
+            types.put(name.toLowerCase(),new ParameterType(name,(Integer) type, out));
 
          else
             throw new Exception(Messages.get("WRONG_DATA_TYPE",Messages.flatten(ALLOWED)));
@@ -67,21 +70,18 @@ public class DataType
       return(types);
    }
 
-   public final String name;
-   public final String type;
-   public final Integer sqlid;
 
-   public DataType(String name, String type)
+   public final boolean out;
+
+   public ParameterType(String name, String type, boolean out)
    {
-      this.name = name;
-      this.type = type;
-      this.sqlid = SQLTypes.getType(type);
+      super(name,type);
+      this.out = out;
    }
 
-   public DataType(String name, int type)
+   public ParameterType(String name, int type, boolean out)
    {
-      this.name = name;
-      this.sqlid = type;
-      this.type = SQLTypes.getType(type);
+      super(name,type);
+      this.out = out;
    }
 }

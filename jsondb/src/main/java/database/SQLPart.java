@@ -174,6 +174,14 @@ public class SQLPart
 
    public SQLPart clone()
    {
+      String sql = this.sql;
+      
+      ArrayList<BindValue> bindvalues =
+         new ArrayList<BindValue>();
+
+      for(BindValue bv : this.bindvalues)
+         bindvalues.add(bv.clone());
+
       return(new SQLPart(sql,bindvalues));
    }
 }

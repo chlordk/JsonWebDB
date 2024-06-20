@@ -23,21 +23,83 @@ SOFTWARE.
 */
 package sources;
 
+import database.Parser;
+import database.SQLPart;
+import java.util.HashMap;
+import database.DataType;
+import database.BindValue;
+import static utils.Misc.*;
 import org.json.JSONObject;
+import database.ParameterType;
 
 
 public class Function implements Source
 {
-   public final String id;
+   private static final String ID = "id";
+   private static final String NAME = "name";
+   private static final String TYPE = "type";
+   private static final String FUNC = "function";
+   private static final String PROC = "procedure";
+   private static final String RETURNS = "returns";
 
-   public Function(JSONObject definition, boolean func)
+   private final String id;
+   private final SQLPart sql;
+   private final DataType rtv;
+
+
+   public Function(JSONObject definition, boolean func) throws Exception
    {
-      id = "procedure";
-      System.out.println("Procedure, returning ? "+func);
+      DataType rettype = null;
+      ParameterType type = null;
+      HashMap<String,ParameterType> parms;
+
+      this.id = getString(definition,ID,true,true);
+      parms = ParameterType.getParameters(definition);
+
+      String call = getString(definition,FUNC,false,false);
+      if (call == null) call = getString(definition,PROC,false,false);
+
+      if (definition.has(RETURNS))
+      {
+         JSONObject rdef = definition.getJSONObject(RETURNS);
+
+         Object rtype = rdef.get(TYPE);
+         String rname = rdef.getString(NAME);
+
+         if (rtype instanceof String)
+            rettype = new DataType(rname,(String) rtype);
+
+         if (rtype instanceof Integer)
+            rettype = new DataType(rname,(Integer) rtype);
+      }
+
+      this.rtv = rettype;
+      this.sql = Parser.parse(call);
+
+      for(BindValue bv : this.sql.bindValues())
+      {
+         type = parms.get(bv.name().toLowerCase());
+
+         if (type != null)
+         {
+            bv.out(type.out);
+            bv.type(type.sqlid);
+         }
+      }
    }
 
    public String id()
    {
       return(id);
+   }
+
+   public SQLPart sql()
+   {
+      return(sql.clone());
+   }
+
+   public DataType retval()
+   {
+      return(rtv);
    }
 }

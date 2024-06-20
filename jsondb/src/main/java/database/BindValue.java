@@ -43,6 +43,7 @@ public class BindValue
    private String name = null;
    private Object value = null;
    private Integer type = null;
+   private boolean outtype = false;
    private boolean ampersand = false;
 
 
@@ -96,6 +97,11 @@ public class BindValue
       return(name);
    }
 
+   public boolean out()
+   {
+      return(outtype);
+   }
+
    public boolean untyped()
    {
       return(type == null);
@@ -140,6 +146,12 @@ public class BindValue
       return(this);
    }
 
+   public BindValue out(boolean out)
+   {
+      outtype = out;
+      return(this);
+   }
+
    public BindValue ampersand(boolean ampersand)
    {
       this.ampersand = ampersand;
@@ -156,6 +168,20 @@ public class BindValue
 
       if (SQLTypes.isDateType(type))
          this.value = Dates.convert(value);
+   }
+
+   public BindValue clone()
+   {
+      BindValue clone = new BindValue();
+
+      clone.pos = this.pos;
+      clone.name = this.name;
+      clone.type = this.type;
+      clone.value = this.value;
+      clone.outtype = this.outtype;
+      clone.ampersand = this.ampersand;
+
+      return(clone);
    }
 
    public String desc()

@@ -54,12 +54,12 @@ public class SQLSource implements Source
       Boolean usecurs = Misc.get(definition,CURSOR);
       if (usecurs == null) usecurs = true;
 
-      cur = usecurs;
-      upd = get(definition,UPD,false);
-      sid = getString(definition,ID,true,true);
-
-      HashMap<String,DataType> types = DataType.parse(definition);
+      this.cur = usecurs;
+      this.upd = get(definition,UPD,false);
+      this.sid = getString(definition,ID,true,true);
       this.sql = Parser.parse(getString(definition,SQL,true,false));
+
+      HashMap<String,DataType> types = DataType.getDataTypes(definition);
 
       for(BindValue bv : this.sql.bindValues())
       {

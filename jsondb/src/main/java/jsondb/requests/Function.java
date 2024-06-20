@@ -26,33 +26,34 @@ package jsondb.requests;
 
 import jsondb.Session;
 import jsondb.Response;
+import java.util.HashMap;
 import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import database.ParameterType;
 
 
 public class Function
 {
    private final String sessid;
-   private final String cursid;
    private final JSONObject definition;
+   private final HashMap<String,ParameterType> parms;
 
    private static final String FETCH = "fetch";
    private static final String CLOSE = "close";
-   private static final String CURSOR = "cursor";
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
 
 
-   public Function(JSONObject definition)
+   public Function(JSONObject definition) throws Exception
    {
       this.definition = definition;
-      cursid = definition.getString(CURSOR);
-      sessid = definition.getString(SESSION);
+      this.sessid = definition.getString(SESSION);
+      this.parms = ParameterType.getParameters(definition);
    }
 
-
+/*
    public Response fetch() throws Exception
    {
       JSONObject response = new JSONOObject();
@@ -142,4 +143,5 @@ public class Function
 
       return(new Response(response));
    }
+*/
 }

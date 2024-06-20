@@ -3,7 +3,7 @@
   [
     {
       "id": "test",
-      "function": "getEmployee()"
+      "function": "getEmployee(:fname)"
       ,
       "parameters":
       [

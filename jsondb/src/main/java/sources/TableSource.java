@@ -209,7 +209,7 @@ public class TableSource implements Source
          def = def.getJSONObject(QUERY);
 
          String sql = getString(def,SQL,true);
-         HashMap<String,DataType> types = DataType.parse(def);
+         HashMap<String,DataType> types = DataType.getDataTypes(def);
 
          return(new QuerySource(object,sql,types));
       }
@@ -267,7 +267,7 @@ public class TableSource implements Source
             JSONObject flt = arr.getJSONObject(i);
             String name = getString(flt,NAME,true,true);
             String whcl = getString(flt,WHCLAUSE,true,false);
-            HashMap<String,DataType> types = DataType.parse(flt);
+            HashMap<String,DataType> types = DataType.getDataTypes(flt);
             filters.put(name.toLowerCase(),new CustomFilter(name,whcl,types));
          }
 
@@ -318,7 +318,7 @@ public class TableSource implements Source
          def = def.getJSONObject(VPD);
 
          String filter = getString(def,WHCLAUSE,true);
-         HashMap<String,DataType> types = DataType.parse(def);
+         HashMap<String,DataType> types = DataType.getDataTypes(def);
          String[] applies = getStringArray(def,APPLY,true,true);
 
          return(new VPDFilter(filter,types,applies));
