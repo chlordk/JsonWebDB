@@ -26,59 +26,49 @@ package sources;
 import database.Parser;
 import database.SQLPart;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import database.DataType;
+import database.Variable;
 import database.BindValue;
 import static utils.Misc.*;
 import org.json.JSONObject;
-import database.ParameterType;
 
 
 public class Function implements Source
 {
    private static final String ID = "id";
-   private static final String NAME = "name";
-   private static final String TYPE = "type";
-   private static final String FUNC = "function";
-   private static final String PROC = "procedure";
-   private static final String RETURNS = "returns";
+   private static final String FUNC = "execute";
+   private static final Pattern pattern = Pattern.compile("[:]?\\w*\\s*=");
 
    private final String id;
    private final SQLPart sql;
    private final DataType rtv;
 
 
-   public Function(JSONObject definition, boolean func) throws Exception
+   public Function(JSONObject definition) throws Exception
    {
+      Variable type = null;
       DataType rettype = null;
-      ParameterType type = null;
-      HashMap<String,ParameterType> parms;
 
       this.id = getString(definition,ID,true,true);
-      parms = ParameterType.getParameters(definition);
 
       String call = getString(definition,FUNC,false,false);
-      if (call == null) call = getString(definition,PROC,false,false);
+      HashMap<String,Variable> vars = Variable.getVariables(definition);
 
-      if (definition.has(RETURNS))
-      {
-         JSONObject rdef = definition.getJSONObject(RETURNS);
+      call = call.trim();
+      Matcher matcher = pattern.matcher(call);
 
-         Object rtype = rdef.get(TYPE);
-         String rname = rdef.getString(NAME);
-
-         if (rtype instanceof String)
-            rettype = new DataType(rname,(String) rtype);
-
-         if (rtype instanceof Integer)
-            rettype = new DataType(rname,(Integer) rtype);
-      }
+      System.out.println(matcher.find());
+      System.out.println(call.substring(0,matcher.end()));
 
       this.rtv = rettype;
       this.sql = Parser.parse(call);
 
       for(BindValue bv : this.sql.bindValues())
       {
-         type = parms.get(bv.name().toLowerCase());
+         type = vars.get(bv.name().toLowerCase());
 
          if (type != null)
          {

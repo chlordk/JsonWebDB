@@ -31,14 +31,14 @@ import utils.JSONOObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import database.ParameterType;
+import database.Variable;
 
 
 public class Function
 {
    private final String sessid;
    private final JSONObject definition;
-   private final HashMap<String,ParameterType> parms;
+   private final HashMap<String,Variable> parms;
 
    private static final String FETCH = "fetch";
    private static final String CLOSE = "close";
@@ -50,7 +50,7 @@ public class Function
    {
       this.definition = definition;
       this.sessid = definition.getString(SESSION);
-      this.parms = ParameterType.getParameters(definition);
+      this.parms = Variable.getVariables(definition);
    }
 
 /*

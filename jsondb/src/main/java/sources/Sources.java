@@ -54,9 +54,8 @@ public class Sources extends Thread
    private static final String TYPE = "type";
    private static final String CONF = "config";
    private static final String DBSC = "database";
-   private static final String FUNC = "function";
-   private static final String PROC = "procedure";
    private static final String SOURCES = "sources";
+   private static final String EXECUTE = "execute";
    private static final String ENTRIES = "datasources";
    private static final String TRIGGER = ".reload.trg";
 
@@ -240,15 +239,9 @@ public class Sources extends Thread
             sources.put(source.id().toLowerCase(),source);
             Config.logger().info(source.toString());
          }
-         else if (def.has(FUNC))
+         else if (def.has(EXECUTE))
          {
-            Function source = new Function(def,true);
-            sources.put(source.id().toLowerCase(),source);
-            Config.logger().info(source.toString());
-         }
-         else if (def.has(PROC))
-         {
-            Function source = new Function(def,false);
+            Function source = new Function(def);
             sources.put(source.id().toLowerCase(),source);
             Config.logger().info(source.toString());
          }

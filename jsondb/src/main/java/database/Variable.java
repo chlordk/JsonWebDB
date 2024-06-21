@@ -30,22 +30,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
-public class ParameterType extends DataType
+public class Variable extends DataType
 {
    private static final String OUT = "out";
    private static final String NAME = "name";
    private static final String TYPE = "type";
-   private static final String PARAMETERS = "parameters";
+   private static final String VARIABLES = "variables";
    private static final String[] ALLOWED = new String[] {"string","integer"};
 
 
-   public static HashMap<String,ParameterType> getParameters(JSONObject def) throws Exception
+   public static HashMap<String,Variable> getVariables(JSONObject def) throws Exception
    {
-      HashMap<String,ParameterType> types =
-         new HashMap<String,ParameterType>();
+      HashMap<String,Variable> types =
+         new HashMap<String,Variable>();
 
-      if (!def.has(PARAMETERS)) return(types);
-      JSONArray arr = def.getJSONArray(PARAMETERS);
+      if (!def.has(VARIABLES)) return(types);
+      JSONArray arr = def.getJSONArray(VARIABLES);
 
       for (int i = 0; i < arr.length(); i++)
       {
@@ -56,12 +56,12 @@ public class ParameterType extends DataType
          Boolean out = tdef.optBooleanObject(OUT,false);
 
          if (type instanceof String)
-            types.put(name.toLowerCase(),new ParameterType(name,(String) type,out));
+            types.put(name.toLowerCase(),new Variable(name,(String) type,out));
 
          else
 
          if (type instanceof Integer)
-            types.put(name.toLowerCase(),new ParameterType(name,(Integer) type, out));
+            types.put(name.toLowerCase(),new Variable(name,(Integer) type, out));
 
          else
             throw new Exception(Messages.get("WRONG_DATA_TYPE",Messages.flatten(ALLOWED)));
@@ -73,13 +73,13 @@ public class ParameterType extends DataType
 
    public final boolean out;
 
-   public ParameterType(String name, String type, boolean out)
+   public Variable(String name, String type, boolean out)
    {
       super(name,type);
       this.out = out;
    }
 
-   public ParameterType(String name, int type, boolean out)
+   public Variable(String name, int type, boolean out)
    {
       super(name,type);
       this.out = out;
