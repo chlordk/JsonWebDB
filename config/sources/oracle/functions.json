@@ -3,7 +3,7 @@
   [
     {
       "id": "test",
-      "execute": "  &lname         = getLastName(:fname,:hire_date)"
+      "execute": ":lname         = getLastName(:fname,:hire_date)"
       ,
       "variables":
       [

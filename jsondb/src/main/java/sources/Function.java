@@ -26,14 +26,12 @@ package sources;
 import database.Parser;
 import database.SQLPart;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import database.DataType;
 import database.Variable;
 import database.BindValue;
 import static utils.Misc.*;
 import org.json.JSONObject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Function implements Source
@@ -44,13 +42,13 @@ public class Function implements Source
 
    private final String id;
    private final SQLPart sql;
-   private final DataType rtv;
+   private final boolean func;
 
 
    public Function(JSONObject definition) throws Exception
    {
+      boolean func = false;
       Variable type = null;
-      DataType rettype = null;
 
       this.id = getString(definition,ID,true,true);
 
@@ -58,12 +56,18 @@ public class Function implements Source
       HashMap<String,Variable> vars = Variable.getVariables(definition);
 
       call = call.trim();
+
       Matcher matcher = pattern.matcher(call);
+      if (matcher.find() && matcher.start() == 0)
+      {
+         func = true;
 
-      System.out.println(matcher.find());
-      System.out.println(call.substring(0,matcher.end()));
+         if (!call.startsWith(":"))
+            call = ":" + call;
+      }
 
-      this.rtv = rettype;
+      this.func = func;
+
       this.sql = Parser.parse(call);
 
       for(BindValue bv : this.sql.bindValues())
@@ -83,13 +87,13 @@ public class Function implements Source
       return(id);
    }
 
+   public boolean returns()
+   {
+      return(func);
+   }
+
    public SQLPart sql()
    {
       return(sql.clone());
-   }
-
-   public DataType retval()
-   {
-      return(rtv);
    }
 }
