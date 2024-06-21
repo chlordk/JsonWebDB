@@ -42,12 +42,12 @@ public class RequestHandler
       new HashMap<String,Class<?>>()
       {{
          put("table",Table.class);
+         put("call",Function.class);
          put("cursor",Cursor.class);
          put("session",Session.class);
          put("sql",SQLStatement.class);
       }};
 
-   private static final String location = RequestHandler.class.getPackage().getName();
 
    public static Response handle(JSONObject request) throws Exception
    {
@@ -104,7 +104,7 @@ public class RequestHandler
          }
          catch (Throwable t)
          {
-            t = t.getCause();
+            if (t.getCause() != null) t = t.getCause();
             Config.logger().log(Level.WARNING,t.toString(),t);
 
             Response response = new Response().exception(t);
@@ -115,7 +115,7 @@ public class RequestHandler
       }
       else
       {
-         Exception t = new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",request.toString(2)));
+         Exception t = new Exception(Messages.get("INVALID_REQUEST",request.toString(2)));
 
          Response response = new Response().exception(t);
          response.exception(t).put("method",invk+"()");
@@ -129,6 +129,7 @@ public class RequestHandler
    {
       name = name.toLowerCase();
       Class<?> clazz = classes.get(name);
+      if (clazz == null) throw new Exception(Messages.get("UNKNOWN_REQUEST_TYPE",name));
       return(clazz.getConstructor(JSONObject.class).newInstance(definition));
    }
 }
