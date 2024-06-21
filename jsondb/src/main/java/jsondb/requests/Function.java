@@ -25,6 +25,7 @@ SOFTWARE.
 package jsondb.requests;
 
 import jsondb.Session;
+import sources.SQLSource;
 import jsondb.Response;
 import java.util.HashMap;
 import utils.JSONOObject;
@@ -37,111 +38,49 @@ import database.Variable;
 public class Function
 {
    private final String sessid;
+   private final String source;
    private final JSONObject definition;
-   private final HashMap<String,Variable> parms;
 
-   private static final String FETCH = "fetch";
-   private static final String CLOSE = "close";
+   private static final String SOURCE = "source";
    private static final String SESSION = "session";
-   private static final String PAGESIZE = "page-size";
+   private static final String EXECUTE = "execute";
 
 
    public Function(JSONObject definition) throws Exception
    {
       this.definition = definition;
+      this.source = definition.getString(SOURCE);
       this.sessid = definition.getString(SESSION);
-      this.parms = Variable.getVariables(definition);
    }
 
-/*
-   public Response fetch() throws Exception
+   public Response execute() throws Exception
    {
       JSONObject response = new JSONOObject();
 
-      Session session = Utils.getSession(response,sessid,FETCH);
+      Session session = Utils.getSession(response,sessid,EXECUTE);
       if (session == null) return(new Response(response));
 
-      Forward fw = Forward.redirect(session,"Cursor",definition);
+      Forward fw = Forward.redirect(session,"Call",definition);
       if (fw != null) return(new Response(fw.response()));
 
-      try {return(fetch(session));}
+      try {return(execute(session));}
         finally {session.down();}
    }
 
 
-   public Response fetch(Session session) throws Exception
+   public Response execute(Session session) throws Exception
    {
       JSONObject response = new JSONOObject();
-      database.Cursor cursor = Utils.getCursor(response,session,cursid,"fetch()");
-      if (cursor == null) return(new Response(response));
-      return(fetch(session,cursor));
+      SQLSource source = Utils.getSource(response,this.source);
+      if (source == null) return(new Response(response));
+      return(execute(session,source));
    }
 
 
-   public Response fetch(Session session, database.Cursor cursor) throws Exception
+   public Response execute(Session session, SQLSource source) throws Exception
    {
       JSONObject response = new JSONOObject();
-      JSONObject fetch = Utils.getMethod(definition,FETCH);
-
-      if (definition.has(FETCH))
-         if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
-
-      JSONArray rows = new JSONArray();
-      ArrayList<Object[]> table = cursor.fetch();
-
-      response.put("success",true);
-      response.put("method","fetch()");
-      response.put("more",cursor.next());
-
-      if (cursor.primary())
-         response.put("primary",true);
-
-      response.put("rows",rows);
-      for(Object[] row : table) rows.put(row);
 
       return(new Response(response));
    }
-
-
-   public Response close() throws Exception
-   {
-      JSONObject response = new JSONOObject();
-
-      Session session = Utils.getSession(response,sessid,CLOSE);
-      if (session == null) return(new Response(response));
-
-      try
-      {
-         Forward fw = Forward.redirect(session,"Cursor",definition);
-         if (fw != null) return(new Response(fw.response()));
-         return(close(session));
-      }
-      finally
-      {
-         session.down();
-      }
-   }
-
-
-   public Response close(Session session) throws Exception
-   {
-      JSONObject response = new JSONOObject();
-      database.Cursor cursor = Utils.getCursor(response,session,cursid,"fetch()");
-      if (cursor == null) return(new Response(response));
-      return(close(session,cursor));
-   }
-
-
-   public Response close(Session session, database.Cursor cursor) throws Exception
-   {
-      JSONObject response = new JSONOObject();
-
-      cursor.close();
-
-      response.put("success",true);
-      response.put("method","close()");
-
-      return(new Response(response));
-   }
-*/
 }

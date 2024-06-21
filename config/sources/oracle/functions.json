@@ -2,8 +2,8 @@
   "datasources":
   [
     {
-      "id": "test",
-      "execute": ":lname         = getLastName(:fname,:hire_date)"
+      "id": "function-1",
+      "execute": ":lname=getLastName(:fname,:hire_date)"
       ,
       "variables":
       [
