@@ -28,6 +28,7 @@ import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.sql.Connection;
 import java.util.Properties;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import database.definitions.AdvancedPool;
 
@@ -169,6 +170,17 @@ public abstract class JdbcInterface
       {
          if (savepoint)
             sp = conn.setSavepoint();
+
+         CallableStatement stmt = conn.prepareCall(sql);
+         ArrayList<Object> data = new ArrayList<Object>();
+
+         for (int i = 0; i < bindvalues.size(); i++)
+         {
+            BindValue bv = bindvalues.get(i);
+            if (bv.untyped()) stmt.setObject(i+1,bv.value());
+            else stmt.setObject(i+1,bv.value(),bv.type());
+            if (bv.out()) stmt.registerOutParameter(i+1, null);
+         }
 
          if (savepoint)
             releaseSavePoint(sp,false);

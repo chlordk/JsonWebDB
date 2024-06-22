@@ -571,7 +571,7 @@ public class Table
 
       if (!usecurs) cursor.close();
 
-      else if (Config.conTimeout() <= 0)
+      else if (Config.conTimeout() <= 0 && !session.isStateful())
          cursor.remove();
 
       response.put("success",true);
