@@ -539,18 +539,10 @@ public class Session
    }
 
 
-   public synchronized JSONObject call(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint, boolean write) throws Exception
+   public synchronized boolean execute(String sql, boolean write, boolean savepoint) throws Exception
    {
       JdbcInterface conn = ensure(write);
-
-      return(null);
-   }
-
-
-   public synchronized boolean execute(String sql, boolean write) throws Exception
-   {
-      JdbcInterface conn = ensure(write);
-      boolean success = conn.execute(sql);
+      boolean success = conn.execute(sql,savepoint);
 
       if (write)
       {
@@ -565,6 +557,31 @@ public class Session
       }
 
       return(success);
+   }
+
+
+   public synchronized JSONObject executeCall(String sql, ArrayList<BindValue> bindvalues, boolean write, boolean func, boolean savepoint) throws Exception
+   {
+      JdbcInterface conn = ensure(write);
+
+      for(BindValue bv : bindvalues)
+         bv.validate();
+
+      UpdateResponse resp = conn.executeCall(sql,bindvalues,savepoint);
+
+      if (write)
+      {
+         if (stateful) touchTrx();
+         if (usesec) primary.dirty(stateful);
+      }
+
+      synchronized(SYNC)
+      {
+         used = new Date();
+         connused = new Date();
+      }
+
+      return(null);
    }
 
 

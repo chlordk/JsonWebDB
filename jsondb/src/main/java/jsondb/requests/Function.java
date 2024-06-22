@@ -24,15 +24,14 @@ SOFTWARE.
 
 package jsondb.requests;
 
+import jsondb.Config;
 import jsondb.Session;
-import sources.SQLSource;
 import jsondb.Response;
-import java.util.HashMap;
+import database.SQLPart;
 import utils.JSONOObject;
-import org.json.JSONArray;
+import java.util.HashMap;
+import database.BindValue;
 import org.json.JSONObject;
-import java.util.ArrayList;
-import database.Variable;
 
 
 public class Function
@@ -44,6 +43,7 @@ public class Function
    private static final String SOURCE = "source";
    private static final String SESSION = "session";
    private static final String EXECUTE = "execute";
+   private static final String SAVEPOINT = "savepoint";
 
 
    public Function(JSONObject definition) throws Exception
@@ -71,15 +71,31 @@ public class Function
    public Response execute(Session session) throws Exception
    {
       JSONObject response = new JSONOObject();
-      SQLSource source = Utils.getSource(response,this.source);
+      sources.Function source = Utils.getSource(response,this.source);
       if (source == null) return(new Response(response));
       return(execute(session,source));
    }
 
 
-   public Response execute(Session session, SQLSource source) throws Exception
+   public Response execute(Session session, sources.Function source) throws Exception
    {
       JSONObject response = new JSONOObject();
+      JSONObject args = Utils.getMethod(definition,"execute");
+      HashMap<String,BindValue> values = Utils.getBindValues(args);
+
+      boolean savepoint = Config.dbconfig().savepoint(source.update());
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      SQLPart call = source.sql();
+
+      for(BindValue bv : call.bindValues())
+      {
+         BindValue val = values.get(bv.name().toLowerCase());
+         if (val != null) bv.value(val.value());
+      }
+
+      call.bindByValue();
+      session.executeCall(call.snippet(),call.bindValues(),source.update(),source.returns(),savepoint);
 
       return(new Response(response));
    }

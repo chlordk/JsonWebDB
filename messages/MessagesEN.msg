@@ -1,6 +1,7 @@
-EMPTY_REQUEST              = Empty Request
-INVALID_REQUEST            = Invalid Request : \n\n {%1}
-UNKNOWN_REQUEST_TYPE       = Unknown Request Type : '{%1}'
+EMPTY_REQUEST              = Empty request
+INVALID_REQUEST            = Invalid request : \n\n {%1}
+INVALID_SYNTAX             = Invalid syntax '{%1}'
+UNKNOWN_REQUEST_TYPE       = Unknown request Type : '{%1}'
 TRANSACTION_LOST           = Transaction lost
 ILLEGALE_INSTANCE_NAME     = Illegal instance name {%1}
 AUTHENTICATION_FAILED      = Failed to authenticate {%1}

@@ -124,19 +124,64 @@ public abstract class JdbcInterface
   }
 
 
-  public UpdateResponse call(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
-  {
-     Statement stmt = conn.prepareCall(sql);
-     Config.logger().severe(logentry(sql));
-     return(null);
-  }
-
-
-   public boolean execute(String sql) throws Exception
+   public boolean execute(String sql, boolean savepoint) throws Exception
    {
+      Savepoint sp = null;
+
+      if (conn.getAutoCommit())
+         savepoint = false;
+
       Statement stmt = conn.createStatement();
       Config.logger().severe(logentry(sql));
-      return(stmt.execute(sql));
+
+      try
+      {
+         if (savepoint)
+            sp = conn.setSavepoint();
+
+         boolean success = stmt.execute(sql);
+
+         if (savepoint)
+            releaseSavePoint(sp,false);
+
+         return(success);
+      }
+      catch (Exception e)
+      {
+         if (savepoint)
+            releaseSavePoint(sp,true);
+
+         return(false);
+      }
+   }
+
+
+   public UpdateResponse executeCall(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   {
+      Savepoint sp = null;
+
+      if (conn.getAutoCommit())
+         savepoint = false;
+
+      Config.logger().severe(logentry(sql,bindvalues));
+
+      try
+      {
+         if (savepoint)
+            sp = conn.setSavepoint();
+
+         if (savepoint)
+            releaseSavePoint(sp,false);
+
+         return(null);
+      }
+      catch (Exception e)
+      {
+         if (savepoint)
+            releaseSavePoint(sp,true);
+
+         return(null);
+      }
    }
 
 

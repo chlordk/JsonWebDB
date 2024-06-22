@@ -340,7 +340,10 @@ public class SQLStatement
       Boolean update = source.update();
       if (update == null) update = false;
 
-      boolean success = session.execute(sql.snippet(),update);
+      boolean savepoint = Config.dbconfig().savepoint(true);
+      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+
+      boolean success = session.execute(sql.snippet(),update,savepoint);
 
       response.put("success",success);
       response.put("session",sessid);

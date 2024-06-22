@@ -1,5 +1,5 @@
-Presentation:
-  Scalable
-
 KeepAlive:
   Session moved ?
+
+Savepoints, roll back in catch
+conn.timeout & stateful

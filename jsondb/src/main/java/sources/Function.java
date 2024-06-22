@@ -27,6 +27,7 @@ import database.Parser;
 import database.SQLPart;
 import java.util.HashMap;
 import database.Variable;
+import messages.Messages;
 import database.BindValue;
 import static utils.Misc.*;
 import org.json.JSONObject;
@@ -37,11 +38,13 @@ import java.util.regex.Pattern;
 public class Function implements Source
 {
    private static final String ID = "id";
+   private static final String UPD = "update";
    private static final String FUNC = "execute";
    private static final Pattern pattern = Pattern.compile("[:]?\\w*\\s*=");
 
    private final String id;
    private final SQLPart sql;
+   private final boolean upd;
    private final boolean func;
 
 
@@ -68,7 +71,19 @@ public class Function implements Source
 
       this.func = func;
 
+      if (func)
+      {
+         int pos = call.indexOf("=");
+         if (pos <= 0) throw new Exception(Messages.get("INVALID_SYNTAX",call));
+         call = "{" +  call.substring(0,pos) + " = call " + call.substring(pos+1) + "}";
+      }
+      else call = "{ call " + call + "}";
+
       this.sql = Parser.parse(call);
+
+      Boolean upd = get(definition,UPD,false);
+      if (upd == null) upd = false;
+      this.upd = upd;
 
       for(BindValue bv : this.sql.bindValues())
       {
@@ -95,5 +110,10 @@ public class Function implements Source
    public SQLPart sql()
    {
       return(sql.clone());
+   }
+
+   public boolean update()
+   {
+      return(upd);
    }
 }
