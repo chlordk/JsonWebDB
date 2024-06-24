@@ -246,15 +246,7 @@ public class Cursor
             Object value = rset.getObject(c+1);
 
             if (columns.get(c).isDateType())
-            {
-               if (value instanceof Date)
-                  value = Dates.convert((Date) value);
-
-               else
-
-               if (value instanceof Timestamp)
-                  value = Dates.convert((Timestamp) value);
-            }
+               value = Dates.convertDate(value);
 
             row[c] = value;
          }

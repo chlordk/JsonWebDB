@@ -81,6 +81,9 @@ public class Function implements Source
 
       this.sql = Parser.parse(call);
 
+      if (func && sql.bindValues().size() > 0)
+         sql.bindValues().get(0).ampersand(false).out(true);
+
       Boolean upd = get(definition,UPD,false);
       if (upd == null) upd = false;
       this.upd = upd;

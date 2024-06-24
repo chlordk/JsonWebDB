@@ -28,11 +28,13 @@ import state.State;
 import java.util.Date;
 import database.Cursor;
 import java.util.HashMap;
+import utils.JSONOObject;
 import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import utils.NameValuePair;
 import database.JdbcInterface;
 import state.StatePersistency;
 import java.util.logging.Level;
@@ -560,14 +562,16 @@ public class Session
    }
 
 
-   public synchronized JSONObject executeCall(String sql, ArrayList<BindValue> bindvalues, boolean write, boolean func, boolean savepoint) throws Exception
+   public synchronized JSONObject executeCall(String sql, ArrayList<BindValue> bindvalues, boolean write, boolean savepoint) throws Exception
    {
       JdbcInterface conn = ensure(write);
+      JSONObject response = new JSONOObject();
+      ArrayList<NameValuePair<Object>> resp = null;
 
       for(BindValue bv : bindvalues)
          bv.validate();
 
-      UpdateResponse resp = conn.executeCall(sql,bindvalues,savepoint);
+      resp = conn.executeCall(sql,bindvalues,savepoint);
 
       if (write)
       {
@@ -581,7 +585,10 @@ public class Session
          connused = new Date();
       }
 
-      return(null);
+      for(NameValuePair<Object> nvp : resp)
+         response.put(nvp.name(),nvp.value());
+
+      return(response);
    }
 
 
@@ -632,7 +639,7 @@ public class Session
 
       UpdateResponse resp = write.executeUpdate(sql,bindvalues,returning,savepoint);
 
-      response = new JSONObject().put("affected",resp.affected);
+      response = new JSONOObject().put("affected",resp.affected);
 
       if (resp.affected > 0)
       {

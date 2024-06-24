@@ -3,7 +3,7 @@
    [
       {
          "id": "Dates",
-         "query": {"sql": "select sysdate as date from dual"},
+         "query": {"sql": "select sysdate as now from dual"},
          "select": "allowed"
       }
    ]

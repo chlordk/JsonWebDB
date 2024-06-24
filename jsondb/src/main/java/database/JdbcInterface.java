@@ -21,11 +21,13 @@
 
 package database;
 
+import utils.Dates;
 import jsondb.Config;
 import java.util.HashMap;
 import java.sql.Statement;
 import java.sql.Savepoint;
 import java.util.ArrayList;
+import utils.NameValuePair;
 import java.sql.Connection;
 import java.util.Properties;
 import java.sql.CallableStatement;
@@ -157,12 +159,16 @@ public abstract class JdbcInterface
    }
 
 
-   public UpdateResponse executeCall(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
+   public ArrayList<NameValuePair<Object>> executeCall(String sql, ArrayList<BindValue> bindvalues, boolean savepoint) throws Exception
    {
+      int returns = 0;
       Savepoint sp = null;
 
       if (conn.getAutoCommit())
          savepoint = false;
+
+      ArrayList<NameValuePair<Object>> results =
+         new ArrayList<NameValuePair<Object>>();
 
       Config.logger().severe(logentry(sql,bindvalues));
 
@@ -172,27 +178,59 @@ public abstract class JdbcInterface
             sp = conn.setSavepoint();
 
          CallableStatement stmt = conn.prepareCall(sql);
-         ArrayList<Object> data = new ArrayList<Object>();
 
          for (int i = 0; i < bindvalues.size(); i++)
          {
+            Integer type = 0;
             BindValue bv = bindvalues.get(i);
-            if (bv.untyped()) stmt.setObject(i+1,bv.value());
-            else stmt.setObject(i+1,bv.value(),bv.type());
-            if (bv.out()) stmt.registerOutParameter(i+1, null);
+
+            if (!bv.untyped()) type = bv.type();
+            else type = SQLTypes.guessType(bv.value());
+
+            stmt.setObject(i+1,bv.value(),type);
+
+            if (bv.out())
+            {
+               returns++;
+               stmt.registerOutParameter(i+1,type);
+            }
+         }
+
+         stmt.execute();
+
+         for (int i = 0; returns > 0 && i < bindvalues.size(); i++)
+         {
+            Integer type = 0;
+            BindValue bv = bindvalues.get(i);
+
+            if (bv.out())
+            {
+               String name = bv.name();
+               Object value = stmt.getObject(i+1);
+
+               if (!bv.untyped()) type = bv.type();
+               else type = SQLTypes.guessType(value);
+
+               if (SQLTypes.isDateType(type))
+                  value = Dates.convertDate(value);
+
+               results.add(new NameValuePair<Object>(name,value));
+            }
          }
 
          if (savepoint)
             releaseSavePoint(sp,false);
 
-         return(null);
+         return(results);
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
+         Config.logger().severe(logentry(sql,bindvalues,t));
+
          if (savepoint)
             releaseSavePoint(sp,true);
 
-         return(null);
+         throw new Exception(t);
       }
    }
 
@@ -220,14 +258,14 @@ public abstract class JdbcInterface
 
             return(new UpdateResponse(data));
          }
-         catch (Exception e)
+         catch (Throwable t)
          {
-            Config.logger().severe(logentry(sql,bindvalues,e));
+            Config.logger().severe(logentry(sql,bindvalues,t));
 
             if (savepoint)
                releaseSavePoint(sp,true);
 
-            throw new Exception(e);
+            throw new Exception(t);
          }
       }
 
@@ -255,14 +293,14 @@ public abstract class JdbcInterface
             return(new UpdateResponse(affected));
          }
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
-         Config.logger().severe(logentry(sql,bindvalues,e));
+         Config.logger().severe(logentry(sql,bindvalues,t));
 
          if (savepoint)
             releaseSavePoint(sp,true);
 
-         throw new Exception(e);
+         throw new Exception(t);
       }
    }
 
@@ -297,14 +335,14 @@ public abstract class JdbcInterface
                releaseSavePoint(sp,false);
          }
       }
-      catch (Exception e)
+      catch (Throwable t)
       {
-         Config.logger().severe(logentry(cursor,e));
+         Config.logger().severe(logentry(cursor,t));
 
          if (savepoint)
             releaseSavePoint(sp,true);
 
-         throw new Exception(e);
+         throw new Exception(t);
       }
    }
 
@@ -321,9 +359,9 @@ public abstract class JdbcInterface
    }
 
 
-   private String logentry(Cursor cursor, Exception e)
+   private String logentry(Cursor cursor, Throwable t)
    {
-      return(logentry(cursor.sql(),cursor.bindvalues(),e));
+      return(logentry(cursor.sql(),cursor.bindvalues(),t));
    }
 
 
@@ -333,7 +371,7 @@ public abstract class JdbcInterface
    }
 
 
-   private String logentry(String sql, ArrayList<BindValue> bindvalues, Exception e)
+   private String logentry(String sql, ArrayList<BindValue> bindvalues, Throwable t)
    {
       String del = "\n---------------------------------------------------------------------\n";
 
@@ -349,8 +387,8 @@ public abstract class JdbcInterface
             logentry += "\n"+bindvalues.get(i).desc();
       }
 
-      if (e != null)
-         logentry += "\n\n" + e.toString() + "\n";
+      if (t != null)
+         logentry += "\n\n" + t.toString() + "\n";
 
       logentry += del;
 

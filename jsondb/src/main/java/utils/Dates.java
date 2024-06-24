@@ -69,6 +69,21 @@ public class Dates
    }
 
 
+   public static String convertDate(Object value) throws Exception
+   {
+      if (value instanceof java.sql.Date)
+         return(Dates.convert((java.sql.Date) value));
+
+      if (value instanceof Date)
+        return(Dates.convert((Date) value));
+
+      if (value instanceof Timestamp)
+        return(Dates.convert((Timestamp) value));
+
+      throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
+   }
+
+
    public static Date convert(Object value) throws Exception
    {
       SimpleDateFormat fmt = null;

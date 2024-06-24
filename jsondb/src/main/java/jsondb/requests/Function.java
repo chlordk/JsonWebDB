@@ -95,7 +95,11 @@ public class Function
       }
 
       call.bindByValue();
-      session.executeCall(call.snippet(),call.bindValues(),source.update(),source.returns(),savepoint);
+      response = session.executeCall(call.snippet(),call.bindValues(),source.update(),savepoint);
+
+      response.put("success",true);
+      response.put("session",sessid);
+      response.put("method","execute()");
 
       return(new Response(response));
    }
