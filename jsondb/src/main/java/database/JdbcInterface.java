@@ -212,7 +212,7 @@ public abstract class JdbcInterface
                else type = SQLTypes.guessType(value);
 
                if (SQLTypes.isDateType(type))
-                  value = Dates.convertDate(value);
+                  value = Dates.toString(value);
 
                results.add(new NameValuePair<Object>(name,value));
             }

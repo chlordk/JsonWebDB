@@ -167,7 +167,7 @@ public class BindValue
       }
 
       if (SQLTypes.isDateType(type))
-         this.value = Dates.convert(value);
+         this.value = Dates.toDate(value);
    }
 
    public BindValue clone()

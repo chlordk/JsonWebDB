@@ -43,7 +43,7 @@ public class Dates
    private static DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 
-   public static String convert(Date date)
+   public static String toString(Date date)
    {
       Instant time = date.toInstant();
       ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
@@ -51,16 +51,7 @@ public class Dates
    }
 
 
-   public static String convert(Timestamp sqldate)
-   {
-      Date date = new Date(sqldate.getTime());
-      Instant time = date.toInstant();
-      ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
-      return(utc.format(formatter));
-   }
-
-
-   public static String convert(java.sql.Date sqldate)
+   public static String toString(Timestamp sqldate)
    {
       Date date = new Date(sqldate.getTime());
       Instant time = date.toInstant();
@@ -69,22 +60,31 @@ public class Dates
    }
 
 
-   public static String convertDate(Object value) throws Exception
+   public static String toString(java.sql.Date sqldate)
+   {
+      Date date = new Date(sqldate.getTime());
+      Instant time = date.toInstant();
+      ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
+      return(utc.format(formatter));
+   }
+
+
+   public static String toString(Object value) throws Exception
    {
       if (value instanceof java.sql.Date)
-         return(Dates.convert((java.sql.Date) value));
+         return(Dates.toString((java.sql.Date) value));
 
       if (value instanceof Date)
-        return(Dates.convert((Date) value));
+        return(Dates.toString((Date) value));
 
       if (value instanceof Timestamp)
-        return(Dates.convert((Timestamp) value));
+        return(Dates.toString((Timestamp) value));
 
       throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
    }
 
 
-   public static Date convert(Object value) throws Exception
+   public static Date toDate(Object value) throws Exception
    {
       SimpleDateFormat fmt = null;
 

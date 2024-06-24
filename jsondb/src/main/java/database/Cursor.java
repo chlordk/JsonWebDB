@@ -246,7 +246,7 @@ public class Cursor
             Object value = rset.getObject(c+1);
 
             if (columns.get(c).isDateType())
-               value = Dates.convertDate(value);
+               value = Dates.toString(value);
 
             row[c] = value;
          }
