@@ -34,7 +34,6 @@ public class HTTPConfig
 {
    private static final String PATH = "path";
    private static final String PAGE = "page";
-   private static final String ADMN = "admin";
    private static final String INDX = "index";
    private static final String AUTH = "admin";
    private static final String VIRT = "virtual";
@@ -73,7 +72,7 @@ public class HTTPConfig
       HTTPConfig.usr = Config.get(auth,USER);
       HTTPConfig.pwd = Config.get(auth,PASW);
 
-      HTTPConfig.admin = Config.get(auth,ADMN);
+      HTTPConfig.admin = Config.get(auth,PATH);
       HTTPConfig.index = Config.get(http,INDX);
 
       HTTPConfig.sslreq = Config.get(auth,SSLR);

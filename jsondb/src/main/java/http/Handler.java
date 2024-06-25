@@ -60,37 +60,9 @@ public class Handler implements HttpHandler
    }
 
 
-   public void doPost(HttpExchange exchange) throws IOException
-   {
-      JsonDB jsondb = new JsonDB();
-
-      InputStream in = exchange.getRequestBody();
-      OutputStream out = exchange.getResponseBody();
-      String request = new String(in.readAllBytes());
-
-      try
-      {
-         Response response = jsondb.execute(request);
-         byte[] content = response.toString(2).getBytes();
-
-         exchange.sendResponseHeaders(200,content.length);
-         out.write(content);
-
-         out.flush();
-         out.close();
-      }
-      catch (Throwable t)
-      {
-         Config.logger().log(Level.SEVERE,t.toString(),t);
-         throw new IOException(t);
-      }
-   }
-
-
    public void doGet(HttpExchange exchange) throws IOException
    {
       JsonDB jsondb = new JsonDB();
-      OutputStream out = exchange.getResponseBody();
 
       String path = exchange.getRequestURI().getPath();
       if (path.length() <= 2) path = HTTPConfig.index();
@@ -119,10 +91,38 @@ public class Handler implements HttpHandler
             return;
          }
 
+         OutputStream out = exchange.getResponseBody();
          if (file.gzip) exchange.getResponseHeaders().set("Content-Encoding","gzip");
          exchange.getResponseHeaders().set("Last-Modified",file.gmt());
          exchange.sendResponseHeaders(200,file.size);
          out.write(file.content);
+         out.close();
+      }
+      catch (Throwable t)
+      {
+         Config.logger().log(Level.SEVERE,t.toString(),t);
+         throw new IOException(t);
+      }
+   }
+
+
+   public void doPost(HttpExchange exchange) throws IOException
+   {
+      JsonDB jsondb = new JsonDB();
+
+      InputStream in = exchange.getRequestBody();
+      OutputStream out = exchange.getResponseBody();
+      String request = new String(in.readAllBytes());
+
+      try
+      {
+         Response response = jsondb.execute(request);
+         byte[] content = response.toString(2).getBytes();
+
+         exchange.sendResponseHeaders(200,content.length);
+         out.write(content);
+
+         out.flush();
          out.close();
       }
       catch (Throwable t)

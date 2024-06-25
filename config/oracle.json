@@ -2,12 +2,13 @@
    "application":
    {
 		"index": "index.html",
+		"class": "demo.Application",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
 		"location": "/Users/alhof/Repository/forms42/demo/dist"
 		,
 		"admin":
 		{
-			"admin": "/admin",
+			"path": "/admin",
 			"username": "admin",
 			"password": "Manager1",
 			"ssl-required": false
