@@ -70,7 +70,7 @@
       {
          "type": "object",
          "additionalProperties": false,
-         "required": ["type","endpoint"],
+         "required": ["types","instances"],
          "description": "Defines all server types, how to reach them, and for embedded only queue-length and worker-threads",
          "properties":
          {
@@ -94,6 +94,60 @@
                      "queue-length": {"type": "integer", "description": "Only embedded server (see HTTPServer)"},
                      "worker-threads": {"type": "integer", "description": "Only embedded server (see HTTPServer)"}
                   }
+               }
+            }
+            ,
+            "instances":
+            {
+               "type": "array",
+               "additionalProperties": false,
+               "description": "Defines instances",
+               "items":
+               {
+                  "type": "object",
+                  "required": ["type","name","port","ssl"],
+                  "properties":
+                  {
+                     "type": {"type": "string"},
+                     "name": {"type": "string"},
+                     "port": {"type": "integer"},
+                     "ssl" : {"type": "integer"}
+                  }
+               }
+            }
+         }
+      }
+      ,
+      "session":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["session-timeout","connection-timeout","transaction-timeout"],
+         "properties":
+         {
+            "session-timeout": {"type": "integer"},
+            "connection-timeout": {"type": "integer"},
+            "transaction-timeout": {"type": "integer"}
+         }
+      }
+      ,
+      "embedded":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["keystore"],
+         "properties":
+         {
+            "keystore":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "required": ["type","file","password"],
+               "properties":
+               {
+                  "type": {"type": "string"},
+                  "file": {"type": "string"},
+                  "password": {"type": "string"}
                }
             }
          }
