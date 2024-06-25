@@ -65,5 +65,16 @@
             }
          }
       }
+      ,
+      "cluster":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["type","endpoint"],
+         "description": "Defines all server types, how to reach them, and for embedded only queue-length and worker-threads",
+         "properties":
+         {
+         }
+      }
    }
 }
