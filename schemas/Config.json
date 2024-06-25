@@ -74,6 +74,28 @@
          "description": "Defines all server types, how to reach them, and for embedded only queue-length and worker-threads",
          "properties":
          {
+            "types":
+            {
+               "type": "array",
+               "additionalProperties": false,
+               "required": ["types"],
+               "description": "Defines all server types, how to reach them, and for embedded only queue-length and worker-threads",
+               "items":
+               {
+                  "type": "object",
+                  "required": ["type","endpoint"],
+                  "description": "Anything that starts with 'path' will go to 'page'",
+                  "properties":
+                  {
+                     "type": {"type": "string"},
+                     "embedded": {"type": "boolean", "description": "Use embedded server"},
+                     "endpoint": {"type": "string" , "description": "url to reach server (from backend)"},
+                     "location": {"type": "string" , "description": "overrule path to application"},
+                     "queue-length": {"type": "integer", "description": "Only embedded server (see HTTPServer)"},
+                     "worker-threads": {"type": "integer", "description": "Only embedded server (see HTTPServer)"}
+                  }
+               }
+            }
          }
       }
    }
