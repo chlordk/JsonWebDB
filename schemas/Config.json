@@ -189,7 +189,7 @@
             {
                "type": "object",
                "additionalProperties": false,
-               "required": ["type","username","password","test","driver","primary"],
+               "required": ["username","password","test","driver","primary"],
                "properties":
                {
                   "username": {"type": "string"},
@@ -255,7 +255,7 @@
                      "items":
                      {
                         "pattern": {"type": "string"},
-                        "maxsize": {"type": "string"}
+                        "maxsize": {"type": "integer"}
                      }
                   }
                }
