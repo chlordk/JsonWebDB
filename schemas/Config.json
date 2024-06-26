@@ -250,11 +250,11 @@
                   "cache":
                   {
                      "type": "array",
-                     "description": "Files matching pattern and smaller than maxsize (bytes) will be cached",
-                     "required": ["pattern","maxsize"],
+                     "description": "Files matching filetype and smaller than maxsize (bytes) will be cached",
+                     "required": ["filetype","maxsize"],
                      "items":
                      {
-                        "pattern": {"type": "string"},
+                        "filetype": {"type": "string"},
                         "maxsize": {"type": "integer"}
                      }
                   }
