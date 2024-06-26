@@ -267,14 +267,20 @@ public class Config
    @SuppressWarnings({ "unchecked" })
    public static <T> T get(String section)
    {
-      return((T) config.get(section));
+      if (config.has(section))
+         return((T) config.get(section));
+
+      return(null);
    }
 
    /** Get an object from a json */
    @SuppressWarnings({ "unchecked" })
    public static <T> T get(JSONObject section, String attr)
    {
-      return((T) section.get(attr));
+      if (section.has(attr))
+         return((T) section.get(attr));
+
+      return(null);
    }
 
    /** Get path to a given file or folder */
@@ -382,8 +388,8 @@ public class Config
       private DataBaseConfig(JSONObject def) throws Exception
       {
          this.useproxy = def.getBoolean(USEPROXY);
-         this.replatency = def.getInt(REPLATENCY);
-         this.defaultuser = def.getString(DEFUSER);
+         this.replatency = def.optInt(REPLATENCY);
+         this.defaultuser = def.optString(DEFUSER);
          this.pkeysource = def.getString(PKEYSOURCE);
          this.dbtype = DatabaseType.getType(def.getString(DBTYPE));
          this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));

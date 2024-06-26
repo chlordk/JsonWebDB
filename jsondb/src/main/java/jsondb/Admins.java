@@ -33,7 +33,7 @@ public class Admins
 {
    private static final String USER = "entity";
    private static final String SIGN = "signature";
-   private static final String PRIV = "super-users";
+   private static final String SIGNS = "signatures";
 
    private static final ConcurrentHashMap<String,String> admins =
       new  ConcurrentHashMap<String,String>();
@@ -62,7 +62,10 @@ public class Admins
       String signature = null;
 
       JSONObject def = null;
-      JSONArray arr = Config.get(PRIV);
+      JSONArray arr = Config.get(SIGNS);
+
+      if (arr == null)
+         return;
 
       for (int i = 0; i < arr.length(); i++)
       {

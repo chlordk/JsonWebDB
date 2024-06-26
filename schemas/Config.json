@@ -152,5 +152,58 @@
             }
          }
       }
+      ,
+      "signatures":
+      {
+         "type": "array",
+         "additionalProperties": false,
+         "required": ["entity","signature"],
+         "description": "Signed requests bypasses validation",
+         "items":
+         {
+            "entity": {"type": "string"},
+            "signature": {"type": "string"}
+         }
+      }
+      ,
+      "database":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["type","primary-key-source","proxyuser"],
+         "properties":
+         {
+            "type": {"type": "string"},
+            "primary-key-source": {"type": "string"},
+            "proxyuser": {"type": "boolean", "description": "Use proxy users"},
+            "defaultuser": {"type": "string", "description": "Database user to use, if not specified"},
+            "replication-latency": {"type": "integer", "description": "Time for primary database updates to propagate to secondary"},
+            "savepoint":
+            {
+               "type": "array",
+               "items":{"enum": ["read","write"]},
+               "description": "When to use savepoints"
+            },
+            "pool-properties":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "required": ["type","username","password","test","driver"],
+               "properties":
+               {
+                  "username": {"type": "string"},
+                  "password": {"type": "string"},
+                  "test": {"type": "string", "description": "sql for testing connection"},
+                  "classes":
+                  {
+                     "type": "array",
+                     "items":{"type": "string"},
+                     "description": "Extra classes to load when using JDBC"
+                  },
+                  "driver": {"type": "string", "description": "JDBC driver class"}
+               }
+            }
+         }
+      }
    }
 }
