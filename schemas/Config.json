@@ -272,6 +272,18 @@
                }
             }
          }
+      },
+      "logger":
+      {
+         "type": "object",
+         "additionalProperties": false,
+         "required": ["files","size","level"],
+         "properties":
+         {
+            "files": {"type": "integer"},
+            "size":  {"type": "string"},
+            "level": {"type": "string"}
+         }
       }
    }
 }
