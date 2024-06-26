@@ -162,7 +162,8 @@
          "items":
          {
             "entity": {"type": "string"},
-            "signature": {"type": "string"}
+            "signature": {"type": "string"},
+            "required": ["entity","signature"]
          }
       }
       ,
@@ -188,7 +189,7 @@
             {
                "type": "object",
                "additionalProperties": false,
-               "required": ["type","username","password","test","driver"],
+               "required": ["type","username","password","test","driver","primary"],
                "properties":
                {
                   "username": {"type": "string"},
@@ -200,7 +201,63 @@
                      "items":{"type": "string"},
                      "description": "Extra classes to load when using JDBC"
                   },
-                  "driver": {"type": "string", "description": "JDBC driver class"}
+                  "driver": {"type": "string", "description": "JDBC driver class"},
+                  "primary":
+                  {
+                     "type": "object",
+                     "required": ["min","max"],
+                     "properties":
+                     {
+                        "min": {"type": "integer", "description": "Min connections"},
+                        "max": {"type": "integer", "description": "Min connections"},
+                        "max-wait": {"type": "integer", "description": "Max milliseconds to wait for a connection"},
+                        "validate": {"type": "integer", "description": "Milliseconds between connections are tested"},
+                        "jdbc-url": {"type": "string", "description": "The jdbc url"}
+                     }
+                  },
+                  "secondary":
+                  {
+                     "type": "object",
+                     "required": ["min","max"],
+                     "properties":
+                     {
+                        "min": {"type": "integer", "description": "Min connections"},
+                        "max": {"type": "integer", "description": "Min connections"},
+                        "max-wait": {"type": "integer", "description": "Max milliseconds to wait for a connection"},
+                        "validate": {"type": "integer", "description": "Milliseconds between connections are tested"},
+                        "jdbc-url": {"type": "string", "description": "The jdbc url"}
+                     }
+                  }
+               }
+            },
+            "files":
+            {
+               "type": "object",
+               "additionalProperties": false,
+               "required": ["mimetypes"],
+               "properties":
+               {
+                  "mimetypes":
+                  {
+                     "type": "array",
+                     "required": ["filetype","mimetype"],
+                     "items":
+                     {
+                        "filetype": {"type": "string"},
+                        "mimetype": {"type": "string"}
+                     }
+                  },
+                  "cache":
+                  {
+                     "type": "array",
+                     "description": "Files matching pattern and smaller than maxsize (bytes) will be cached",
+                     "required": ["pattern","maxsize"],
+                     "items":
+                     {
+                        "pattern": {"type": "string"},
+                        "maxsize": {"type": "string"}
+                     }
+                  }
                }
             }
          }
