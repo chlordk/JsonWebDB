@@ -146,27 +146,22 @@
 
 			{"filetype": "js",   "mimetype": "text/javascript"},
 			{"filetype": "json", "mimetype": "application/json"}
-		]
-		,
+		],
 		"cache":
-		{
-			"small":
-			[
-				{"pattern": "*.js", "maxsize": 1024},
-				{"pattern": "*.css", "maxsize": 1024},
-				{"pattern": "*.png", "maxsize": 1024},
-				{"pattern": "*.jpg", "maxsize": 1024},
-				{"pattern": "*.gif", "maxsize": 1024},
-				{"pattern": "*.jpeg", "maxsize": 1024},
-				{"pattern": "*.html", "maxsize": 1024}
-			]
-			,
-			"large":
-			[
-				{"pattern": "*.js", "minsize": 1048576},
-				{"pattern": "*.html", "minsize": 1048576}
-			]
-		}
+		[
+			{"filetype": "*.js", "maxsize": 1024},
+			{"filetype": "*.css", "maxsize": 1024},
+			{"filetype": "*.png", "maxsize": 1024},
+			{"filetype": "*.jpg", "maxsize": 1024},
+			{"filetype": "*.gif", "maxsize": 1024},
+			{"filetype": "*.jpeg", "maxsize": 1024},
+			{"filetype": "*.html", "maxsize": 1024}
+		],
+		"compress":
+		[
+			{"filetype": "*.js", "minsize": 1048576},
+			{"filetype": "*.html", "minsize": 1048576}
+		]
 	}
 	,
 	"logger":

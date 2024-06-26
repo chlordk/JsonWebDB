@@ -37,11 +37,9 @@ public class FileConfig
    private static final String FILES = "files";
 
    private static final String CACHE = "cache";
-   private static final String SMALL = "small";
-   private static final String LARGE = "large";
+   private static final String COMPRESS = "compress";
    private static final String MIMETYPES = "mimetypes";
 
-   private static final String PATTERN = "pattern";
    private static final String MINSIZE = "minsize";
    private static final String MAXSIZE = "maxsize";
 
@@ -61,11 +59,12 @@ public class FileConfig
    public static void initialize() throws Exception
    {
       JSONObject files = Config.get(FILES);
-      JSONObject cache = Config.get(files,CACHE);
+      JSONArray cache = Config.get(files,CACHE);
+      JSONArray compr = Config.get(files,COMPRESS);
 
       loadMimeTypes(files);
       loadCacheRules(cache);
-      loadCompressionRules(cache);
+      loadCompressionRules(compr);
    }
 
    public static String root()
@@ -117,27 +116,26 @@ public class FileConfig
       }
    }
 
-   private static void loadCacheRules(JSONObject def)
+   private static void loadCacheRules(JSONArray def)
    {
       cache.clear();
-      JSONArray rules = Config.get(def,SMALL);
 
-      for (int i = 0; i < rules.length(); i++)
+      for (int i = 0; i < def.length(); i++)
       {
-         JSONObject rule = rules.getJSONObject(i);
-         cache.add(new FilePattern(rule.getString(PATTERN),rule.getLong(MAXSIZE)));
+         JSONObject rule = def.getJSONObject(i);
+         cache.add(new FilePattern(rule.getString(FILETYPE),rule.getLong(MAXSIZE)));
       }
    }
 
-   private static void loadCompressionRules(JSONObject def)
+
+   private static void loadCompressionRules(JSONArray def)
    {
       compress.clear();
-      JSONArray rules = Config.get(def,LARGE);
 
-      for (int i = 0; i < rules.length(); i++)
+      for (int i = 0; i < def.length(); i++)
       {
-         JSONObject rule = rules.getJSONObject(i);
-         compress.add(new FilePattern(rule.getString(PATTERN),rule.getLong(MINSIZE)));
+         JSONObject rule = def.getJSONObject(i);
+         compress.add(new FilePattern(rule.getString(FILETYPE),rule.getLong(MINSIZE)));
       }
    }
 }
