@@ -25,6 +25,6 @@ SOFTWARE.
 
 public class Version
 {
-   public static final String version = "5.0.1";
+   public static final String version = "3.0.0";
    public static final String library = "JsonWebDB";
 }

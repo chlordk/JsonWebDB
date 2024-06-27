@@ -115,7 +115,8 @@ public class HTTPConfig
       for (int i = 0; i < virtual.size(); i++)
       {
          VirtualPath vp = virtual.get(i);
-         if (path.startsWith(vp.path)) return(vp.page);
+         if (path.startsWith(vp.path+"/")) return(vp.page);
+         if (path.startsWith(vp.path+"?")) return(vp.page);
       }
 
       return(null);

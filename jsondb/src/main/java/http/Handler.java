@@ -41,6 +41,15 @@ import com.sun.net.httpserver.HttpsExchange;
 
 public class Handler implements HttpHandler
 {
+   private static String JSONType = getJsonType();
+
+   private static String getJsonType()
+   {
+      String ct = Config.getMimeType(".json");
+      if (ct == null) ct = "application/json";
+      return(ct);
+   }
+
    @Override
    public void handle(HttpExchange exchange) throws IOException
    {
@@ -73,6 +82,9 @@ public class Handler implements HttpHandler
          return;
       }
 
+      String vpath = HTTPConfig.getVirtual(path);
+      if (vpath != null) path = vpath;
+
       try
       {
          String lastmod = getRequestHeader(exchange,"If-modified-since");
@@ -92,6 +104,7 @@ public class Handler implements HttpHandler
          }
 
          OutputStream out = exchange.getResponseBody();
+         exchange.getResponseHeaders().set("Content-Type",file.mimetype);
          if (file.gzip) exchange.getResponseHeaders().set("Content-Encoding","gzip");
          exchange.getResponseHeaders().set("Last-Modified",file.gmt());
          exchange.sendResponseHeaders(200,file.size);
@@ -119,7 +132,9 @@ public class Handler implements HttpHandler
          Response response = jsondb.execute(request);
          byte[] content = response.toString(2).getBytes();
 
+         exchange.getResponseHeaders().set("Content-Type",Handler.JSONType);
          exchange.sendResponseHeaders(200,content.length);
+
          out.write(content);
 
          out.flush();

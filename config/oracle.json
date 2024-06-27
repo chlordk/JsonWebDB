@@ -4,7 +4,7 @@
 		"index": "index.html",
 		"class": "demo.Application",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-		"location": "/Users/alhof/Repository/forms42/demo/dist"
+		"location": "/Users/alhof/Repository/forms30/test/dist"
 		,
 		"admin":
 		{

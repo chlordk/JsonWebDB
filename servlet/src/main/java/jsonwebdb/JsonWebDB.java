@@ -44,6 +44,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class JsonWebDB extends HttpServlet
 {
+   private static String JSONType = null;
+
    public void init() throws ServletException
    {
       try {start();}
@@ -62,7 +64,11 @@ public class JsonWebDB extends HttpServlet
       String home = System.getenv("JsonWebDB_Home");
       String inst = System.getenv("JsonWebDB_Inst");
       String conf = System.getenv("JsonWebDB_Config");
+
       JsonDB.initialize(home,inst,conf,false);
+
+      JSONType = Config.getMimeType(".json");
+      if (JSONType == null) JSONType = "application/json";
    }
 
 
@@ -83,6 +89,9 @@ public class JsonWebDB extends HttpServlet
                admin(path,request,response);
                return;
             }
+
+            String vpath = HTTPConfig.getVirtual(path);
+            if (vpath != null) path = vpath;
 
             if (!jsondb.modified(path,request.getHeader("If-modified-since")))
             {
@@ -121,7 +130,7 @@ public class JsonWebDB extends HttpServlet
             String body = getBody(request);
             Response json = jsondb.execute(body);
 
-            response.setContentType(jsondb.mimetype("json"));
+            response.setContentType(JSONType);
             OutputStream out = response.getOutputStream();
             out.write(json.toString().getBytes());
             out.close();
