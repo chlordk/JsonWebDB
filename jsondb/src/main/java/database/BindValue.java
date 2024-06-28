@@ -74,7 +74,7 @@ public class BindValue
 
    public BindValue(String name)
    {
-      this.name = name.toLowerCase();
+      this.name = name;
    }
 
    public int start()

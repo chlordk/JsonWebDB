@@ -149,8 +149,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       props.setInitialSize(0);
       props.setMaxActive(max);
 
-      props.setMaxWait(wait);
-      props.setValidationInterval(cval);
+      props.setMaxWait(wait * 1000);
+      props.setValidationInterval(cval * 1000);
 
       return(props);
    }

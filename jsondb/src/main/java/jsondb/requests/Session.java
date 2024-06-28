@@ -133,11 +133,17 @@ public class Session
          response.put("success",true);
          response.put("method","connect()");
          response.put("session",session.guid());
+         response.put("timeout",Config.sesTimeout());
 
          if (signature != null)
          {
-            if (Admins.getAdmin(signature) != null)
+            String voucher = Admins.getAdmin(signature);
+
+            if (voucher != null)
+            {
                authenticated = true;
+               response.put("signed",voucher);
+            }
          }
 
          else

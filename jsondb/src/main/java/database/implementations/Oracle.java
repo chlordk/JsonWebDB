@@ -40,6 +40,7 @@ public class Oracle extends JdbcInterface
       super(pool);
    }
 
+   
    @Override
    public void setProxyUser(Connection conn, String username) throws Exception
    {
@@ -49,12 +50,14 @@ public class Oracle extends JdbcInterface
       oconn.openProxySession(OracleConnection.PROXYTYPE_USER_NAME,props);
    }
 
+
    @Override
    public void releaseProxyUser(Connection conn) throws Exception
    {
       OracleConnection oconn = getOracleConnection(conn);
       oconn.close(OracleConnection.PROXY_SESSION);
    }
+
 
    @Override
    public void releaseSavePoint(Savepoint savepoint, boolean rollback) throws Exception

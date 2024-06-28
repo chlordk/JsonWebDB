@@ -122,6 +122,7 @@
       {
          "type": "object",
          "additionalProperties": false,
+         "description": "Define timeouts in seconds",
          "required": ["session-timeout","connection-timeout","transaction-timeout"],
          "properties":
          {
@@ -210,8 +211,8 @@
                      {
                         "min": {"type": "integer", "description": "Min connections"},
                         "max": {"type": "integer", "description": "Min connections"},
-                        "max-wait": {"type": "integer", "description": "Max milliseconds to wait for a connection"},
-                        "validate": {"type": "integer", "description": "Milliseconds between connections are tested"},
+                        "max-wait": {"type": "integer", "description": "Seconds to wait for a connection"},
+                        "validate": {"type": "integer", "description": "Seconds between connections are tested"},
                         "jdbc-url": {"type": "string", "description": "The jdbc url"}
                      }
                   },

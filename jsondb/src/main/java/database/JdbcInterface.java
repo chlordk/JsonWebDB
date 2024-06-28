@@ -37,8 +37,8 @@ import database.definitions.AdvancedPool;
 
 public abstract class JdbcInterface
 {
-   private Connection conn = null;
    private final AdvancedPool pool;
+   protected Connection conn = null;
 
 
    public static JdbcInterface getInstance(boolean write) throws Exception

@@ -110,8 +110,8 @@
 				"min": 5,
 				"max": 60,
 
-				"max-wait": 10000,
-				"validate": 30000,
+				"max-wait": 10,
+				"validate": 30,
 
 				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 			}
@@ -121,8 +121,8 @@
 				"min": 10,
 				"max": 600,
 
-				"max-wait": 10000,
-				"validate": 30000,
+				"max-wait": 10,
+				"validate": 30,
 
 				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&ApplicationName=JsonWebDB"
 			}
