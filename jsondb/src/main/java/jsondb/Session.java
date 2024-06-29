@@ -543,6 +543,7 @@ public class Session
 
    public synchronized boolean execute(String sql, boolean write, boolean savepoint) throws Exception
    {
+      if (!stateful) savepoint = false;
       JdbcInterface conn = ensure(write);
       boolean success = conn.execute(sql,savepoint);
 
@@ -564,6 +565,7 @@ public class Session
 
    public synchronized JSONObject executeCall(String sql, ArrayList<BindValue> bindvalues, boolean write, boolean savepoint) throws Exception
    {
+      if (!stateful) savepoint = false;
       JdbcInterface conn = ensure(write);
       JSONObject response = new JSONOObject();
       ArrayList<NameValuePair<Object>> resp = null;
@@ -606,6 +608,7 @@ public class Session
 
    public synchronized Cursor executeQuery(String sql, ArrayList<BindValue> bindvalues, boolean forceread, boolean savepoint, int pagesize) throws Exception
    {
+      if (!stateful) savepoint = false;
       JdbcInterface read = ensure(false,forceread);
 
       for(BindValue bv : bindvalues)
@@ -632,6 +635,7 @@ public class Session
    public synchronized JSONObject executeUpdate(String sql, ArrayList<BindValue> bindvalues, String[] returning, boolean savepoint) throws Exception
    {
       JSONObject response = null;
+      if (!stateful) savepoint = false;
       JdbcInterface write = ensure(true);
 
       for(BindValue bv : bindvalues)
