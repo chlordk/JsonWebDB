@@ -90,7 +90,7 @@ public class Misc
       }
 
       Object object = def.get(attr);
-      
+
       if (object == JSONObject.NULL)
          return(null);
 
@@ -125,6 +125,9 @@ public class Misc
       }
 
       Object object = def.get(attr);
+
+      if (object == JSONObject.NULL)
+         return(null);
 
       if (object instanceof JSONArray)
       {
