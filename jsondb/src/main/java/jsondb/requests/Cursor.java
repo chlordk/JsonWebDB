@@ -80,10 +80,12 @@ public class Cursor
    public Response fetch(Session session, database.Cursor cursor) throws Exception
    {
       JSONObject response = new JSONOObject();
-      JSONObject fetch = Utils.getMethod(definition,FETCH);
 
       if (definition.has(FETCH))
+      {
+         JSONObject fetch = Utils.getMethod(definition,FETCH);
          if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
+      }
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
