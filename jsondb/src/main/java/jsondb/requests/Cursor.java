@@ -81,7 +81,7 @@ public class Cursor
    {
       JSONObject response = new JSONOObject();
 
-      if (definition.has(FETCH))
+      if (definition.has(FETCH+"()"))
       {
          JSONObject fetch = Utils.getMethod(definition,FETCH);
          if (fetch.has(PAGESIZE)) cursor.pagesize(fetch.getInt(PAGESIZE));
