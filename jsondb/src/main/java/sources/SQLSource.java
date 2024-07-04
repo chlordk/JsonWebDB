@@ -21,18 +21,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+
 package sources;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-
-import database.BindValue;
-import database.DataType;
+import utils.Misc;
 import database.Parser;
 import database.SQLPart;
-import utils.Misc;
-
+import database.DataType;
+import java.util.HashMap;
+import database.BindValue;
+import org.json.JSONObject;
 import static utils.Misc.*;
 
 

@@ -76,6 +76,7 @@ public class Table
    private static final String SAVEPOINT = "savepoint";
    private static final String FORUPDATE = "for-update";
    private static final String ASSERTIONS = "assertions";
+   private static final String FORUPDATENW = "for-update-nowait";
 
 
    public Table(JSONObject definition) throws Exception
@@ -515,6 +516,10 @@ public class Table
       Boolean lock = Misc.get(args,FORUPDATE);
       if (lock == null) lock = false;
 
+      Boolean locknw = Misc.get(args,FORUPDATENW);
+      if (locknw == null) locknw = false;
+      if (locknw) lock = true;
+
       String order = Misc.getString(args,ORDER,false);
 
       String[] columns = Misc.getJSONList(args,COLUMNS,String.class);
@@ -548,6 +553,7 @@ public class Table
 
       if (order != null) select.append("\norder by "+order);
       if (lock && session.isStateful()) select.append("\nfor update");
+      if (locknw && session.isStateful()) select.append("nowait");
 
       boolean savepoint = Config.dbconfig().savepoint(false);
       if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);

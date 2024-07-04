@@ -26,7 +26,6 @@ package jsondb.requests;
 
 import sources.Source;
 import jsondb.Session;
-import jsondb.Session.TransactionLost;
 import sources.Sources;
 import database.Cursor;
 import java.util.HashMap;
@@ -34,6 +33,7 @@ import messages.Messages;
 import database.BindValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import jsondb.Session.TransactionLost;
 
 
 public class Utils

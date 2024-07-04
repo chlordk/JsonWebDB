@@ -29,7 +29,6 @@ import filters.Equals;
 import filters.Custom;
 import filters.NotLike;
 import filters.Between;
-import filters.SubQuery;
 import filters.LessThan;
 import filters.NotEquals;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
 import org.json.JSONObject;
+import filters.MultiFilter;
 import java.util.ArrayList;
 import filters.GreaterThan;
 import java.util.Comparator;
@@ -59,7 +59,7 @@ public abstract class Filter
       ArrayList<String> flts = new ArrayList<String>();
 
       for(String flt : classes.keySet())
-         flts.add(flt.replace("not","not "));
+         flts.add(flt);
 
       flts.sort(new Comparator<String>()
       {
@@ -82,7 +82,7 @@ public abstract class Filter
       new HashMap<String,Class<?>>()
       {{
          put("like",Like.class);
-         put("notlike",NotLike.class);
+         put("not like",NotLike.class);
 
          put("=",Equals.class);
          put("!=",NotEquals.class);
@@ -94,9 +94,14 @@ public abstract class Filter
          put(">=",GreaterThanEquals.class);
 
          put("between",Between.class);
-         put("notbetween",NotBetween.class);
+         put("not between",NotBetween.class);
 
-         put("in",SubQuery.class);
+         put("in",MultiFilter.class);
+         put("not in",MultiFilter.class);
+
+         put("exists",MultiFilter.class);
+         put("not exists",MultiFilter.class);
+
          put("custom",Custom.class);
       }};
 
@@ -154,7 +159,12 @@ public abstract class Filter
    @SuppressWarnings("unchecked")
    public static <T extends Filter> T getInstance(String name, Context context, JSONObject definition) throws Exception
    {
-      Class<?> clazz = classes.get(name.toLowerCase().replaceAll(" ",""));
+      name = name.toLowerCase();
+
+      while (name.indexOf("  ") >= 0)
+         name = name.replaceAll("  "," ");
+
+      Class<?> clazz = classes.get(name);
 
       try
       {

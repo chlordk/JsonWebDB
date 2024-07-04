@@ -185,6 +185,12 @@
                         "description": "Lock rows (select for update)"
                      }
                      ,
+                     "for-update-nowait":
+                     {
+                        "type": "boolean",
+                        "description": "Lock rows, but don't wait if already locked"
+                     }
+                     ,
                      "assertions":
                      {
                         "type": "array",

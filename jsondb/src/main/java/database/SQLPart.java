@@ -175,7 +175,7 @@ public class SQLPart
    public SQLPart clone()
    {
       String sql = this.sql;
-      
+
       ArrayList<BindValue> bindvalues =
          new ArrayList<BindValue>();
 

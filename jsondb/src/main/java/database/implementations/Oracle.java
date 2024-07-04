@@ -40,7 +40,7 @@ public class Oracle extends JdbcInterface
       super(pool);
    }
 
-   
+
    @Override
    public void setProxyUser(Connection conn, String username) throws Exception
    {
