@@ -27,12 +27,14 @@ package filters.definitions;
 import filters.Like;
 import filters.Equals;
 import filters.Custom;
+import filters.IsNull;
 import filters.NotLike;
 import filters.Between;
 import filters.LessThan;
 import filters.NotEquals;
 import java.util.HashMap;
 import messages.Messages;
+import filters.IsNotNull;
 import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
@@ -92,6 +94,9 @@ public abstract class Filter
 
          put(">",GreaterThan.class);
          put(">=",GreaterThanEquals.class);
+
+         put("is null",IsNull.class);
+         put("is not null",IsNotNull.class);
 
          put("between",Between.class);
          put("not between",NotBetween.class);
