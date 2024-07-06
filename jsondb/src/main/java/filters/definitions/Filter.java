@@ -35,6 +35,7 @@ import filters.NotEquals;
 import java.util.HashMap;
 import messages.Messages;
 import filters.IsNotNull;
+import filters.DateRange;
 import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
@@ -43,7 +44,6 @@ import java.util.ArrayList;
 import filters.GreaterThan;
 import java.util.Comparator;
 import filters.LessThanEquals;
-import filters.MultiDateRange;
 import filters.MultiListFilter;
 import filters.GreaterThanEquals;
 import filters.WhereClause.Context;
@@ -108,10 +108,7 @@ public abstract class Filter
          put("exists",MultiListFilter.class);
          put("not exists",MultiListFilter.class);
 
-         put("@day",MultiDateRange.class);
-         put("@week",MultiDateRange.class);
-         put("@month",MultiDateRange.class);
-         put("@year",MultiDateRange.class);
+         put("daterange",DateRange.class);
 
          put("custom",Custom.class);
       }};

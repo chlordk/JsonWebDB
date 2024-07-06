@@ -91,6 +91,12 @@ public class Dates
       if (value == null)
          return(null);
 
+      if (value instanceof Date)
+         return((Date) value);
+
+      if (value instanceof java.sql.Date)
+         return(new Date(((java.sql.Date) value).getTime()));
+
       if (!(value instanceof String))
          throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
 

@@ -27,28 +27,27 @@ package filters;
 import utils.Dates;
 import java.util.Date;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.Instant;
-import java.time.LocalDate;
-
+import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
 import org.json.JSONObject;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import filters.definitions.Filter;
 import filters.WhereClause.Context;
 import java.time.temporal.ChronoUnit;
 
+
 /**
  * This filter handles date-ranges for day, week, month and year
  */
-public class MultiDateRange extends Filter
+public class DateRange extends Filter
 {
-   private final Date date;
-   private final String opr;
+   private final Date fr;
+   private final Date to;
 
-
-   public MultiDateRange(Context context, JSONObject definition) throws Exception
+   public DateRange(Context context, JSONObject definition) throws Exception
    {
       super(context,definition);
 
@@ -57,8 +56,17 @@ public class MultiDateRange extends Filter
       flt = flt.toLowerCase();
       flt = flt.replaceAll(" ","");
 
-      opr = flt;
-      date = Dates.toDate(this.value);
+      if (this.values != null && values.length > 0)
+      {
+         fr = Dates.toDate(this.values[0]);
+         if (this.values.length == 0) to = fr;
+         else to = Dates.toDate(this.values[1]);
+      }
+      else
+      {
+         fr = Dates.toDate(this.value);
+         to = fr;
+      }
    }
 
    @Override
@@ -72,18 +80,24 @@ public class MultiDateRange extends Filter
    {
       if (bindvalues.size() == 0)
       {
-         Date to = null;
-         Date fr = trunc(date);
+         Date fr = trunc(this.fr);
+         Date to = nextDay(this.to);
 
-         switch (opr)
+         String name = column.toLowerCase();
+         DataType coldef = context.datatypes.get(name);
+
+         BindValue bv1 = new BindValue(column);
+         bindvalues.add(bv1.value(fr));
+
+         BindValue bv2 = new BindValue(column);
+         bindvalues.add(bv2.value(to));
+
+         if (coldef != null)
          {
-            case "@day":
-                  to = nextDay(fr);
-               break;
-
-            default:
-               break;
+            bv1.type(coldef.sqlid);
+            bv2.type(coldef.sqlid);
          }
+
       }
 
       return(bindvalues);
