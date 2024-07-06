@@ -39,11 +39,12 @@ import filters.NotBetween;
 import org.json.JSONArray;
 import database.BindValue;
 import org.json.JSONObject;
-import filters.MultiFilter;
 import java.util.ArrayList;
 import filters.GreaterThan;
 import java.util.Comparator;
 import filters.LessThanEquals;
+import filters.MultiDateRange;
+import filters.MultiListFilter;
 import filters.GreaterThanEquals;
 import filters.WhereClause.Context;
 
@@ -101,11 +102,16 @@ public abstract class Filter
          put("between",Between.class);
          put("not between",NotBetween.class);
 
-         put("in",MultiFilter.class);
-         put("not in",MultiFilter.class);
+         put("in",MultiListFilter.class);
+         put("not in",MultiListFilter.class);
 
-         put("exists",MultiFilter.class);
-         put("not exists",MultiFilter.class);
+         put("exists",MultiListFilter.class);
+         put("not exists",MultiListFilter.class);
+
+         put("@day",MultiDateRange.class);
+         put("@week",MultiDateRange.class);
+         put("@month",MultiDateRange.class);
+         put("@year",MultiDateRange.class);
 
          put("custom",Custom.class);
       }};

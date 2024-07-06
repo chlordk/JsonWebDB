@@ -38,14 +38,14 @@ import filters.WhereClause.Context;
 /**
  * This filter handles IN, NOT IN, EXISTS, NOT EXISTS for both lists and subqueries
  */
-public class MultiFilter extends Filter
+public class MultiListFilter extends Filter
 {
    private final String opr;
    private final SQLPart subq;
    private static final String TABLE = Table.class.getSimpleName();
 
 
-   public MultiFilter(Context context, JSONObject definition) throws Exception
+   public MultiListFilter(Context context, JSONObject definition) throws Exception
    {
       super(context,definition);
 
