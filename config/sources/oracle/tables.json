@@ -35,6 +35,11 @@
                "name": "contains",
                "where-clause": "upper(city||' '||street_address) like upper('%'||:location||'%'"
             }
+            ,
+            {
+               "name": "country_name",
+               "where-clause": "country_id in (select country_id from countries where country_name like :country)",
+               "datatypes": [ {"name": "country", "type": "12"} ] }
          ]
          ,
          "insert": "allowed",
