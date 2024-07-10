@@ -39,7 +39,8 @@
             {
                "name": "country_name",
                "where-clause": "country_id in (select country_id from countries where country_name like :country)",
-               "datatypes": [ {"name": "country", "type": "12"} ] }
+               "datatypes": [ {"name": "country", "type": "string"} ] 
+            }
          ]
          ,
          "insert": "allowed",

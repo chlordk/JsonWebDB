@@ -1,0 +1,16 @@
+{
+  "datasources":
+  [
+    {
+      "id": "function-1",
+      "execute": ":lname=getLastName(:fname,:hire_date)"
+      ,
+      "variables":
+      [
+        {"name": "lname", "type": 12, "out": true},
+        {"name": "fname", "type": 12, "out": false},
+        {"name": "hire_date", "type": "date", "out": true}
+      ]
+    }
+  ]
+}

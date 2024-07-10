@@ -1,0 +1,48 @@
+{
+   "datasources":
+   [
+      {
+         "id": "custom-1",
+         "sql": "select * from employees where first_name like '&fname'",
+
+         "datatypes":
+         [
+           {"name": "fname", "type": 12}
+         ]
+      }
+      ,
+      {
+         "id": "custom-2",
+         "sql": "update employees set first_name = :fname where first_name = :fname",
+
+         "datatypes":
+         [
+           {"name": "fname", "type": "string"}
+         ]
+      }
+      ,
+      {
+         "id": "custom-3",
+
+         "update": true,
+         "sql": "create table &table (id int, txt varchar2(20))",
+
+         "datatypes":
+         [
+           {"name": "table", "type": "string"}
+         ]
+      }
+      ,
+      {
+         "id": "custom-4",
+
+         "update": true,
+         "sql": "drop table &table",
+
+         "datatypes":
+         [
+           {"name": "table", "type": "string"}
+         ]
+      }
+   ]
+}
