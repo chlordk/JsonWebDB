@@ -297,6 +297,9 @@ public class Cursor
 
    private void close(boolean delete, boolean remove)
    {
+      if (eof)
+         return;
+
       eof = true;
       inuse = false;
 
