@@ -211,7 +211,6 @@ public class Sources extends Thread
 
          if (file.getName().endsWith(".json"))
          {
-            System.out.println(file);
             FileInputStream in = new FileInputStream(file);
             String content = new String(in.readAllBytes()); in.close();
             JSONObject defs = new JSONObject(content);
