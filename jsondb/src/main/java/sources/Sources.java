@@ -56,7 +56,7 @@ public class Sources extends Thread
    private static final String DBSC = "database";
    private static final String SOURCES = "sources";
    private static final String EXECUTE = "execute";
-   private static final String ENTRIES = "datasources";
+   private static final String ENTRIES = "database";
    private static final String TRIGGER = ".reload.trg";
 
    private static Path path = null;
@@ -91,7 +91,7 @@ public class Sources extends Thread
          File root = new File(path);
          Sources instance = new Sources();
 
-         for(DatabaseType type :  DatabaseType.values())
+         for(DatabaseType type : DatabaseType.values())
          {
             ArrayList<Source> allsrc = new ArrayList<Source>();
             File folder = new File(root,type.name().toLowerCase());
@@ -211,6 +211,7 @@ public class Sources extends Thread
 
          if (file.getName().endsWith(".json"))
          {
+            System.out.println(file);
             FileInputStream in = new FileInputStream(file);
             String content = new String(in.readAllBytes()); in.close();
             JSONObject defs = new JSONObject(content);

@@ -1,5 +1,5 @@
 {
-   "datasources":
+   "database":
    [
       {
          "id": "custom-1",

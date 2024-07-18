@@ -85,4 +85,9 @@ public class SQLSource implements Source
    {
       return(sql.clone());
    }
+
+   public String toString()
+   {
+      return(sid);
+   }
 }

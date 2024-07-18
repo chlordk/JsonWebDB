@@ -120,4 +120,9 @@ public class Function implements Source
    {
       return(upd);
    }
+
+   public String toString()
+   {
+      return(id);
+   }
 }

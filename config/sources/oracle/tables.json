@@ -1,5 +1,5 @@
 {
-   "datasources":
+   "database":
    [
       {
          "id": "Countries",
@@ -39,7 +39,7 @@
             {
                "name": "country_name",
                "where-clause": "country_id in (select country_id from countries where country_name like :country)",
-               "datatypes": [ {"name": "country", "type": "string"} ] 
+               "datatypes": [ {"name": "country", "type": "string"} ]
             }
          ]
          ,
