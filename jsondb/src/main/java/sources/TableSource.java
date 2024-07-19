@@ -179,7 +179,7 @@ public class TableSource implements Source
       {this.primarykey.addAll(columns);}
    }
 
-   public SQLPart from(HashMap<String,BindValue> bindvalues)
+   public SQLPart from(HashMap<String,BindValue> bindvalues) throws Exception
    {
       SQLPart from = new SQLPart();
 
@@ -227,10 +227,13 @@ public class TableSource implements Source
          }
       }
 
-      private SQLPart from(HashMap<String,BindValue> values)
+      private SQLPart from(HashMap<String,BindValue> values) throws Exception
       {
          SQLPart bound = query.clone();
          String alias = object == null ? "t" : object;
+
+         if (bound.bindValues().size() > 0 && values == null)
+            throw new Exception(Messages.get("MISSING_BINDVALUES"));
 
          for(BindValue used : bound.bindValues())
          {

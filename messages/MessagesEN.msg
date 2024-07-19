@@ -25,6 +25,7 @@ CANNOT_REMOVE_CURSOR       = Cursor {%1} already removed
 WHERECLAUSE_OR_START       = Where-Clause starting with 'or' in '{%1}'
 ACCESS_DENIED              = Access to object '{%1}' Denied
 NO_WHERE_CLAUSE            = Where clause is missing, but required
+MISSING_BINDVALUES         = Cannot complete statement because of missing bindvalues
 WHERE_PRIMARY_KEY          = Where clause requires restrictions on primary key '{%1}'
 WRONG_DATA_TYPE            = Wrong datatype, expected '{%1}'
 BAD_FILTER_DEFINITION      = Bad filter definition '{%1}'

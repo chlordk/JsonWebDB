@@ -31,6 +31,7 @@ import jsondb.Response;
 import database.Cursor;
 import database.SQLPart;
 import utils.JSONOObject;
+import messages.Messages;
 import java.util.HashMap;
 import sources.SQLSource;
 import database.BindValue;
@@ -194,10 +195,13 @@ public class SQLStatement
       BindValue used = null;
       JSONObject response = new JSONOObject();
       JSONObject args = Utils.getMethod(definition,SELECT);
-      HashMap<String,BindValue> values = Utils.getBindValues(args);
+      HashMap<String,BindValue> values = Utils.getBindValues(definition);
 
       SQLPart select = source.sql();
       boolean usecurs = source.cursor();
+
+      if (select.bindValues().size() > 0 && values == null)
+         throw new Exception(Messages.get("MISSING_BINDVALUES"));
 
       for(BindValue def : select.bindValues())
       {
@@ -246,10 +250,13 @@ public class SQLStatement
       BindValue used = null;
       JSONObject response = new JSONOObject();
       JSONObject args = Utils.getMethod(definition,method);
-      HashMap<String,BindValue> values = Utils.getBindValues(args);
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
+      HashMap<String,BindValue> values = Utils.getBindValues(definition);
 
       SQLPart sql = source.sql();
+
+      if (sql.bindValues().size() > 0 && values == null)
+         throw new Exception(Messages.get("MISSING_BINDVALUES"));
 
       for(BindValue def : sql.bindValues())
       {
@@ -327,7 +334,10 @@ public class SQLStatement
       SQLPart sql = source.sql();
       JSONObject response = new JSONOObject();
       JSONObject args = Utils.getMethod(definition,EXECUTE);
-      HashMap<String,BindValue> values = Utils.getBindValues(args);
+      HashMap<String,BindValue> values = Utils.getBindValues(definition);
+
+      if (sql.bindValues().size() > 0 && values == null)
+         throw new Exception(Messages.get("MISSING_BINDVALUES"));
 
       for(BindValue def : sql.bindValues())
       {
