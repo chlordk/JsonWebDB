@@ -55,7 +55,6 @@ public class SQLStatement
    private static final String SESSION = "session";
    private static final String PAGESIZE = "page-size";
    private static final String SAVEPOINT = "savepoint";
-   private static final String RETURNING = "returning";
 
 
    public SQLStatement(JSONObject definition) throws Exception
@@ -194,8 +193,12 @@ public class SQLStatement
    {
       BindValue used = null;
       JSONObject response = new JSONOObject();
-      JSONObject args = Utils.getMethod(definition,SELECT);
       HashMap<String,BindValue> values = Utils.getBindValues(definition);
+
+      JSONObject args = null;
+      
+      if (definition.has(SELECT+"()"))
+         args = Utils.getMethod(definition,SELECT);
 
       SQLPart select = source.sql();
       boolean usecurs = source.cursor();
@@ -212,9 +215,11 @@ public class SQLStatement
       select.bindByValue();
 
       boolean savepoint = Config.dbconfig().savepoint(false);
-      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+      if (definition.has(SAVEPOINT)) savepoint = definition.getBoolean(SAVEPOINT);
 
-      Integer pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
+      Integer pagesize = null;
+      if (args != null) pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
+
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint,pagesize);
 
       JSONArray rows = new JSONArray();
@@ -249,7 +254,6 @@ public class SQLStatement
    {
       BindValue used = null;
       JSONObject response = new JSONOObject();
-      JSONObject args = Utils.getMethod(definition,method);
       ArrayList<BindValue> bindvalues = new ArrayList<BindValue>();
       HashMap<String,BindValue> values = Utils.getBindValues(definition);
 
@@ -267,27 +271,10 @@ public class SQLStatement
 
       SQLPart update = new SQLPart(sql.snippet(),bindvalues).bindByValue();
 
-      ArrayList<BindValue> retvals = new ArrayList<BindValue>();
-      String[] returning = Misc.getJSONList(args,RETURNING,String.class);
-
-      if (returning != null)
-      {
-         HashMap<String,Integer> types = new HashMap<String,Integer>();
-         for(BindValue def : update.bindValues()) types.put(def.name(),def.type());
-
-         for (int i = 0; i < returning.length; i++)
-         {
-            BindValue bv = new BindValue(returning[i]);
-            bv.type(types.get((bv.name().toLowerCase())));
-         }
-
-         update.append(retvals);
-      }
-
       boolean savepoint = Config.dbconfig().savepoint(true);
-      if (args.has(SAVEPOINT)) savepoint = args.getBoolean(SAVEPOINT);
+      if (definition.has(SAVEPOINT)) savepoint = definition.getBoolean(SAVEPOINT);
 
-      response = session.executeUpdate(update.snippet(),update.bindValues(),returning,savepoint);
+      response = session.executeUpdate(update.snippet(),update.bindValues(),null,savepoint);
 
       response.put("success",true);
       response.put("session",sessid);
