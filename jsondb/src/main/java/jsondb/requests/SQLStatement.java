@@ -28,6 +28,7 @@ import utils.Misc;
 import jsondb.Config;
 import jsondb.Session;
 import jsondb.Response;
+import database.Column;
 import database.Cursor;
 import database.SQLPart;
 import utils.JSONOObject;
@@ -196,7 +197,7 @@ public class SQLStatement
       HashMap<String,BindValue> values = Utils.getBindValues(definition);
 
       JSONObject args = null;
-      
+
       if (definition.has(SELECT+"()"))
          args = Utils.getMethod(definition,SELECT);
 
@@ -221,6 +222,7 @@ public class SQLStatement
       if (args != null) pagesize = Misc.get(args,PAGESIZE); if (pagesize == null) pagesize = 0;
 
       Cursor cursor = session.executeQuery(select.snippet(),select.bindValues(),savepoint,pagesize);
+      ArrayList<Column> columns = cursor.describe();
 
       JSONArray rows = new JSONArray();
       ArrayList<Object[]> table = cursor.fetch();
@@ -233,6 +235,13 @@ public class SQLStatement
       response.put("success",true);
       response.put("session",sessid);
       response.put("method","select()");
+
+      JSONArray cols = new JSONArray();
+
+      for (int i = 0; i < columns.size(); i++)
+         cols.put(((Column) columns.get(i)).toJSONObject());
+
+      response.put("columns",cols);
 
       if (cursor.next())
       {
