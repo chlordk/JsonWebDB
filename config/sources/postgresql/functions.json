@@ -12,5 +12,17 @@
         {"name": "hire_date", "type": "date", "out": true}
       ]
     }
+    ,
+    {
+      "id": "getSalaryLimit",
+      "execute": "getSalaryLimit(:job,:min,:max)"
+      ,
+      "variables":
+      [
+        {"name": "job", "type": 12},
+        {"name": "min", "type": "int", "out": true},
+        {"name": "max", "type": "int", "out": true}
+      ]
+    }
   ]
 }
