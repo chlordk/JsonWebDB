@@ -20,8 +20,8 @@
       "variables":
       [
         {"name": "job", "type": 12},
-        {"name": "min", "type": "int", "out": true},
-        {"name": "max", "type": "int", "out": true}
+        {"name": "min", "type": "integer", "out": true},
+        {"name": "max", "type": "integer", "out": true}
       ]
     }
   ]
