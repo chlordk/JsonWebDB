@@ -88,6 +88,6 @@ public class SQLSource implements Source
 
    public String toString()
    {
-      return(sid);
+      return(this.getClass().getSimpleName()+": "+sid);
    }
 }

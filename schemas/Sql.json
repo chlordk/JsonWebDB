@@ -65,12 +65,6 @@
                      "type": "boolean",
                      "description": "Use savepoint"
                   }
-                  ,
-                  "returning":
-                  {
-                     "type": "array",
-                     "items": {"type": "string"}
-                  }
                }
             }
             ,
@@ -85,12 +79,6 @@
                   {
                      "type": "boolean",
                      "description": "Use savepoint"
-                  }
-                  ,
-                  "returning":
-                  {
-                     "type": "array",
-                     "items": {"type": "string"}
                   }
                }
             }
@@ -107,12 +95,6 @@
                      "type": "boolean",
                      "description": "Use savepoint"
                   }
-                  ,
-                  "returning":
-                  {
-                     "type": "array",
-                     "items": {"type": "string"}
-                  }
                }
             }
             ,
@@ -123,6 +105,12 @@
 
                "properties":
                {
+                  "cursor":
+                  {
+                     "type": "boolean",
+                     "description": "Keep cursor for subsequent fetch"
+                  }
+                  ,
                   "page-size":
                   {
                      "type": "number",

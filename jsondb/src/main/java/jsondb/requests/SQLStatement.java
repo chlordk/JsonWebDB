@@ -48,6 +48,7 @@ public class SQLStatement
    private final JSONObject definition;
 
    private static final String SOURCE = "source";
+   private static final String CURSOR = "cursor";
    private static final String INSERT = "insert";
    private static final String UPDATE = "update";
    private static final String DELETE = "delete";
@@ -202,7 +203,9 @@ public class SQLStatement
          args = Utils.getMethod(definition,SELECT);
 
       SQLPart select = source.sql();
-      boolean usecurs = source.cursor();
+
+      Boolean usecurs = Misc.get(args,CURSOR);
+      if (usecurs == null) usecurs = true;
 
       if (select.bindValues().size() > 0 && values == null)
          throw new Exception(Messages.get("MISSING_BINDVALUES"));

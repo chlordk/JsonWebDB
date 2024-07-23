@@ -123,6 +123,6 @@ public class Function implements Source
 
    public String toString()
    {
-      return(id);
+      return(this.getClass().getSimpleName()+": "+id);
    }
 }
