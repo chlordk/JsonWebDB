@@ -30,6 +30,7 @@ import database.Cursor;
 import java.util.HashMap;
 import utils.JSONOObject;
 import messages.Messages;
+import database.SQLTypes;
 import database.BindValue;
 import org.json.JSONArray;
 import java.util.ArrayList;
@@ -569,9 +570,13 @@ public class Session
       JdbcInterface conn = ensure(write);
       JSONObject response = new JSONOObject();
       ArrayList<NameValuePair<Object>> resp = null;
+      ArrayList<BindValue> outvals = new ArrayList<BindValue>();
 
       for(BindValue bv : bindvalues)
+      {
          bv.validate();
+         if (bv.out()) outvals.add(bv);
+      }
 
       resp = conn.executeCall(sql,bindvalues,savepoint);
 
@@ -587,8 +592,18 @@ public class Session
          connused = new Date();
       }
 
+      int pos = 0;
       for(NameValuePair<Object> nvp : resp)
-         response.put(nvp.name(),nvp.value());
+      {
+         JSONObject retval = new JSONObject();
+         Integer sqltype = outvals.get(pos++).type();
+
+         retval.put("type",SQLTypes.getType(sqltype));
+         retval.put("sqltype",sqltype);
+
+         retval.put("value",nvp.value());
+         response.put(nvp.name(),retval);
+      }
 
       return(response);
    }
