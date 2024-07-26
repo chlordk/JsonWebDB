@@ -43,6 +43,7 @@ public class Function
    private static final String SOURCE = "source";
    private static final String SESSION = "session";
    private static final String EXECUTE = "execute";
+   private static final String RETURNS = "returns";
    private static final String SAVEPOINT = "savepoint";
 
 
@@ -100,6 +101,9 @@ public class Function
       response.put("success",true);
       response.put("session",sessid);
       response.put("method","execute()");
+
+      if (source.returns())
+         response.put(RETURNS,call.bindValues().get(0).name());
 
       return(new Response(response));
    }

@@ -593,17 +593,22 @@ public class Session
       }
 
       int pos = 0;
+      JSONArray returning = new JSONArray();
+
       for(NameValuePair<Object> nvp : resp)
       {
          JSONObject retval = new JSONObject();
          Integer sqltype = outvals.get(pos++).type();
 
+         retval.put("name",nvp.name());
          retval.put("type",SQLTypes.getType(sqltype));
          retval.put("sqltype",sqltype);
 
          retval.put("value",nvp.value());
-         response.put(nvp.name(),retval);
+         returning.put(retval);
       }
+
+      response.put("values",returning);
 
       return(response);
    }

@@ -65,7 +65,7 @@
    "session":
    {
 		"session-timeout": 600,
-		"connection-timeout": 60,
+		"connection-timeout": 300,
 		"transaction-timeout": 30
    }
 	,
