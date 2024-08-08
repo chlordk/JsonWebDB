@@ -157,6 +157,18 @@ public class JsonDB
    public Response execute(JSONObject request) throws Exception
    {
       dbreqs.incrementAndGet();
+
+      if (!Config.application().accept(request))
+      {
+         Response response = new Response();
+         response.put("success",false);
+         response.put("rejected",true);
+         log(request,response); return(response);
+      }
+
+      JSONObject mod = Config.application().rewrite(request);
+      if (mod != null) request = mod;
+
       Response response = RequestHandler.handle(request);
 
       if (!response.payload().has("instance"))

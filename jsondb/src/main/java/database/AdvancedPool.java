@@ -70,8 +70,8 @@ public class AdvancedPool implements database.definitions.AdvancedPool
       sec.setPassword(pwd);
       sec.setValidationQuery(sql);
 
-      getCommonProps(prmdef,prm);
-      getCommonProps(secdef,sec);
+      if (prmdef != null) getCommonProps(prmdef,prm);
+      if (secdef != null) getCommonProps(secdef,sec);
 
       if (def.has(DRIVER))
       {

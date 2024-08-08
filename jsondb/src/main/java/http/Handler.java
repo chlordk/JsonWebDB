@@ -53,6 +53,16 @@ public class Handler implements HttpHandler
    @Override
    public void handle(HttpExchange exchange) throws IOException
    {
+      try
+      {
+         if (Config.application().intercept(exchange))
+            return;
+      }
+      catch (Exception e)
+      {
+         throw new IOException(e);
+      }
+
       String meth = exchange.getRequestMethod();
 
       if (meth.equals("GET"))

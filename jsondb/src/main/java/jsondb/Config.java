@@ -35,6 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import static utils.Misc.*;
 import org.json.JSONTokener;
+
+import application.Application;
+
 import java.net.InetAddress;
 import state.StatePersistency;
 import database.JdbcInterface;
@@ -46,6 +49,7 @@ import database.implementations.DatabaseType;
 
 public class Config
 {
+   private static final String ACLZ = "class";
    private static final String CONF = "config";
    private static final String SESS = "session";
    private static final String PATH = "location";
@@ -78,6 +82,7 @@ public class Config
    private static String inst = null;
    private static String appl = null;
    private static String endp = null;
+   private static String aclz = null;
 
    private static Logger logger = null;
    private static JSONObject config = null;
@@ -85,6 +90,7 @@ public class Config
 
    private static String root = null;
    private static AdvancedPool pool = null;
+   private static Application appclz = null;
    private static DataBaseConfig dbconf = null;
 
 
@@ -149,6 +155,9 @@ public class Config
       if (dbsc.has(POOLPROPS))
          pool = dbsc.getJSONObject(POOLPROPS);
 
+      Object aclz = get(get(APPL),ACLZ);
+      if (aclz instanceof String) Config.aclz = get(get(APPL),ACLZ);
+
       Config.dbconf = new DataBaseConfig(dbsc);
       if (pool != null) Config.pool = new database.AdvancedPool(pool);
    }
@@ -165,6 +174,11 @@ public class Config
       StatePersistency.initialize();
 
       Monitor.monitor();
+
+      if (aclz == null) appclz = new Application();
+      else appclz = (Application) Class.forName(aclz).getConstructor().newInstance();
+
+      appclz.init();
    }
 
    /** Installation root */
@@ -233,10 +247,16 @@ public class Config
       return(instance);
    }
 
-   /** The databse config */
+   /** The database config */
    public static DataBaseConfig dbconfig()
    {
       return(dbconf);
+   }
+
+   /** The application interceptor */
+   public static Application application()
+   {
+      return(appclz);
    }
 
    /** The config json */
@@ -292,6 +312,16 @@ public class Config
       {
          for (int i = 0; i < parts.length; i++)
             path += File.separator + parts[i];
+      }
+
+      String escape = "\\";
+      if (File.separator.equals(escape))
+      {
+        // Windows
+        if (path.startsWith("/") && path.charAt(2) == ':')
+          path = path.substring(1);
+
+        path = path.replaceAll("/",escape+File.separator);
       }
 
       return(path);

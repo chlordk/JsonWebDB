@@ -54,6 +54,16 @@ public class JsonWebDB extends HttpServlet
 
    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
+      try
+      {
+         if (Config.application().intercept(request,response))
+            return;
+      }
+      catch (Exception e)
+      {
+         throw new IOException(e);
+      }
+
       try {jsonwebdb(request,response);}
       catch (Exception e) {throw new ServletException(e);}
    }

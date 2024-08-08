@@ -24,5 +24,16 @@
         {"name": "max", "type": "integer", "out": true}
       ]
     }
+    ,
+    {
+      "id": "getHireDate",
+      "execute": ":hiredate = getHireDate(:empid)"
+      ,
+      "variables":
+      [
+        {"name": "empid", "type": "integer", "out": true},
+        {"name": "hiredate", "type": "date", "out": true}
+      ]
+    }
   ]
 }

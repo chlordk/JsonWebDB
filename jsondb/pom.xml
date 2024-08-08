@@ -25,6 +25,12 @@
       <artifactId>postgresql</artifactId>
       <version>42.7.3</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-servlet-api</artifactId>
+      <version>9.0.17</version>
+    </dependency>
 
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
