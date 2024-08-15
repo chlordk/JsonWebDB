@@ -119,7 +119,7 @@ public class AdvancedPool implements database.definitions.AdvancedPool
    {
       try
       {
-         String url = secondary.getUrl();
+         String url = secondary() ? secondary.getUrl() : primary.getUrl();
          Connection conn = DriverManager.getConnection(url,username,password);
          conn.close();
       }
