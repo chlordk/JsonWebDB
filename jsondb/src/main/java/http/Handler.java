@@ -28,6 +28,7 @@ import jsondb.JsonDB;
 import jsondb.Config;
 import java.util.List;
 import jsondb.Response;
+import multipart.Multipart;
 import files.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,6 +136,17 @@ public class Handler implements HttpHandler
 
       InputStream in = exchange.getRequestBody();
       OutputStream out = exchange.getResponseBody();
+
+      String ctype = exchange.getRequestHeaders().getFirst("Content-Type");
+
+      if (ctype.startsWith("multipart/form-data"))
+      {
+         byte[] content = in.readAllBytes();
+         Multipart upload = new Multipart(ctype,content);
+         upload.parse(); in.close();
+         return;
+      }
+
       String request = new String(in.readAllBytes());
 
       try
@@ -147,6 +159,7 @@ public class Handler implements HttpHandler
 
          out.write(content);
 
+         in.close();
          out.flush();
          out.close();
       }
