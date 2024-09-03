@@ -28,6 +28,7 @@ import http.Admin;
 import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
+import multipart.Multipart;
 import http.HTTPConfig;
 import http.AdminResponse;
 import files.FileResponse;
@@ -135,6 +136,20 @@ public class JsonWebDB extends HttpServlet
 
       if (meth.equals("POST"))
       {
+         String ctype = request.getContentType();
+
+         if (ctype.startsWith("multipart/form-data"))
+         {
+            InputStream in = request.getInputStream();
+            byte[] content = in.readAllBytes(); in.close();
+            Multipart upload = new Multipart(ctype,content);
+
+            try {Config.application().upload(request,response,upload);}
+            catch (Exception e) {throw new IOException(e);}
+
+            return;
+         }
+
          try
          {
             String body = getBody(request);

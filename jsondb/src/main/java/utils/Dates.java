@@ -45,6 +45,7 @@ public class Dates
 
    public static String toString(Date date)
    {
+      if (date == null) return(null);
       Instant time = date.toInstant();
       ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
       return(utc.format(formatter));
@@ -53,6 +54,7 @@ public class Dates
 
    public static String toString(Timestamp sqldate)
    {
+      if (sqldate == null) return(null);
       Date date = new Date(sqldate.getTime());
       Instant time = date.toInstant();
       ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
@@ -62,6 +64,7 @@ public class Dates
 
    public static String toString(java.sql.Date sqldate)
    {
+      if (sqldate == null) return(null);
       Date date = new Date(sqldate.getTime());
       Instant time = date.toInstant();
       ZonedDateTime utc = ZonedDateTime.ofInstant(time,UTC);
@@ -71,6 +74,9 @@ public class Dates
 
    public static String toString(Object value) throws Exception
    {
+      if (value == null)
+         return(null);
+
       if (value instanceof java.sql.Date)
          return(Dates.toString((java.sql.Date) value));
 

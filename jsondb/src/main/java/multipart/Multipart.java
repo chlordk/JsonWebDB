@@ -41,10 +41,17 @@ public class Multipart
       this.content = content;
       int pos = ctype.indexOf("boundary=");
       this.boundary = ("--"+ctype.substring(pos+9)).getBytes();
+      parse();
    }
 
 
-   public void parse()
+   public ArrayList<Field> fields()
+   {
+      return(entries);
+   }
+
+
+   void parse()
    {
       int next = 0;
       byte[] eoh = "\r\n\r\n".getBytes();

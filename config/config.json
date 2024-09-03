@@ -113,7 +113,7 @@
 				"max-wait": 10,
 				"validate": 30,
 
-				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=JsonWebDB"
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
 			}
 			,
 			"secondary":
@@ -124,7 +124,7 @@
 				"max-wait": 10,
 				"validate": 30,
 
-				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=JsonWebDB"
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
 			}
 		}
    }

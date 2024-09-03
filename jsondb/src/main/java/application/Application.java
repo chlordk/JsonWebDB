@@ -26,6 +26,7 @@ package application;
 
 import jsondb.Config;
 import jsondb.JsonDB;
+import multipart.Multipart;
 import org.json.JSONObject;
 import java.util.logging.Logger;
 import com.sun.net.httpserver.HttpExchange;
@@ -53,6 +54,18 @@ public class Application
    public boolean intercept(HttpServletRequest request, HttpServletResponse response) throws Exception
    {
       return(false);
+   }
+
+
+   public void upload(HttpExchange exchange, Multipart upload) throws Exception
+   {
+      this.logger.info("Upload from micro-service");
+   }
+
+
+   public void upload(HttpServletRequest request, HttpServletResponse response, Multipart upload) throws Exception
+   {
+      this.logger.info("Upload from servlet");
    }
 
 

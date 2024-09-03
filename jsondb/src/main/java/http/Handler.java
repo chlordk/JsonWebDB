@@ -141,9 +141,12 @@ public class Handler implements HttpHandler
 
       if (ctype.startsWith("multipart/form-data"))
       {
-         byte[] content = in.readAllBytes();
+         byte[] content = in.readAllBytes(); in.close();
          Multipart upload = new Multipart(ctype,content);
-         upload.parse(); in.close();
+
+         try {Config.application().upload(exchange,upload);}
+         catch (Exception e) {throw new IOException(e);}
+
          return;
       }
 
