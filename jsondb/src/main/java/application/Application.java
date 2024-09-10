@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Application
 {
-   JsonDB jsondb = new JsonDB();
-   Logger logger = Config.logger();
+   public final JsonDB jsondb = new JsonDB();
+   public final Logger logger = Config.logger();
 
 
    public boolean intercept(HttpExchange exchange) throws Exception
@@ -71,5 +71,11 @@ public class Application
    public JSONObject rewrite(JSONObject request) throws Exception
    {
       return(request);
+   }
+
+
+   public JSONObject override(JSONObject request) throws Exception
+   {
+      return(null);
    }
 }

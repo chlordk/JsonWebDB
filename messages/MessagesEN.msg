@@ -1,4 +1,5 @@
 EMPTY_REQUEST              = Empty request
+MISSING_INVOKE             = Keyword "invoke" missing
 INVALID_REQUEST            = Invalid request : \n\n {%1}
 INVALID_SYNTAX             = Invalid syntax '{%1}'
 UNKNOWN_REQUEST_TYPE       = Unknown request Type : '{%1}'

@@ -157,11 +157,12 @@ public class JsonDB
     */
    public Response execute(Application appl, JSONObject request) throws Exception
    {
+      Response response = null;
       dbreqs.incrementAndGet();
 
       if (appl != null && !appl.accept(request))
       {
-         Response response = new Response();
+         response = new Response();
          response.put("success",false);
          response.put("rejected",true);
          log(request,response); return(response);
@@ -171,9 +172,13 @@ public class JsonDB
       {
          JSONObject mod = appl.rewrite(request);
          if (mod != null) request = mod;
+
+         JSONObject repl = appl.override(request);
+         if (repl != null) response = new Response(repl);
       }
 
-      Response response = RequestHandler.handle(request);
+      if (response == null)
+         response = RequestHandler.handle(request);
 
       if (!response.payload().has("instance"))
          response.put("instance",instance).put("version",version);

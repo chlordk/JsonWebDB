@@ -2,7 +2,7 @@
    "application":
    {
 		"index": "index.html",
-		"class": "application.Application",
+		"class": "backend.Application",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
 		"location": "/Users/alhof/Repository/forms30/test-core/dist"
 		,

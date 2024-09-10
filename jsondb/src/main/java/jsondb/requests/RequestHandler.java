@@ -49,19 +49,34 @@ public class RequestHandler
       }};
 
 
-   public static Response handle(JSONObject request) throws Exception
+   public static Response handle(JSONObject request)
    {
       return(handle(request,null));
    }
 
 
-   public static Response handle(JSONObject request, Integer methno) throws Exception
+   public static Response handle(JSONObject request, Integer methno)
    {
       String invk = null;
 
+      String[] methods = new String[0];
       String names[] = JSONObject.getNames(request);
       JSONObject payload = request.getJSONObject(names[0]);
-      String[] methods = Misc.getStringArray(payload,"invoke",true);
+
+      try
+      {
+         methods = Misc.getStringArray(payload,"invoke",true);
+      }
+      catch (Exception e)
+      {
+         String msg = Messages.get("MISSING_INVOKE");
+         Exception ex = new Exception(msg);
+
+         Response response = new Response().exception(ex);
+         Config.logger().log(Level.WARNING,msg,ex);
+
+         return(response);
+      }
 
       if (methno == null && methods.length == 1)
          methno = 0;
