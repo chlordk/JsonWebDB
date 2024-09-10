@@ -33,6 +33,7 @@ import files.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import application.Application;
 import java.util.logging.Level;
 import http.AdminResponse.Header;
 import com.sun.net.httpserver.HttpHandler;
@@ -54,9 +55,14 @@ public class Handler implements HttpHandler
    @Override
    public void handle(HttpExchange exchange) throws IOException
    {
+      Application appl = null;
+
+      try {appl = Config.application();}
+      catch (Exception e) {throw new IOException(e);}
+
       try
       {
-         if (Config.application().intercept(exchange))
+         if (appl != null && appl.intercept(exchange))
             return;
       }
       catch (Exception e)
@@ -74,7 +80,7 @@ public class Handler implements HttpHandler
 
       if (meth.equals("POST"))
       {
-         doPost(exchange);
+         doPost(appl,exchange);
          return;
       }
    }
@@ -130,7 +136,7 @@ public class Handler implements HttpHandler
    }
 
 
-   public void doPost(HttpExchange exchange) throws IOException
+   public void doPost(Application appl, HttpExchange exchange) throws IOException
    {
       JsonDB jsondb = new JsonDB();
 
@@ -141,11 +147,14 @@ public class Handler implements HttpHandler
 
       if (ctype.startsWith("multipart/form-data"))
       {
-         byte[] content = in.readAllBytes(); in.close();
-         Multipart upload = new Multipart(ctype,content);
+         if (appl != null)
+         {
+            byte[] content = in.readAllBytes(); in.close();
+            Multipart upload = new Multipart(ctype,content);
 
-         try {Config.application().upload(exchange,upload);}
-         catch (Exception e) {throw new IOException(e);}
+            try {appl.upload(exchange,upload);}
+               catch (Exception e) {throw new IOException(e);}
+         }
 
          return;
       }
@@ -154,7 +163,7 @@ public class Handler implements HttpHandler
 
       try
       {
-         Response response = jsondb.execute(request);
+         Response response = jsondb.execute(appl,request);
          byte[] content = response.toString(2).getBytes();
 
          exchange.getResponseHeaders().set("Content-Type",Handler.JSONType);

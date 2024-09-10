@@ -2,9 +2,9 @@
    "application":
    {
 		"index": "index.html",
-		"class": null,
+		"class": "application.Application",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-		"location": "/Users/alhof/Repository/forms30/test/dist"
+		"location": "/Users/alhof/Repository/forms30/test-core/dist"
 		,
 		"admin":
 		{

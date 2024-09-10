@@ -40,11 +40,6 @@ public class Application
    Logger logger = Config.logger();
 
 
-   public void init()
-   {
-   }
-
-
    public boolean intercept(HttpExchange exchange) throws Exception
    {
       return(false);
@@ -59,13 +54,11 @@ public class Application
 
    public void upload(HttpExchange exchange, Multipart upload) throws Exception
    {
-      this.logger.info("Upload from micro-service");
    }
 
 
    public void upload(HttpServletRequest request, HttpServletResponse response, Multipart upload) throws Exception
    {
-      this.logger.info("Upload from servlet");
    }
 
 

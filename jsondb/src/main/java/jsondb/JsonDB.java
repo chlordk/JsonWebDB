@@ -30,6 +30,7 @@ import utils.JSONOObject;
 import files.FileResponse;
 import org.json.JSONObject;
 import static jsondb.Version.*;
+import application.Application;
 import jsondb.requests.RequestHandler;
 import database.definitions.AdvancedPool;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -142,9 +143,9 @@ public class JsonDB
     * @return response
     * @throws Exception
     */
-   public Response execute(String request) throws Exception
+   public Response execute(Application appl, String request) throws Exception
    {
-      return(execute(new JSONOObject(request)));
+      return(execute(appl, new JSONOObject(request)));
    }
 
 
@@ -154,11 +155,11 @@ public class JsonDB
     * @return the response
     * @throws Exception
     */
-   public Response execute(JSONObject request) throws Exception
+   public Response execute(Application appl, JSONObject request) throws Exception
    {
       dbreqs.incrementAndGet();
 
-      if (!Config.application().accept(request))
+      if (appl != null && !appl.accept(request))
       {
          Response response = new Response();
          response.put("success",false);
@@ -166,8 +167,11 @@ public class JsonDB
          log(request,response); return(response);
       }
 
-      JSONObject mod = Config.application().rewrite(request);
-      if (mod != null) request = mod;
+      if (appl != null)
+      {
+         JSONObject mod = appl.rewrite(request);
+         if (mod != null) request = mod;
+      }
 
       Response response = RequestHandler.handle(request);
 

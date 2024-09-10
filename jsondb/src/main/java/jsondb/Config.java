@@ -35,14 +35,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import static utils.Misc.*;
 import org.json.JSONTokener;
-
-import application.Application;
-
 import java.net.InetAddress;
 import state.StatePersistency;
 import database.JdbcInterface;
+import application.Application;
 import java.io.FileInputStream;
 import java.util.logging.Logger;
+import java.lang.reflect.Constructor;
 import database.definitions.AdvancedPool;
 import database.implementations.DatabaseType;
 
@@ -90,8 +89,8 @@ public class Config
 
    private static String root = null;
    private static AdvancedPool pool = null;
-   private static Application appclz = null;
    private static DataBaseConfig dbconf = null;
+   private static Constructor<Application> appcons = null;
 
 
    /**
@@ -175,10 +174,11 @@ public class Config
 
       Monitor.monitor();
 
-      if (aclz == null) appclz = new Application();
-      else appclz = (Application) Class.forName(aclz).getConstructor().newInstance();
+      if (aclz != null)
+         appcons = Class.forName(aclz).getConstructor();
 
-      appclz.init();
+      if (aclz != null)
+         logger().info("Application class "+aclz);
    }
 
    /** Installation root */
@@ -254,9 +254,10 @@ public class Config
    }
 
    /** The application interceptor */
-   public static Application application()
+   public static Application application() throws Exception
    {
-      return(appclz);
+      if (appcons == null) return(null);
+      else return((Application) appcons.newInstance());
    }
 
    /** The config json */

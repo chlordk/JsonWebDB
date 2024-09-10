@@ -28,14 +28,15 @@ import http.Admin;
 import jsondb.Config;
 import jsondb.JsonDB;
 import jsondb.Response;
-import multipart.Multipart;
 import http.HTTPConfig;
 import http.AdminResponse;
 import files.FileResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import multipart.Multipart;
 import java.io.OutputStream;
 import java.util.logging.Level;
+import application.Application;
 import http.AdminResponse.Header;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -55,9 +56,14 @@ public class JsonWebDB extends HttpServlet
 
    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
+      Application appl = null;
+
+      try {appl = Config.application();}
+      catch (Exception e) {throw new IOException(e);}
+
       try
       {
-         if (Config.application().intercept(request,response))
+         if (appl != null && appl.intercept(request,response))
             return;
       }
       catch (Exception e)
@@ -65,7 +71,7 @@ public class JsonWebDB extends HttpServlet
          throw new IOException(e);
       }
 
-      try {jsonwebdb(request,response);}
+      try {jsonwebdb(appl,request,response);}
       catch (Exception e) {throw new ServletException(e);}
    }
 
@@ -83,7 +89,7 @@ public class JsonWebDB extends HttpServlet
    }
 
 
-   public void jsonwebdb(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+   public void jsonwebdb(Application appl, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
       JsonDB jsondb = new JsonDB();
       String meth = request.getMethod();
@@ -140,12 +146,15 @@ public class JsonWebDB extends HttpServlet
 
          if (ctype.startsWith("multipart/form-data"))
          {
-            InputStream in = request.getInputStream();
-            byte[] content = in.readAllBytes(); in.close();
-            Multipart upload = new Multipart(ctype,content);
+            if (appl != null)
+            {
+               InputStream in = request.getInputStream();
+               byte[] content = in.readAllBytes(); in.close();
+               Multipart upload = new Multipart(ctype,content);
 
-            try {Config.application().upload(request,response,upload);}
-            catch (Exception e) {throw new IOException(e);}
+               try {Config.application().upload(request,response,upload);}
+               catch (Exception e) {throw new IOException(e);}
+            }
 
             return;
          }
@@ -153,7 +162,7 @@ public class JsonWebDB extends HttpServlet
          try
          {
             String body = getBody(request);
-            Response json = jsondb.execute(body);
+            Response json = jsondb.execute(appl,body);
 
             response.setContentType(JSONType);
             OutputStream out = response.getOutputStream();
