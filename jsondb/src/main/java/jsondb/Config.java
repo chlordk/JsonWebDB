@@ -90,7 +90,7 @@ public class Config
    private static String root = null;
    private static AdvancedPool pool = null;
    private static DataBaseConfig dbconf = null;
-   private static Constructor<Application> appcons = null;
+   private static Constructor<?> appcons = null;
 
 
    /**
