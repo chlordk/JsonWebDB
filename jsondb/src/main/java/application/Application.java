@@ -52,6 +52,12 @@ public class Application
    }
 
 
+   public JSONObject intercept(JSONObject request) throws Exception
+   {
+      return(null);
+   }
+
+
    public void upload(HttpExchange exchange, Multipart upload) throws Exception
    {
    }
@@ -71,11 +77,5 @@ public class Application
    public JSONObject rewrite(JSONObject request) throws Exception
    {
       return(request);
-   }
-
-
-   public JSONObject override(JSONObject request) throws Exception
-   {
-      return(null);
    }
 }

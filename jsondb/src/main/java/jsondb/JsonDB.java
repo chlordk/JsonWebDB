@@ -173,7 +173,7 @@ public class JsonDB
          JSONObject mod = appl.rewrite(request);
          if (mod != null) request = mod;
 
-         JSONObject repl = appl.override(request);
+         JSONObject repl = appl.intercept(request);
          if (repl != null) response = new Response(repl);
       }
 
