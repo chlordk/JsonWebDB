@@ -4,7 +4,7 @@
 		"index": "index.html",
 		"class": "backend.Application",
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-		"location": "/Users/alhof/Repository/forms30/test-core/dist"
+		"location": "/Users/alhof/Repository/forms30/test-full/dist"
 		,
 		"admin":
 		{

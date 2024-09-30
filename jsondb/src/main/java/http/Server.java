@@ -179,6 +179,7 @@ public class Server
       catch (Exception e)
       {
          System.err.println("'"+Config.inst()+"' is not running");
+         System.exit(-1);
       }
    }
 
