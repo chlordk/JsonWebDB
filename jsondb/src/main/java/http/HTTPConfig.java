@@ -85,7 +85,7 @@ public class HTTPConfig
 
       JSONArray arr = Config.get(http,VIRT);
 
-      for (int i = 0; i < arr.length(); i++)
+      for (int i = 0; arr != null && i < arr.length(); i++)
       {
          JSONObject def = arr.getJSONObject(i);
          virtual.add(new VirtualPath(def.getString(PATH),def.getString(PAGE)));
