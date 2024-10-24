@@ -25,13 +25,10 @@ SOFTWARE.
 package utils;
 
 import java.util.Date;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import messages.Messages;
 import java.time.Instant;
 import java.sql.Timestamp;
+import org.json.JSONObject;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.text.SimpleDateFormat;
