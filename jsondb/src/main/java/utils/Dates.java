@@ -25,6 +25,10 @@ SOFTWARE.
 package utils;
 
 import java.util.Date;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import messages.Messages;
 import java.time.Instant;
 import java.sql.Timestamp;
@@ -86,7 +90,7 @@ public class Dates
       if (value instanceof Timestamp)
         return(Dates.toString((Timestamp) value));
 
-      throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
+      throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName(),value));
    }
 
 
@@ -103,8 +107,14 @@ public class Dates
       if (value instanceof java.sql.Date)
          return(new Date(((java.sql.Date) value).getTime()));
 
+		if (value instanceof JSONOObject)
+		{
+			if (((JSONObject) value) == JSONObject.NULL)
+	         return(null);
+		}
+
       if (!(value instanceof String))
-         throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName()));
+         throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName(),value));
 
       String date = value.toString();
 
