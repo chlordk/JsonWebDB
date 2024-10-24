@@ -356,6 +356,9 @@ public class TableSource implements Source
       {
          SQLPart bound = filter.clone();
 
+			if (values == null)
+				values = new HashMap<String,BindValue>();
+
          for(BindValue used : bound.bindValues())
          {
             BindValue bv = values.get(used.name());
