@@ -56,6 +56,9 @@ public class BindValue
       bv.name        = json.getString("name");
       bv.ampersand   = json.getBoolean("ampersand");
 
+		if (bv.value == JSONObject.NULL)
+			bv.value = null;
+
       if (SQLTypes.getType(bv.type).indexOf("DATE") >= 0)
          bv.value = new Date((long) bv.value);
 
@@ -142,6 +145,9 @@ public class BindValue
 
    public BindValue value(Object value)
    {
+		if (value == JSONObject.NULL)
+			value = null;
+
       this.value = value;
       return(this);
    }

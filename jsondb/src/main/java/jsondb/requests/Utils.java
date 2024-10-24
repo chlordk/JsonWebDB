@@ -102,9 +102,6 @@ public class Utils
          String name = bdef.getString(NAME);
          Object value = bdef.get(VALUE);
 
-         if (value == JSONObject.NULL)
-            value = null;
-
          bindvalues.put(name.toLowerCase(),new BindValue(name).value(value));
       }
 

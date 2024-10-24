@@ -28,7 +28,6 @@ import java.util.Date;
 import messages.Messages;
 import java.time.Instant;
 import java.sql.Timestamp;
-import org.json.JSONObject;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.text.SimpleDateFormat;
@@ -103,12 +102,6 @@ public class Dates
 
       if (value instanceof java.sql.Date)
          return(new Date(((java.sql.Date) value).getTime()));
-
-		if (value instanceof JSONOObject)
-		{
-			if (((JSONObject) value) == JSONObject.NULL)
-	         return(null);
-		}
 
       if (!(value instanceof String))
          throw new Exception(Messages.get("CANNOT_CONVERT_DATE",value.getClass().getSimpleName(),value));
