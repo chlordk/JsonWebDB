@@ -61,6 +61,7 @@ public class Session
 
    public Response connect() throws Exception
    {
+		String username = null;
       String password = null;
       String signature = null;
       boolean stateful = false;
@@ -70,7 +71,7 @@ public class Session
 
       JSONObject response = new JSONOObject();
 
-      String username = Config.dbconfig().defaultuser();
+      String defuser = Config.dbconfig().defaultuser();
       JSONObject data = Utils.getMethod(definition,CONNPROPS);
 
       if (data.has(USERNAME))
@@ -123,7 +124,8 @@ public class Session
       if (signature != null) data.put(SIGNATURE,"********");
 
       boolean authenticated = false;
-      jsondb.Session session = jsondb.Session.create(username,stateful);
+		String usr = username != null ? username : defuser;
+      jsondb.Session session = jsondb.Session.create(usr,stateful);
 
       if (vpdinfo != null && vpdinfo.size() > 0) session.setVPDInfo(vpdinfo);
       if (coninfo != null && coninfo.size() > 0) session.setClientInfo(coninfo);
@@ -134,6 +136,13 @@ public class Session
          response.put("method","connect()");
          response.put("session",session.guid());
          response.put("timeout",Config.sesTimeout());
+
+			if (username == null && defuser != null)
+			{
+				authenticated = true;
+			}
+
+			else
 
          if (signature != null)
          {

@@ -24,6 +24,7 @@ SOFTWARE.
 
 package jsondb;
 
+import utils.Misc;
 import state.State;
 import java.io.File;
 import http.HTTPConfig;
@@ -420,7 +421,7 @@ public class Config
       {
          this.useproxy = def.getBoolean(USEPROXY);
          this.replatency = def.optInt(REPLATENCY);
-         this.defaultuser = def.optString(DEFUSER);
+         this.defaultuser = Misc.get(def,DEFUSER);
          this.pkeysource = def.getString(PKEYSOURCE);
          this.dbtype = DatabaseType.getType(def.getString(DBTYPE));
          this.savepoint = this.savepoint(getStringArray(def,SAVEPOINT));

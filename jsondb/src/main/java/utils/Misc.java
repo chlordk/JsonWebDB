@@ -191,7 +191,12 @@ public class Misc
          return(null);
       }
 
-      return((T) def.get(attr));
+		Object value = def.get(attr);
+
+		if (value == JSONObject.NULL)
+         return(null);
+
+      return((T) value);
    }
 
 
