@@ -404,12 +404,6 @@ public class Session
       if (idle >= 0 && curr - used < idle)
          return(false);
 
-		if (!State.removeSession(guid))
-		{
-			Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
-			return(false);
-		}
-
       for (Cursor cursor : cursors)
          cursor.offline();
 

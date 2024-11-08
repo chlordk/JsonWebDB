@@ -93,7 +93,7 @@ public class Monitor extends Thread
 
          if (trx && (now - lastTrxUsed.getTime() > trxtmout))
          {
-            Config.logger().info("rollback "+session.guid());
+            Config.logger().info("rollback session "+session.guid());
             session = Session.get(session.guid(),true);
 
             if (session != null)
@@ -105,7 +105,7 @@ public class Monitor extends Thread
 
          if (con && (now - lastConnUsed.getTime() > contmout))
          {
-            Config.logger().info("release "+session.guid());
+            Config.logger().info("release connection "+session.guid());
             session = Session.get(session.guid(),true);
 
             if (session != null)
@@ -117,7 +117,7 @@ public class Monitor extends Thread
 
          if (now - lastUsed.getTime() > sestmout)
          {
-            Config.logger().info("remove "+session.guid());
+            Config.logger().info("remove session "+session.guid());
             session = Session.get(session.guid(),true);
 
             if (session != null)
