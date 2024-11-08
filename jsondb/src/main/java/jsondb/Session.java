@@ -395,20 +395,20 @@ public class Session
    {
       ArrayList<Cursor> cursors = State.getAllCursors(guid);
 
-      if (!State.removeSession(guid))
-      {
-         Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
-         return(false);
-      }
-
       long used = lastUsed().getTime();
       long curr = (new Date()).getTime();
 
       if (this.trxused != null)
          return(false);
 
-      if (idle >= 0 && curr - used < idle*1000)
+      if (idle >= 0 && curr - used < idle)
          return(false);
+
+		if (!State.removeSession(guid))
+		{
+			Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
+			return(false);
+		}
 
       for (Cursor cursor : cursors)
          cursor.offline();

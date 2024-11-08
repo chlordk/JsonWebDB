@@ -4,7 +4,7 @@
 		"index": "index.html",
 		"class": null,
 		"virtual": [{"path": "/forms", "page": "index.html"}],
-		"location": "/Users/alhof/Repository/forms30/test-full/dist"
+		"location": "/Users/alhof/Repository/forms30/test-core/dist"
 		,
 		"admin":
 		{
@@ -113,7 +113,7 @@
 				"max-wait": 10,
 				"validate": 30,
 
-				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.local:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
 			}
 			,
 			"secondary":
@@ -124,7 +124,7 @@
 				"max-wait": 10,
 				"validate": 30,
 
-				"jdbc-url": "jdbc:postgresql://AlexMacBook03.home:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
+				"jdbc-url": "jdbc:postgresql://AlexMacBook03.local:5432/hr?ssl=false&escapeSyntaxCallMode=callIfNoReturn&ApplicationName=MyJsonWebDBApp"
 			}
 		}
    }
