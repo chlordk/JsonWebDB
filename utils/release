@@ -1,6 +1,12 @@
 #! /bin/bash
 
-VERSION=3.0.0
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <version>"
+    exit 1
+fi
+
+VERSION=$1
 LOCATION=$(dirname "$0")
 
 cd $LOCATION/..

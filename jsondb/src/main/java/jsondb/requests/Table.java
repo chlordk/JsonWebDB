@@ -207,7 +207,7 @@ public class Table
       {
          JSONObject col = colspec.getJSONObject(i);
 
-         Object value = col.get(VALUE);
+         Object value = Misc.get(col,VALUE);
          String column = col.getString(COLUMN);
 
          if (i == 0) list = column;
@@ -301,7 +301,7 @@ public class Table
       {
          JSONObject col = colspec.getJSONObject(i);
 
-         Object value = col.get(VALUE);
+         Object value = Misc.get(col,VALUE);
          String column = col.getString(COLUMN);
 
          if (i == 0) list = column+" = ?";

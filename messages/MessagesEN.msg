@@ -27,6 +27,7 @@ WHERECLAUSE_OR_START       = Where-Clause starting with 'or' in '{%1}'
 ACCESS_DENIED              = Access to object '{%1}' Denied
 NO_WHERE_CLAUSE            = Where clause is missing, but required
 MISSING_BINDVALUES         = Cannot complete statement because of missing bindvalues
+WRONG_NUMBER_OF_BINDVALUES = Cannot complete statement because the number of bindvalues doesn't match requirements '{%1}'
 WHERE_PRIMARY_KEY          = Where clause requires restrictions on primary key '{%1}'
 WRONG_DATA_TYPE            = Wrong datatype, expected '{%1}'
 BAD_FILTER_DEFINITION      = Bad filter definition '{%1}'

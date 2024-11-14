@@ -28,6 +28,7 @@ import utils.Dates;
 import java.util.Date;
 import java.time.ZoneId;
 import java.time.Instant;
+import messages.Messages;
 import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
@@ -55,6 +56,10 @@ public class DateRange extends Filter
 
       flt = flt.toLowerCase();
       flt = flt.replaceAll(" ","");
+
+		if (values.length < 1 || values.length > 2)
+			throw new Exception(Messages.get("WRONG_NUMBER_OF_BINDVALUES","Date Range"));
+
 
       if (this.values != null && values.length > 0)
       {

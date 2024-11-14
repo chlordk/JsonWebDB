@@ -24,6 +24,7 @@ SOFTWARE.
 
 package filters;
 
+import messages.Messages;
 import database.DataType;
 import database.BindValue;
 import java.util.ArrayList;
@@ -46,12 +47,15 @@ public class Between extends Filter
    }
 
    @Override
-   public ArrayList<BindValue> bindvalues()
+   public ArrayList<BindValue> bindvalues() throws Exception
    {
       if (bindvalues.size() == 0)
       {
          BindValue bv1 = new BindValue(column);
          BindValue bv2 = new BindValue(column);
+
+			if (values.length != 2)
+				throw new Exception(Messages.get("WRONG_NUMBER_OF_BINDVALUES","Between"));
 
          bindvalues.add(bv1.value(values[0]));
          bindvalues.add(bv2.value(values[1]));

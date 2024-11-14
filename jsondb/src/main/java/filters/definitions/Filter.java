@@ -127,7 +127,7 @@ public abstract class Filter
 
 
    public abstract String sql();
-   public abstract ArrayList<BindValue> bindvalues();
+   public abstract ArrayList<BindValue> bindvalues() throws Exception;
 
 
    public Filter(Context context, JSONObject definition)
@@ -136,7 +136,11 @@ public abstract class Filter
       this.definition = definition;
 
       if (definition.has(VALUE))
+		{
          value = definition.get(VALUE);
+			if (value == JSONObject.NULL)
+				value = null;
+		}
 
       if (definition.has(COLUMN))
          column = definition.getString(COLUMN);
@@ -159,7 +163,11 @@ public abstract class Filter
 
          values = new Object[vals.length()];
          for (int i = 0; i < values.length; i++)
+			{
             values[i] = vals.get(i);
+				if (values == JSONObject.NULL)
+					values[i] = null;
+			}
       }
    }
 
