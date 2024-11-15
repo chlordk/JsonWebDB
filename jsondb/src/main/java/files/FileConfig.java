@@ -26,6 +26,8 @@ package files;
 
 import java.io.File;
 import jsondb.Config;
+import messages.Messages;
+
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -102,7 +104,12 @@ public class FileConfig
       if (pos >= 0) ext = ext.substring(pos+1);
 
 		String mime = mimetypes.get(ext);
-		if (mime == null) mime = "application/octet-stream";
+
+		if (mime == null)
+		{
+			mime = "application/octet-stream";
+			Config.logger().warning(Messages.get("UNKNOWN_MIME_TYPE",ext));
+		}
 
       return(mime);
    }
