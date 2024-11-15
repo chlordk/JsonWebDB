@@ -101,7 +101,10 @@ public class FileConfig
       int pos = ext.lastIndexOf('.');
       if (pos >= 0) ext = ext.substring(pos+1);
 
-      return(mimetypes.get(ext));
+		String mime = mimetypes.get(ext);
+		if (mime == null) mime = "application/octet-stream";
+
+      return(mime);
    }
 
    private static void loadMimeTypes(JSONObject def)
