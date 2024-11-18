@@ -421,6 +421,14 @@ public class Session
          {Config.logger().log(Level.SEVERE,e.toString(),e);}
       }
 
+		// No reason to hold it in memory, anyone can pick it up
+
+		if (!State.removeSession(guid))
+      {
+         Config.logger().warning(Messages.get("DISC_WITH_CLIENTS",guid,clients));
+         return(false);
+      }
+
       StatePersistency.releaseSession(this.guid,this.user,this.stateful);
       return(true);
    }
