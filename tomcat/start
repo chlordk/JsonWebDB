@@ -1,27 +1,11 @@
 #!/bin/bash
 
-ARGS=$#
-PORT=8001
-SSLPORT=8002
-INST="docker01"
+INST="${1:-docker01}"
+PORT=${2:-8001}
+SSLPORT=${3:-8002}
 
 CWD=$(pwd)
 LOCATION=$(dirname "$0")
-
-if [[ ARGS -gt 0 ]]
-then
-  INST=$1
-fi
-
-if [[ ARGS -gt 1 ]]
-then
-  PORT=$2
-fi
-
-if [[ ARGS -gt 2 ]]
-then
-  SSLPORT=$3
-fi
 
 cd $LOCATION
 rm -rf $LOCATION/../logs/*
